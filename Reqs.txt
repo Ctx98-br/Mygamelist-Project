@@ -1,0 +1,3 @@
+pip install "fastapi[all]"
+pip install pyjwt
+pip install "pwdlib[argon2]"
