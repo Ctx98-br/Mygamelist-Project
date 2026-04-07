@@ -86,68 +86,68 @@
 </head>
 <body>
     <main class="panel">
-        <h1>Bem vindo ao MyGameList</h1>
-        <div id="status" class="ok">Verificando token...</div>
-        <p class="muted">Dados do usuario autenticado via JWT:</p>
-        <pre id="user-data">Carregando...</pre>
+        <h1>Bem-vindo ao MyGameList, <span id="user-name" style="color: var(--accent);">...</span></h1>
+        
+        <div id="status" class="ok">Conectado com sucesso ✅</div>
+        <p class="muted">Dados do usuário autenticado via JWT:</p>
+        
+        <pre id="user-data">Carregando dados do servidor...</pre>
 
         <div class="actions">
-            <button id="refresh" type="button">Atualizar perfil</button>
-            <button id="logout" type="button">Sair</button>
+            <button id="refresh" type="button">Atualizar Perfil</button>
+            <button id="logout-btn" type="button" style="background: var(--danger); color: white;">Sair</button>
         </div>
     </main>
 
     <script>
-        const statusEl = document.getElementById("status");
-        const userDataEl = document.getElementById("user-data");
+    async function checkAuth() {
+        const token = localStorage.getItem("access_token");
 
-        function getToken() {
-            return localStorage.getItem("access_token");
+        if (!token) {
+            window.location.href = "/";
+            return;
         }
 
-        function redirectToLogin() {
+        try {
+            const response = await fetch("/users/me/", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("Token inválido");
+            }
+
+            const userData = await response.json();
+            
+            // Atualiza o nome no título
+            document.getElementById("user-name").textContent = userData.full_name || userData.username;
+            
+            // Mostra o JSON formatado no painel escuro (o '2' é para indentar)
+            document.getElementById("user-data").textContent = JSON.stringify(userData, null, 2);
+            
+        } catch (error) {
+            console.error(error);
+            localStorage.removeItem("access_token");
             window.location.href = "/";
         }
+    }
 
-        async function loadProfile() {
-            const token = getToken();
+    // Função de Logout
+    function handleLogout() {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("token_type");
+        window.location.href = "/";
+    }
 
-            if (!token) {
-                statusEl.textContent = "Token nao encontrado. Redirecionando para login...";
-                setTimeout(redirectToLogin, 700);
-                return;
-            }
+    // Event Listeners (Conectando os botões)
+    document.getElementById("logout-btn").addEventListener("click", handleLogout);
+    document.getElementById("refresh").addEventListener("click", checkAuth);
 
-            try {
-                const response = await fetch("/users/me/", {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error("Token invalido ou expirado");
-                }
-
-                const data = await response.json();
-                statusEl.textContent = "Autenticado com sucesso";
-                userDataEl.textContent = JSON.stringify(data, null, 2);
-            } catch (error) {
-                statusEl.textContent = error.message;
-                localStorage.removeItem("access_token");
-                localStorage.removeItem("token_type");
-                setTimeout(redirectToLogin, 900);
-            }
-        }
-
-        document.getElementById("refresh").addEventListener("click", loadProfile);
-        document.getElementById("logout").addEventListener("click", () => {
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("token_type");
-            redirectToLogin();
-        });
-
-        loadProfile();
+    // Executa ao carregar a página
+    checkAuth();
     </script>
 </body>
 </html>

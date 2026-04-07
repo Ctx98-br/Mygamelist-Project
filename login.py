@@ -10,22 +10,18 @@ from jwt.exceptions import InvalidTokenError
 from pwdlib import PasswordHash
 from pydantic import BaseModel
 
+from sqlalchemy.orm import Session
+from database import SessionLocal, UserTable, get_db, engine
+from database import UserCreate
+
+
+
 # to get a string like this run:
 # openssl rand -hex 32
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-
-fake_users_db = {
-    "johndoe": {
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "email": "johndoe@example.com",
-        "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$wagCPXjifgvUFBzq4hqe3w$CYaIb8sB+wtD+Vu/P4uod1+Qof8h+1g7bbDlBID48Rc",
-        "disabled": False,
-    }
-}
 
 
 class Token(BaseModel):
@@ -66,14 +62,12 @@ def get_password_hash(password):
     return password_hash.hash(password)
 
 
-def get_user(db, username: str):
-    if username in db:
-        user_dict = db[username]
-        return UserInDB(**user_dict)
+def get_user(db: Session, username: str):
+    return db.query(UserTable).filter(UserTable.username == username).first()
 
 
-def authenticate_user(fake_db, username: str, password: str):
-    user = get_user(fake_db, username)
+def authenticate_user(db: Session, username: str, password: str):
+    user = get_user(db, username) # Consulta o banco
     if not user:
         verify_password(password, DUMMY_HASH)
         return False
@@ -93,7 +87,10 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user(
+    token: Annotated[str, Depends(oauth2_scheme)],
+    db: Session = Depends(get_db) # <--- Adicione a dependência do banco aqui
+):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -101,13 +98,15 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username = payload.get("sub")
+        username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
     except InvalidTokenError:
         raise credentials_exception
-    user = get_user(fake_users_db, username=token_data.username)
+        
+    # BUSCA NO POSTGRES
+    user = db.query(UserTable).filter(UserTable.username == username).first()
+    
     if user is None:
         raise credentials_exception
     return user
@@ -124,8 +123,11 @@ async def get_current_active_user(
 @app.post("/token")
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    db: Session = Depends(get_db) # <--- Faltava injetar o banco aqui
 ) -> Token:
-    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
+    # AQUI ESTAVA O ERRO: Trocamos fake_users_db por db
+    user = authenticate_user(db, form_data.username, form_data.password)
+    
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -137,6 +139,23 @@ async def login_for_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
     return Token(access_token=access_token, token_type="bearer")
+
+@app.post("/register")
+def register_user(user: UserCreate, db: Session = Depends(get_db)):
+    if get_user(db, user.username):
+        raise HTTPException(status_code=400, detail="Username already registered")
+    
+    hashed = get_password_hash(user.password)
+    db_user = UserTable(
+        username=user.username, 
+        email=user.email, 
+        full_name=user.full_name, 
+        hashed_password=hashed
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user) # Boa prática: atualiza o objeto com dados do banco
+    return {"message": "Usuário criado com sucesso!"}
 
 
 @app.get("/")

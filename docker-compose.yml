@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:16
+    container_name: mygamelist_db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: sua_senha_segura
+      POSTGRES_DB: mygamelist
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    container_name: mygamelist_web
+    ports:
+      - "8000:8000"
+    environment:
+      # No Docker, o host do banco é o nome do serviço 'db'
+      DATABASE_URL: postgresql://admin:sua_senha_segura@db:5432/mygamelist
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
