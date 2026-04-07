@@ -5,7 +5,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: sua_senha_segura
+      POSTGRES_PASSWORD: 9742PTGs
       POSTGRES_DB: mygamelist
     ports:
       - "5432:5432"
@@ -19,7 +19,7 @@ services:
       - "8000:8000"
     environment:
       # No Docker, o host do banco é o nome do serviço 'db'
-      DATABASE_URL: postgresql://admin:sua_senha_segura@db:5432/mygamelist
+      DATABASE_URL: postgresql://admin:9742PTGs@db:5432/mygamelist
     depends_on:
       - db
 
