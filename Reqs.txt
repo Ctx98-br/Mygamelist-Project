@@ -1,3 +1,10 @@
-pip install "fastapi[all]"
-pip install pyjwt
-pip install "pwdlib[argon2]"
+fastapi[all]
+pyjwt
+pwdlib[argon2]
+uvicorn[standard]
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+sqlalchemy
+psycopg2-binary
+python-dotenv
