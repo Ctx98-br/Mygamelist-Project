@@ -27,3 +27,13 @@ pip install -r Reqs.txt
 Para executar o projeto: 
 
 fastapi dev login.py
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Se for via docker, baixe e extraia o arquivo e abra a pasta
+
+digite o comando:
+
+docker-compose up --build dentro da pasta do projeto e espere carregar
+acesse o site pelo este endereço: http://0.0.0.0:8000/
+acesse o swagger pelo este comando: http://0.0.0.0:8000/docs
