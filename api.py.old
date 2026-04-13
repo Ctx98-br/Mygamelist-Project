@@ -1,0 +1,48 @@
+import requests
+from fastapi import Depends, FastAPI, Form, Request
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import Session
+
+# Importe as coisas do seu database.py
+from database import Base, GameTable, engine, get_db
+
+app = FastAPI()
+templates = Jinja2Templates(directory="templates")
+
+API_KEY = "35feb255f6ac4b88a3ed5cee84341acd"
+BASE_URL = "https://api.rawg.io/api/games"
+
+
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request, search: str = None):
+    games = []
+    if search:
+        response = requests.get(f"{BASE_URL}?key={API_KEY}&search={search}")
+        if response.status_code == 200:
+            games = response.json().get("results", [])
+
+    return templates.TemplateResponse(
+        "dashboard2.html", {"request": request, "games": games}
+    )
+
+
+# NOVA ROTA: Para salvar o jogo no Postgres
+@app.post("/add-to-catalog/")
+async def add_game(
+    game_id: int = Form(...),
+    title: str = Form(...),
+    image: str = Form(...),
+    db: Session = Depends(get_db),
+):
+    # Por enquanto, usaremos um usuário fixo até você ter o sistema de login
+    # Certifique-se de que o usuário 'admin' existe na tabela 'users'
+    new_game = GameTable(
+        game_api_id=game_id, title=title, image_url=image, owner_username="admin"
+    )
+
+    db.add(new_game)
+    db.commit()
+
+    # Redireciona de volta para a página inicial ou para uma página de sucesso
+    return RedirectResponse(url="/", status_code=303)

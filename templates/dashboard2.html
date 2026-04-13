@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="pt-br">
+    <head>
+        <title>MyGameList - Dashboard</title>
+        <style>
+            body {
+                font-family: "Segoe UI", sans-serif;
+                background: #121212;
+                color: white;
+                text-align: center;
+                margin: 0;
+            }
+            nav {
+                background: #1e1e1e;
+                padding: 15px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 2px solid #6200ee;
+            }
+            .user-info {
+                font-weight: bold;
+                color: #03dac6;
+            }
+            .game-container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 20px;
+                padding: 20px;
+            }
+            .game-card {
+                background: #1e1e1e;
+                padding: 15px;
+                border-radius: 10px;
+                width: 220px;
+                transition: 0.3s;
+            }
+            .game-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            }
+            .game-card img {
+                border-radius: 5px;
+                width: 100%;
+                height: 150px;
+                object-fit: cover;
+            }
+
+            input {
+                padding: 10px;
+                width: 300px;
+                border-radius: 5px;
+                border: none;
+                outline: none;
+            }
+            button {
+                padding: 10px 20px;
+                cursor: pointer;
+                background: #6200ee;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                font-weight: bold;
+            }
+            .btn-add {
+                background-color: #03dac6 !important;
+                color: black !important;
+                width: 100%;
+                margin-top: 10px;
+            }
+            .btn-logout {
+                background-color: #cf6679 !important;
+            }
+
+            /* Estrelas simples */
+            .rating {
+                color: #ffd700;
+                margin: 10px 0;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+        <nav>
+            <span>🎮 <strong>MyGameList</strong></span>
+            <div>
+                <a href="/my-list" style="color: #03dac6; margin-right: 15px"
+                    >📚 Ver Minha Lista</a
+                >
+                <span class="user-info" id="user-display">Carregando...</span>
+                <button class="btn-logout" onclick="logout()">Sair</button>
+            </div>
+        </nav>
+
+        <h1>Explorar Jogos</h1>
+
+        <form action="/dashboard" method="GET">
+            <input
+                type="text"
+                name="search"
+                placeholder="Pesquisar novos jogos..."
+                value="{{ request.query_params.get('search', '') }}"
+                required
+            />
+            <button type="submit">Buscar</button>
+        </form>
+
+        <div class="game-container">
+            {% for game in games %}
+            <div class="game-card">
+                <img src="{{ game.background_image }}" alt="{{ game.name }}" />
+                <h3>{{ game.name }}</h3>
+                <p>📅 {{ game.released }}</p>
+                <div class="rating">⭐⭐⭐⭐⭐</div>
+                <button
+                    class="btn-add"
+                    onclick="adicionarJogo('{{ game.id }}', '{{ game.name }}', '{{ game.background_image }}')"
+                >
+                    + Adicionar à Lista
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+
+        <script>
+            // 1. Verificar se está logado e buscar Nome do Usuário
+            async function loadUserInfo() {
+                const token = localStorage.getItem("access_token");
+                if (!token) {
+                    window.location.href = "/";
+                    return;
+                }
+
+                try {
+                    const response = await fetch("/users/me/", {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        document.getElementById("user-display").innerText =
+                            "Olá, " + data.full_name;
+                    } else {
+                        logout();
+                    }
+                } catch (err) {
+                    console.error("Erro ao carregar perfil");
+                }
+            }
+
+            // 2. Função para Adicionar Jogo
+            async function adicionarJogo(id, title, img) {
+                const token = localStorage.getItem("access_token");
+                const formData = new FormData();
+                formData.append("game_id", id);
+                formData.append("title", title);
+                formData.append("image", img);
+
+                const response = await fetch("/add-to-catalog/", {
+                    method: "POST",
+                    headers: { Authorization: `Bearer ${token}` },
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    alert("✅ " + title + " adicionado com sucesso!");
+                } else {
+                    alert("❌ Erro ao adicionar. Verifique seu login.");
+                }
+            }
+
+            // 3. Logout
+            function logout() {
+                localStorage.removeItem("access_token");
+                window.location.href = "/";
+            }
+
+            function logout() {
+                // Limpa o localStorage
+                localStorage.removeItem("access_token");
+                // Limpa o Cookie (forçando expiração)
+                document.cookie =
+                    "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                window.location.href = "/";
+            }
+
+            // Iniciar
+            loadUserInfo();
+        </script>
+    </body>
+</html>

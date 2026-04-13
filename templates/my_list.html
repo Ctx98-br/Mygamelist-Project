@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Minha Lista - MyGameList</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                background: #121212;
+                color: white;
+                text-align: center;
+            }
+            nav {
+                background: #1e1e1e;
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+            .game-container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 20px;
+            }
+            .game-card {
+                background: #252525;
+                padding: 15px;
+                border-radius: 10px;
+                width: 200px;
+                border: 1px solid #333;
+            }
+            .game-card img {
+                width: 100%;
+                border-radius: 5px;
+            }
+            .btn-remove {
+                background: #cf6679;
+                color: white;
+                border: none;
+                padding: 8px;
+                margin-top: 10px;
+                cursor: pointer;
+                border-radius: 5px;
+                width: 100%;
+            }
+            a {
+                color: #03dac6;
+                text-decoration: none;
+                margin: 0 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <nav>
+            <a href="/dashboard">🔍 Buscar Novos</a>
+            <a href="/my-list">📚 Minha Lista</a>
+        </nav>
+
+        <h1>Minha Coleção Particular</h1>
+
+        <div class="game-container">
+            {% for game in games %}
+            <div class="game-card">
+                <img src="{{ game.image_url }}" alt="{{ game.title }}" />
+                <h4>{{ game.title }}</h4>
+                <form action="/remove-from-catalog/{{ game.id }}" method="post">
+                    <button type="submit" class="btn-remove">🗑️ Remover</button>
+                </form>
+            </div>
+            {% else %}
+            <p>Sua lista está vazia. Vá em "Buscar Novos" para adicionar!</p>
+            {% endfor %}
+        </div>
+        <script>
+            // Se não tiver token, volta pro login antes de carregar a página
+            if (!localStorage.getItem("access_token")) {
+                window.location.href = "/";
+            }
+        </script>
+    </body>
+</html>
