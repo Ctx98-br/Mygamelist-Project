@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home do Usuário | MyGameList</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect rx='14' width='64' height='64' fill='%232563eb'/%3E%3Cpath d='M18 34c0-7 5-12 12-12h4c7 0 12 5 12 12s-5 12-12 12h-4c-7 0-12-5-12-12z' fill='white'/%3E%3Ccircle cx='26' cy='34' r='3' fill='%232563eb'/%3E%3Ccircle cx='38' cy='34' r='3' fill='%232563eb'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root{--bg:#0f172a;--bg2:#111827;--card:#ffffff;--primary:#2563eb;--secondary:#0ea5e9;--text:#0f172a;--muted:#64748b;--line:#e5e7eb}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{font-family:Inter,Segoe UI,sans-serif;min-height:100vh;background:radial-gradient(circle at top right,#1e293b,var(--bg) 45%,var(--bg2));color:#fff;transition:background .35s ease} body:hover{background:radial-gradient(circle at top right,#2563eb,#0f172a 45%,#111827)}
+header{position:sticky;top:0;z-index:5;background:rgba(15,23,42,.92);backdrop-filter:blur(12px);padding:16px 28px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.08);transition:.25s} header:hover{background:rgba(30,41,59,.96)}
+header h1{margin:0;font-size:1.1rem}.top{display:flex;gap:10px;align-items:center}
+button{border:0;border-radius:12px;padding:11px 14px;background:linear-gradient(135deg,var(--primary),#1d4ed8);color:#fff;font-weight:700;cursor:pointer;transition:.22s} button:hover{transform:translateY(-2px) scale(1.03);background:linear-gradient(135deg,#0ea5e9,#2563eb)} button:not(.ghost):hover{box-shadow:0 12px 24px rgba(37,99,235,.28)} header .top button:last-child:hover{background:linear-gradient(135deg,#ef4444,#dc2626)!important;color:#fff;box-shadow:0 12px 24px rgba(239,68,68,.30)}
+button.ghost{background:rgba(255,255,255,.12);transition:.22s} button.ghost:hover{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;transform:translateY(-2px) scale(1.04);box-shadow:0 12px 24px rgba(34,197,94,.28)}
+.container{max-width:1280px;margin:34px auto;padding:0 24px}
+   .hero{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:26px;align-items:stretch;margin-bottom:26px}
+    .hero-card,.card{background:linear-gradient(180deg,#ffffff,#f8fafc);color:var(--text);border-radius:28px;padding:30px;box-shadow:0 20px 45px rgba(15,23,42,.12);min-height:390px;display:flex;flex-direction:column;justify-content:flex-start;position:relative;overflow:hidden;transition:.25s;border:1px solid rgba(255,255,255,.9)}.hero-card:before,.card:before{content:'';position:absolute;top:-60px;right:-60px;width:140px;height:140px;background:radial-gradient(circle,rgba(37,99,235,.10),transparent 70%);border-radius:50%}  .hero-card:hover,.card:hover{transform:translateY(-6px) scale(1.01);box-shadow:0 30px 60px rgba(15,23,42,.16);background:linear-gradient(180deg,#ffffff,#eff6ff)}
+.hero h2{margin:0 0 10px;font-size:2.4rem;line-height:1.1}.hero p{margin:0;color:var(--muted);line-height:1.6}
+  .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:10px}   .stat{padding:18px;border-radius:20px;background:linear-gradient(135deg,#eff6ff,#ffffff);border:1px solid #dbeafe;min-height:118px;display:flex;flex-direction:column;justify-content:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.8);transition:.2s} .stat:hover{transform:translateY(-3px);background:linear-gradient(135deg,#dbeafe,#ffffff);border-color:#60a5fa}.stat b{display:block;font-size:1.5rem}.stat span{color:var(--muted);font-size:.9rem}
+   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:26px;align-items:stretch}.grid>.card{min-height:420px}  .section-title{margin:0 0 16px;font-size:1.18rem;font-weight:800;transition:.2s} .card:hover .section-title,.hero-card:hover .section-title{color:#2563eb} .card:hover .section-title i,.hero-card:hover .section-title i{filter:brightness(1.2);transform:scale(1.08)}
+  .list{display:grid;gap:14px;grid-template-rows:auto;align-content:start;flex:1}  .item{display:grid;grid-template-columns:1fr auto;align-items:center;gap:14px;padding:18px;border:1px solid #e2e8f0;border-radius:18px;background:linear-gradient(180deg,#fff,#f8fafc);min-height:88px;transition:.18s} .item:hover{border-color:#60a5fa;transform:translateX(4px) scale(1.01);background:linear-gradient(135deg,#eff6ff,#dbeafe)} .item:hover .badge{background:linear-gradient(135deg,#2563eb,#0ea5e9);color:#fff} .item:hover i{transform:scale(1.12)}.item small{color:var(--muted)}
+ .badge{padding:6px 10px;border-radius:999px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);color:#1d4ed8;font-size:.82rem;font-weight:800;transition:.2s}
+.progress{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-top:10px}.bar{height:100%;background:linear-gradient(135deg,var(--secondary),var(--primary))}
+@media(max-width:980px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.hero-card,.card,.grid>.card{min-height:auto}.stats{grid-template-columns:1fr 1fr}}@media(max-width:640px){.stats{grid-template-columns:1fr}.item{min-height:auto;grid-template-columns:1fr}.hero-card,.card{padding:22px}.top{flex-wrap:wrap}.container{padding:0 14px}}}@media(max-width:640px){.stats{grid-template-columns:1fr}.hero h2{font-size:1.8rem}}
+</style>
+</head>
+<body>
+<header>
+<h1><i class="fa-solid fa-gamepad"></i> MyGameList</h1>
+<div class="top">
+<button class="ghost"><i class="fa-solid fa-bell"></i></button>
+<button class="ghost"><i class="fa-solid fa-user"></i> Perfil</button>
+<button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
+</div>
+</header>
+<div class="container">
+<section class="hero">
+<div class="hero-card" style="display:flex;flex-direction:column;justify-content:space-between;min-height:100%;gap:18px">
+<div>
+<h2>Bem-vindo de volta!</h2>
+<p>Gerencie sua coleção, acompanhe progresso e descubra novos jogos para adicionar à sua lista.</p>
+<div class="list" style="margin-top:14px">
+<div class="item"><div><strong>Nota média dos seus jogos</strong><br><small>Baseado nas suas avaliações</small></div><span class="badge">8.6/10</span></div>
+<div class="item"><div><strong>Jogo mais bem avaliado</strong><br><small>Seu destaque atual</small></div><span class="badge">Elden Ring</span></div>
+<div class="item"><div><strong>Gênero favorito</strong><br><small>Mais jogado no mês</small></div><span class="badge">RPG</span></div>
+</div>
+</div>
+<div class="stats">
+<div class="stat"><b><i class='fa-solid fa-list' style='color:#2563eb'></i> <span id='total'>24</span></b><span>Jogos na lista</span></div>
+<div class="stat"><b><i class='fa-solid fa-clock' style='color:#22c55e'></i> 42h</b><span>Horas jogadas no mês</span></div>
+<div class="stat"><b><i class='fa-solid fa-trophy' style='color:#eab308'></i> 7</b><span>Jogos zerados</span></div>
+<div class="stat"><b><i class='fa-solid fa-chart-line' style='color:#8b5cf6'></i> 83%</b><span>Meta anual</span></div>
+<div class="stat"><b><i class='fa-solid fa-medal' style='color:#f97316'></i> #18</b><span>Ranking semanal</span></div>
+</div>
+</div>
+<div class="hero-card second-card" style="display:flex;flex-direction:column;justify-content:flex-start;gap:14px;min-height:100%">
+<h3 class="section-title"><i class="fa-solid fa-fire"></i> Tendências & Descobertas</h3>
+<div class="list">
+<div class="item"><div><strong><i class='fa-solid fa-fire' style='color:#ef4444'></i> Jogo em alta</strong><br><small>Mais comentado da semana</small></div><span class="badge">GTA VI</span></div>
+<div class="item"><div><strong><i class='fa-solid fa-thumbs-up' style='color:#22c55e'></i> Recomendado para você</strong><br><small>Baseado no seu gênero favorito</small></div><span class="badge">The Witcher 3</span></div>
+<div class="item"><div><strong><i class='fa-solid fa-rocket' style='color:#8b5cf6'></i> Próximo lançamento</strong><br><small>Título aguardado</small></div><span class="badge">Silksong</span></div>
+<div class="item"><div><strong><i class='fa-solid fa-crown' style='color:#f59e0b'></i> Conta Atual</strong><br><small>Status e benefícios</small></div><span class="badge">Premium</span></div>
+</div>
+<hr style='border:none;border-top:1px solid #e5e7eb;margin:18px 0'>
+<h3 class="section-title"><i class="fa-solid fa-rocket" style='color:#8b5cf6'></i> Meta Espacial</h3>
+<p style='margin:0 0 10px;color:#64748b'>Complete 3 jogos este mês e alcance a galáxia final.</p>
+<div style='background:#0f172a;border-radius:18px;padding:16px;position:relative;overflow:hidden;border:1px solid #334155'>
+<div style='display:flex;justify-content:space-between;font-size:.8rem;color:#cbd5e1;margin-bottom:8px'><span>🌍 Início</span><span>🌕 Meta</span></div>
+<div style='height:12px;background:#1e293b;border-radius:999px;position:relative'>
+<div style='width:68%;height:100%;border-radius:999px;background:linear-gradient(90deg,#06b6d4,#8b5cf6,#ec4899)'></div>
+<div style='position:absolute;left:68%;top:-16px;font-size:1.4rem;transform:translateX(-50%)'>🚀</div>
+</div>
+<div style='display:flex;justify-content:flex-end;margin-top:10px;color:#e2e8f0;font-size:.9rem'><span>+250 XP</span></div>
+</div>
+
+</div>
+</section>
+
+<section class="grid" style="margin-top:6px">
+<div class="card">
+<h3 class="section-title"><i class="fa-solid fa-list" style='color:#2563eb'></i> Últimos adicionados</h3>
+<div class="list">
+<div class="item"><div><strong><i class='fa-solid fa-dragon' style='color:#8b5cf6'></i> Elden Ring</strong><br><small>RPG / Aventura</small></div><span class="badge">Jogando</span></div>
+<div class="item"><div><strong><i class='fa-solid fa-axe-battle' style='color:#ef4444'></i> God of War</strong><br><small>Ação</small></div><span class="badge">Pendente</span></div>
+<div class="item"><div><strong><i class='fa-solid fa-fire-flame-curved' style='color:#f97316'></i> Hades</strong><br><small>Roguelike</small></div><span class="badge">Finalizado</span></div>
+<div class="item"><div><strong><i class='fa-solid fa-city' style='color:#06b6d4'></i> Cyberpunk 2077</strong><br><small>RPG / Mundo Aberto</small></div><span class="badge">Wishlist</span></div>
+<div class="item"><div><strong><i class='fa-solid fa-skull' style='color:#dc2626'></i> Resident Evil 4</strong><br><small>Survival Horror</small></div><span class="badge">Jogando</span></div>
+<div class="item"><div><strong><i class='fa-solid fa-car-side' style='color:#22c55e'></i> Forza Horizon 5</strong><br><small>Corrida</small></div><span class="badge">Pendente</span></div>
+</div>
+</div>
+<div class="card">
+<h3 class="section-title"><i class="fa-solid fa-comments" style='color:#22c55e'></i> Comunidade & Feed</h3>
+<div class="list">
+<div class="item"><div><strong><i class='fa-solid fa-message' style='color:#22c55e'></i> Chat Online</strong><br><small>12 usuários conectados agora</small></div><button><i class="fa-solid fa-message"></i></button></div>
+<div class="item"><div><strong><i class='fa-solid fa-comment-dots' style='color:#2563eb'></i> Comentários Recentes</strong><br><small>Veja opiniões sobre jogos</small></div><button><i class="fa-solid fa-comment-dots"></i></button></div>
+<div class="item"><div><strong><i class='fa-solid fa-rss' style='color:#f59e0b'></i> Seu Feed</strong><br><small>Compartilhe progresso e novidades</small></div><button><i class="fa-solid fa-rss"></i></button></div>
+<div class="item"><div><strong><i class='fa-solid fa-user-group' style='color:#8b5cf6'></i> Amigos Online</strong><br><small>5 amigos ativos agora</small></div><button><i class="fa-solid fa-user-group"></i></button></div>
+<div class="item"><div><strong><i class='fa-solid fa-heart' style='color:#ef4444'></i> Top Comentário</strong><br><small>Elden Ring merece GOTY!</small></div><button><i class="fa-solid fa-heart"></i></button></div>
+<div class="item"><div><strong><i class='fa-solid fa-users' style='color:#0ea5e9'></i> Grupo Popular</strong><br><small>Fãs de RPG com 230 membros</small></div><button><i class="fa-solid fa-users"></i></button></div>
+</div>
+</div>
+<div class="card">
+<h3 class="section-title"><i class="fa-solid fa-bolt" style='color:#f59e0b'></i> Ações rápidas</h3>
+<div class="list">
+<div class="item"><span>Adicionar novo jogo</span><button><i class="fa-solid fa-plus"></i></button></div>
+<div class="item"><span>Ver lista completa</span><button><i class="fa-solid fa-arrow-right"></i></button></div>
+<div class="item"><span>Editar perfil</span><button><i class="fa-solid fa-pen"></i></button></div>
+<div class="item"><span>Comentar jogo</span><button><i class="fa-solid fa-star"></i></button></div>
+<div class="item"><span>Ver conquistas</span><button><i class="fa-solid fa-medal"></i></button></div>
+<div class="item"><span>Adicionar amigo</span><button><i class="fa-solid fa-user-plus"></i></button></div>
+</div>
+</div>
+</section>
+</div>
+<script>
+function logout(){
+ localStorage.clear();
+ window.location.href='/';
+}
+</script>
+</body>
+</html>
