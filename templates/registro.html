@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+
+<!-- ajusta para celular -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MyGameList - Cadastro</title>
+
+<!-- biblioteca de ícones -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+
+/* cores usadas no site */
+:root{
+--card:#111827;
+--card2:#1e293b;
+--text:#e5e7eb;
+--muted:#94a3b8;
+--blue:#38bdf8;
+--purple:#8b5cf6;
+}
+
+/* limpa margens padrão */
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+/* fundo escuro principal */
+body{
+background:linear-gradient(135deg,#050816,#0b1020);
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
+color:var(--text);
+transition:.3s;
+}
+
+/* quando mudar para tema claro */
+body.light{
+--card:#ffffff;
+--card2:#f1f5f9;
+--text:#0f172a;
+--muted:#475569;
+background:linear-gradient(135deg,#dbeafe,#f8fafc);
+}
+
+/* botão de trocar tema */
+.theme-btn{
+position:fixed;
+top:20px;
+right:20px;
+padding:10px 14px;
+border:none;
+border-radius:12px;
+cursor:pointer;
+font-weight:bold;
+color:#fff;
+background:linear-gradient(135deg,var(--blue),var(--purple));
+transition:.2s;
+}
+
+/* animação ao passar mouse */
+.theme-btn:hover{
+transform:translateY(-2px);
+}
+
+/* caixa principal do formulário */
+.container{
+width:100%;
+max-width:500px;
+background:var(--card);
+padding:30px;
+border-radius:20px;
+box-shadow:0 15px 40px rgba(0,0,0,.35);
+transition:.3s;
+}
+
+/* área do logo */
+.logo{
+text-align:center;
+margin-bottom:25px;
+}
+
+/* nome do site */
+.logo h1{
+font-size:30px;
+color:var(--blue);
+margin-bottom:8px;
+}
+
+/* parte colorida do texto */
+.logo span{
+background:linear-gradient(135deg,var(--blue),var(--purple));
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+font-weight:bold;
+}
+
+/* texto pequeno abaixo */
+.logo p{
+color:var(--muted);
+font-size:14px;
+}
+
+/* espaço entre campos */
+.form-group{
+margin-bottom:16px;
+}
+
+/* texto acima dos inputs */
+label{
+display:block;
+margin-bottom:6px;
+font-size:14px;
+font-weight:bold;
+}
+
+/* caixa para ícone dentro do input */
+.input-box{
+position:relative;
+}
+
+/* posição do ícone */
+.input-box i{
+position:absolute;
+left:12px;
+top:14px;
+color:var(--muted);
+}
+
+/* estilo dos campos */
+input, textarea{
+width:100%;
+padding:12px 12px 12px 38px;
+border:none;
+border-radius:12px;
+background:var(--card2);
+color:var(--text);
+font-size:14px;
+outline:none;
+transition:.3s;
+}
+
+/* campo de texto maior */
+textarea{
+resize:none;
+height:90px;
+padding-left:12px;
+}
+
+/* duas colunas lado a lado */
+.row{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+}
+
+/* área do checkbox */
+.check{
+display:flex;
+gap:8px;
+align-items:flex-start;
+font-size:13px;
+color:var(--muted);
+margin:15px 0;
+}
+
+/* checkbox menor */
+.check input{
+width:auto;
+margin-top:2px;
+}
+
+/* botão criar conta */
+button.submit-btn{
+width:100%;
+padding:14px;
+border:none;
+border-radius:12px;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+color:#fff;
+background:linear-gradient(135deg,var(--blue),var(--purple));
+transition:.2s;
+}
+
+/* efeito no botão */
+button.submit-btn:hover{
+transform:translateY(-2px);
+filter:brightness(1.1);
+}
+
+/* links abaixo */
+.links{
+margin-top:18px;
+text-align:center;
+font-size:14px;
+color:var(--muted);
+}
+
+/* link entrar */
+.links a{
+color:var(--blue);
+text-decoration:none;
+font-weight:bold;
+}
+
+/* no celular vira uma coluna */
+@media(max-width:600px){
+.row{
+grid-template-columns:1fr;
+}
+}
+
+</style>
+</head>
+<body>
+
+<!-- botão para mudar tema -->
+<button class="theme-btn" onclick="toggleTheme()" id="themeBtn">
+<i class="fa-solid fa-moon"></i> Tema
+</button>
+
+<!-- caixa principal -->
+<div class="container">
+
+<!-- topo -->
+<div class="logo">
+<h1><i class="fa-solid fa-gamepad"></i> MyGameList</h1>
+<p>Crie sua <span>conta gamer</span> e monte seu perfil</p>
+</div>
+
+<!-- formulário -->
+<form>
+
+<!-- linha nome e usuário -->
+<div class="row">
+
+<div class="form-group">
+<label>Nome</label>
+<div class="input-box">
+<i class="fa-solid fa-user"></i>
+<input type="text" placeholder="Seu nome">
+</div>
+</div>
+
+<div class="form-group">
+<label>Usuário</label>
+<div class="input-box">
+<i class="fa-solid fa-at"></i>
+<input type="text" placeholder="Nome de usuário">
+</div>
+</div>
+
+</div>
+
+<!-- email -->
+<div class="form-group">
+<label>E-mail</label>
+<div class="input-box">
+<i class="fa-solid fa-envelope"></i>
+<input type="email" placeholder="seuemail@email.com">
+</div>
+</div>
+
+<!-- linha senha -->
+<div class="row">
+
+<div class="form-group">
+<label>Senha</label>
+<div class="input-box">
+<i class="fa-solid fa-lock"></i>
+<input type="password" placeholder="********">
+</div>
+</div>
+
+<div class="form-group">
+<label>Confirmar senha</label>
+<div class="input-box">
+<i class="fa-solid fa-lock"></i>
+<input type="password" placeholder="********">
+</div>
+</div>
+
+</div>
+
+<!-- data nascimento -->
+<div class="form-group">
+<label>Data de nascimento</label>
+<div class="input-box">
+<i class="fa-solid fa-calendar"></i>
+<input type="date">
+</div>
+</div>
+
+<!-- biografia -->
+<div class="form-group">
+<label>Bio do perfil</label>
+<textarea placeholder="Fale sobre você e seus jogos favoritos..."></textarea>
+</div>
+
+<!-- aceitar termos -->
+<div class="check">
+<input type="checkbox">
+<span>Concordo com os termos de uso e política de privacidade.</span>
+</div>
+
+<!-- botão cadastrar -->
+<button type="submit" class="submit-btn">
+<i class="fa-solid fa-user-plus"></i> Criar Conta
+</button>
+
+<!-- link login -->
+<div class="links">
+Já possui conta?
+<a href="#">Entrar</a>
+</div>
+
+</form>
+
+</div>
+
+<script>
+
+/* função que troca entre claro e escuro */
+function toggleTheme(){
+
+/* adiciona ou remove classe light */
+document.body.classList.toggle("light");
+
+/* pega botão */
+let btn = document.getElementById("themeBtn");
+
+/* muda texto e ícone */
+if(document.body.classList.contains("light")){
+btn.innerHTML='<i class="fa-solid fa-sun"></i> Claro';
+}else{
+btn.innerHTML='<i class="fa-solid fa-moon"></i> Tema';
+}
+
+}
+
+</script>
+
+</body>
+</html>
