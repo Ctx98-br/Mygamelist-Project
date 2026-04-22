@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyGameList - Fórum</title>
+
+<!-- ícones bonitos -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+
+/* aqui ficam as cores principais do site */
+:root{
+--bg:#0b1020;
+--card:#111827;
+--card2:#0f172a;
+--text:#e5e7eb;
+--muted:#94a3b8;
+
+--blue:#38bdf8;
+--purple:#8b5cf6;
+--yellow:#facc15;
+--green:#22c55e;
+}
+
+/* tira margens padrão e organiza tudo */
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+/* fundo geral do site */
+body{
+background:linear-gradient(135deg,#050816,#0b1020);
+color:var(--text);
+min-height:100vh;
+transition:.3s;
+}
+
+/* modo claro do site */
+body.light{
+--card:#ffffff;
+--card2:#f1f5f9;
+--text:#0f172a;
+--muted:#475569;
+
+background:linear-gradient(135deg,#e0f2fe,#f8fafc);
+color:var(--text);
+}
+
+/* cabeçalho do site */
+header{
+padding:18px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:rgba(0,0,0,.35);
+backdrop-filter:blur(10px);
+position:sticky;
+top:0;
+}
+
+/* cabeçalho no modo claro */
+body.light header{
+background:#ffffffcc;
+}
+
+/* título do site */
+header h1{
+display:flex;
+gap:10px;
+align-items:center;
+color:var(--blue);
+}
+
+/* destaque da palavra fórum */
+.forum{
+background:linear-gradient(135deg,var(--yellow),var(--purple));
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+font-weight:bold;
+}
+
+/* botão padrão */
+button{
+padding:10px 14px;
+border:0;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+color:#fff;
+background:linear-gradient(135deg,var(--blue),var(--purple));
+transition:.2s;
+}
+
+/* efeito quando passa o mouse no botão */
+button:hover{
+transform:translateY(-2px);
+filter:brightness(1.2);
+}
+
+/* efeito nos ícones do botão */
+button:hover i{
+color:var(--yellow);
+transform:rotate(10deg);
+}
+
+/* área principal dividida em duas colunas */
+.wrapper{
+display:grid;
+grid-template-columns:2fr 1fr;
+gap:20px;
+max-width:1200px;
+margin:auto;
+padding:20px;
+}
+
+/* caixa de criar tópico */
+.post-box{
+background:var(--card);
+padding:16px;
+border-radius:16px;
+}
+
+/* botões do criar tópico lado a lado */
+.post-actions{
+display:flex;
+gap:10px;
+margin-top:10px;
+}
+
+/* campo de texto */
+textarea{
+width:100%;
+height:90px;
+margin-top:10px;
+padding:10px;
+border-radius:10px;
+border:none;
+background:var(--card2);
+color:var(--text);
+}
+
+/* botão de anexar imagem */
+.file-upload{
+display:inline-flex;
+align-items:center;
+gap:6px;
+padding:7px 10px;
+border-radius:8px;
+cursor:pointer;
+background:var(--card2);
+font-size:12px;
+border:1px solid rgba(255,255,255,.1);
+transition:.2s;
+}
+
+/* quando passa mouse no anexar */
+.file-upload:hover{
+background:var(--blue);
+color:#fff;
+}
+
+/* esconde input de arquivo */
+.file-upload input{
+display:none;
+}
+
+/* cada tópico do fórum */
+.topic{
+background:var(--card);
+padding:16px;
+border-radius:16px;
+margin-top:15px;
+transition:.2s;
+border-left:4px solid transparent;
+}
+
+/* efeito ao passar mouse no tópico */
+.topic:hover{
+border-left:4px solid var(--blue);
+transform:translateY(-2px);
+}
+
+/* texto do tópico */
+.topic p{
+color:var(--muted);
+margin-top:6px;
+}
+
+/* comentário */
+.comment{
+margin-top:10px;
+padding:10px;
+border-radius:10px;
+background:var(--card2);
+border-left:3px solid var(--purple);
+}
+
+/* resposta do comentário */
+.reply{
+margin-left:25px;
+margin-top:8px;
+padding:8px;
+border-radius:8px;
+background:rgba(255,255,255,.05);
+border-left:3px solid var(--green);
+}
+
+/* estrelas de avaliação */
+.stars i{
+color:var(--yellow);
+}
+
+/* botões tipo curtir, responder */
+.actions{
+display:flex;
+gap:12px;
+font-size:13px;
+margin-top:6px;
+color:var(--muted);
+}
+
+/* cada ação */
+.actions span{
+cursor:pointer;
+display:flex;
+gap:5px;
+align-items:center;
+}
+
+/* efeito ao passar mouse nas ações */
+.actions span:hover{
+color:var(--blue);
+}
+
+/* lateral direita ranking */
+.sidebar{
+background:var(--card);
+padding:16px;
+border-radius:16px;
+height:fit-content;
+}
+
+/* cada usuário do ranking */
+.rank-item{
+display:flex;
+justify-content:space-between;
+padding:8px 0;
+border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+/* efeito no ranking */
+.rank-item:hover{
+color:var(--blue);
+cursor:pointer;
+}
+
+/* etiqueta do ranking */
+.tag{
+font-size:11px;
+padding:3px 6px;
+border-radius:6px;
+background:var(--blue);
+color:#fff;
+}
+
+/* se tela for pequena, vira uma coluna só */
+@media(max-width:1000px){
+.wrapper{
+grid-template-columns:1fr;
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- topo do site -->
+<header>
+<h1>
+<i class="fa-solid fa-gamepad"></i>
+MyGameList <span class="forum">Fórum</span>
+</h1>
+
+<!-- botão de mudar tema -->
+<button onclick="toggleTheme()" id="themeBtn">
+<i class="fa-solid fa-moon"></i> Tema
+</button>
+</header>
+
+<!-- tudo do site fica aqui -->
+<div class="wrapper">
+
+<!-- lado principal (feed) -->
+<div>
+
+<!-- criar novo tópico -->
+<div class="post-box">
+
+<b><i class="fa-solid fa-pen"></i> Criar tópico</b>
+
+<!-- escrever texto -->
+<textarea placeholder="Escreva sobre o jogo..."></textarea>
+
+<!-- botões do post -->
+<div class="post-actions">
+
+<!-- botão de anexar imagem -->
+<label class="file-upload">
+<input type="file">
+<i class="fa-solid fa-image"></i>
+Anexar
+</label>
+
+<!-- botão publicar -->
+<button>
+<i class="fa-solid fa-paper-plane"></i> Publicar
+</button>
+
+</div>
+
+</div>
+
+<!-- tópico do fórum -->
+<div class="topic">
+
+<b><i class="fa-solid fa-fire"></i> Melhor jogo 2026?</b>
+
+<p>Discussão sobre os jogos mais comentados do ano.</p>
+
+<!-- comentário principal -->
+<div class="comment">
+
+<b>Player01</b>
+
+<!-- avaliação em estrelas -->
+<div class="stars">
+<i class="fa-solid fa-star"></i>
+<i class="fa-solid fa-star"></i>
+<i class="fa-solid fa-star"></i>
+<i class="fa-solid fa-star"></i>
+<i class="fa-regular fa-star"></i>
+</div>
+
+<p>Jogo incrível, história perfeita!</p>
+
+<!-- ações do comentário -->
+<div class="actions">
+<span><i class="fa-solid fa-heart"></i> Curtir</span>
+<span><i class="fa-solid fa-reply"></i> Responder</span>
+</div>
+
+<!-- resposta de outro usuário -->
+<div class="reply">
+
+<b>Player02</b>
+
+<div class="stars">
+<i class="fa-solid fa-star"></i>
+<i class="fa-solid fa-star"></i>
+<i class="fa-solid fa-star"></i>
+<i class="fa-regular fa-star"></i>
+<i class="fa-regular fa-star"></i>
+</div>
+
+<p>Também gostei muito!</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- lado direito ranking -->
+<div class="sidebar">
+
+<h3><i class="fa-solid fa-trophy"></i> Ranking</h3>
+
+<div class="rank-item">
+<span>Player01</span>
+<span class="tag">Top</span>
+</div>
+
+<div class="rank-item">
+<span>Player02</span>
+<span class="tag">Ativo</span>
+</div>
+
+<div class="rank-item">
+<span>Player03</span>
+<span class="tag">Comentador</span>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* função que troca tema claro e escuro */
+function toggleTheme(){
+document.body.classList.toggle("light");
+
+let btn = document.getElementById("themeBtn");
+
+if(document.body.classList.contains("light")){
+btn.innerHTML='<i class="fa-solid fa-sun"></i> Claro';
+}else{
+btn.innerHTML='<i class="fa-solid fa-moon"></i> Tema';
+}
+}
+
+</script>
+
+</body>
+</html>

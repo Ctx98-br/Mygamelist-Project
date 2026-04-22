@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MyGameList</title>
+
+<!-- Favicon gamer -->
+<link rel="icon" type="image/svg+xml"
+href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230ea5e9'/%3E%3Cpath d='M18 34c0-7 5-12 12-12h4c7 0 12 5 12 12s-5 12-12 12h-4c-7 0-12-5-12-12z' fill='white'/%3E%3Ccircle cx='26' cy='34' r='3' fill='%230ea5e9'/%3E%3Ccircle cx='38' cy='34' r='3' fill='%230ea5e9'/%3E%3C/svg%3E">
+
+<!-- Ícones -->
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+
+/* =========================
+   CORES
+========================= */
+:root{
+--bg:#0f172a;
+--bg2:#111827;
+--card:#ffffff;
+--text:#111827;
+--muted:#64748b;
+--line:#e5e7eb;
+
+--blue:#2563eb;
+--green:#22c55e;
+--purple:#8b5cf6;
+--red:#ef4444;
+--gold:#f59e0b;
+--cyan:#06b6d4;
+--pink:#ec4899;
+}
+
+/* Reset */
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:Arial, Helvetica, sans-serif;
+background:
+radial-gradient(circle at top right,#1d4ed8 0%,transparent 20%),
+radial-gradient(circle at left,#7c3aed 0%,transparent 25%),
+linear-gradient(135deg,var(--bg),var(--bg2));
+color:#fff;
+min-height:100vh;
+}
+
+/* =========================
+   HEADER
+========================= */
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:18px 26px;
+background:rgba(0,0,0,.25);
+backdrop-filter:blur(12px);
+border-bottom:1px solid rgba(255,255,255,.08);
+position:sticky;
+top:0;
+z-index:20;
+}
+
+header h1{
+font-size:24px;
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.top{
+display:flex;
+gap:10px;
+}
+
+button{
+border:0;
+padding:10px 14px;
+border-radius:12px;
+cursor:pointer;
+font-weight:bold;
+color:#fff;
+background:linear-gradient(135deg,var(--blue),var(--cyan));
+transition:.2s;
+}
+
+button:hover{
+transform:translateY(-2px);
+}
+
+.ghost{
+background:rgba(255,255,255,.10);
+}
+
+.logout:hover{
+background:linear-gradient(135deg,var(--red),#dc2626);
+}
+
+/* =========================
+   CONTAINER
+========================= */
+.container{
+max-width:1400px;
+margin:auto;
+padding:24px;
+}
+
+.hero{
+display:grid;
+grid-template-columns:1.2fr 1fr;
+gap:22px;
+margin-bottom:22px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:22px;
+}
+
+/* =========================
+   CARDS
+========================= */
+.card{
+background:linear-gradient(180deg,#fff,#f8fafc);
+color:var(--text);
+padding:24px;
+border-radius:22px;
+box-shadow:0 18px 35px rgba(0,0,0,.12);
+transition:.2s;
+height:100%;
+display:flex;
+flex-direction:column;
+}
+
+.card:hover{
+transform:translateY(-4px);
+}
+
+.section-title{
+font-size:22px;
+font-weight:bold;
+margin-bottom:16px;
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+/* =========================
+   LISTAS
+========================= */
+.list{
+display:grid;
+gap:12px;
+}
+
+.item{
+display:grid;
+grid-template-columns:1fr auto;
+gap:10px;
+padding:14px;
+border:1px solid var(--line);
+border-radius:16px;
+background:#f8fafc;
+transition:.2s;
+}
+
+.item:hover{
+background:#eff6ff;
+border-color:#60a5fa;
+transform:translateX(4px);
+}
+
+.badge{
+padding:6px 10px;
+border-radius:999px;
+font-size:13px;
+font-weight:bold;
+background:#dbeafe;
+color:#1d4ed8;
+}
+
+/* =========================
+   STATS
+========================= */
+.stats{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+gap:12px;
+margin-top:18px;
+}
+
+.stat{
+padding:16px;
+border-radius:18px;
+color:#fff;
+}
+
+.stat b{
+display:block;
+font-size:22px;
+margin-bottom:5px;
+}
+
+.s1{background:linear-gradient(135deg,#2563eb,#1d4ed8);}
+.s2{background:linear-gradient(135deg,#22c55e,#16a34a);}
+.s3{background:linear-gradient(135deg,#8b5cf6,#7c3aed);}
+.s4{background:linear-gradient(135deg,#f59e0b,#d97706);}
+.s5{background:linear-gradient(135deg,#ec4899,#db2777);}
+.s6{background:linear-gradient(135deg,#06b6d4,#0891b2);}
+
+/* =========================
+   META ESPACIAL
+========================= */
+.progress-box{
+background:#0f172a;
+padding:18px;
+border-radius:18px;
+margin-top:12px;
+color:#fff;
+}
+
+.track{
+height:14px;
+background:#1e293b;
+border-radius:20px;
+overflow:hidden;
+position:relative;
+margin-top:10px;
+}
+
+.fill{
+width:72%;
+height:100%;
+background:linear-gradient(90deg,#06b6d4,#8b5cf6,#ec4899);
+}
+
+.rocket{
+position:absolute;
+left:72%;
+top:-10px;
+transform:translateX(-50%);
+font-size:22px;
+animation:fly 1.5s infinite;
+}
+
+@keyframes fly{
+0%,100%{transform:translateX(-50%) translateY(0);}
+50%{transform:translateX(-50%) translateY(-4px);}
+}
+
+.meta-info{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+margin-top:14px;
+}
+
+.meta-box{
+background:#111827;
+padding:12px;
+border-radius:14px;
+text-align:center;
+border:1px solid rgba(255,255,255,.06);
+}
+
+.meta-box b{
+display:block;
+font-size:18px;
+margin-top:4px;
+}
+
+/* =========================
+   RESPONSIVO
+========================= */
+@media(max-width:1100px){
+
+.hero{
+grid-template-columns:1fr;
+}
+
+.grid{
+grid-template-columns:1fr 1fr;
+}
+
+}
+
+@media(max-width:700px){
+
+.grid{
+grid-template-columns:1fr;
+}
+
+header{
+flex-direction:column;
+gap:12px;
+}
+
+.top{
+flex-wrap:wrap;
+justify-content:center;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<h1>
+<i class="fa-solid fa-gamepad" style="color:#06b6d4"></i>
+MyGameList
+</h1>
+
+<div class="top">
+<button class="ghost"><i class="fa-solid fa-bell"></i></button>
+<button class="ghost"><i class="fa-solid fa-user"></i> Perfil</button>
+<button class="logout" onclick="logout()">
+<i class="fa-solid fa-right-from-bracket"></i> Sair
+</button>
+</div>
+
+</header>
+
+<div class="container">
+
+<section class="hero">
+
+<!-- Painel principal -->
+<div class="card">
+
+<h2>Bem-vindo 🎮</h2>
+<p style="color:#64748b;margin:10px 0 18px;">
+Seu painel gamer completo.
+</p>
+
+<div class="list">
+
+<div class="item">
+<div><strong><i class="fa-solid fa-star" style="color:#f59e0b"></i> Nota Média</strong></div>
+<span class="badge">8.6</span>
+</div>
+
+<div class="item">
+<div><strong><i class="fa-solid fa-crown" style="color:#8b5cf6"></i> Favorito</strong></div>
+<span class="badge">Elden Ring</span>
+</div>
+
+<div class="item">
+<div><strong><i class="fa-solid fa-fire" style="color:#ef4444"></i> Em Alta</strong></div>
+<span class="badge">GTA VI</span>
+</div>
+
+</div>
+
+<div class="stats">
+
+<div class="stat s1"><b>24</b><span>Jogos</span></div>
+<div class="stat s2"><b>128</b><span>Seguidores</span></div>
+<div class="stat s3"><b>89</b><span>Seguindo</span></div>
+<div class="stat s4"><b>Lv18</b><span>Nível</span></div>
+<div class="stat s5"><b>42h</b><span>Horas</span></div>
+<div class="stat s6"><b>#182</b><span>Ranking</span></div>
+
+</div>
+
+</div>
+
+<!-- Meta Espacial -->
+<div class="card">
+
+<h3 class="section-title">
+<i class="fa-solid fa-rocket" style="color:#8b5cf6"></i>
+Meta Espacial
+</h3>
+
+<p style="color:#64748b;">
+Finalize 3 jogos no mês e desbloqueie bônus lendário.
+</p>
+
+<div class="progress-box">
+
+<div style="display:flex;justify-content:space-between;">
+<span>🌍 Terra</span>
+<span>🌕 Lua</span>
+</div>
+
+<div class="track">
+<div class="fill"></div>
+<div class="rocket">🚀</div>
+</div>
+
+<div style="margin-top:12px;text-align:right;">
++250 XP
+</div>
+
+<div class="meta-info">
+
+<div class="meta-box">
+<i class="fa-solid fa-trophy" style="color:#f59e0b"></i>
+<b>2/3</b>
+<small>Jogos concluídos</small>
+</div>
+
+<div class="meta-box">
+<i class="fa-solid fa-clock" style="color:#22c55e"></i>
+<b>18h</b>
+<small>Tempo investido</small>
+</div>
+
+<div class="meta-box">
+<i class="fa-solid fa-gift" style="color:#ec4899"></i>
+<b>Skin</b>
+<small>Prêmio atual</small>
+</div>
+
+<div class="meta-box">
+<i class="fa-solid fa-ranking-star" style="color:#06b6d4"></i>
+<b>#18</b>
+<small>Ranking evento</small>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="grid">
+
+<!-- Comunidade -->
+<div class="card">
+
+<h3 class="section-title">
+<i class="fa-solid fa-users" style="color:#06b6d4"></i>
+Comunidade
+</h3>
+
+<div class="list">
+
+<div class="item"><div><i class="fa-solid fa-comments"></i> Chat Online</div><button>Entrar</button></div>
+<div class="item"><div><i class="fa-solid fa-globe"></i> Fórum Gamer</div><button>Abrir</button></div>
+<div class="item"><div><i class="fa-solid fa-rss"></i> Feed Social</div><button>Ver</button></div>
+<div class="item"><div><i class="fa-solid fa-people-group"></i> Clãs Ativos</div><button>Ver</button></div>
+
+</div>
+
+</div>
+
+<!-- Lançamentos -->
+<div class="card">
+
+<h3 class="section-title">
+<i class="fa-solid fa-fire" style="color:#ef4444"></i>
+Lançamentos
+</h3>
+
+<div class="list">
+
+<div class="item"><div><i class="fa-solid fa-car"></i> GTA VI</div><span class="badge">🔥</span></div>
+<div class="item"><div><i class="fa-solid fa-mask"></i> Silksong</div><span class="badge">⭐</span></div>
+<div class="item"><div><i class="fa-solid fa-skull"></i> Hades II</div><span class="badge">🎮</span></div>
+<div class="item"><div><i class="fa-solid fa-dragon"></i> Fable</div><span class="badge">💜</span></div>
+
+</div>
+
+</div>
+
+<!-- Ações -->
+<div class="card">
+
+<h3 class="section-title">
+<i class="fa-solid fa-bolt" style="color:#f59e0b"></i>
+Ações
+</h3>
+
+<div class="list">
+
+<div class="item"><div><i class="fa-solid fa-plus"></i> Adicionar jogo</div><button>+</button></div>
+<div class="item"><div><i class="fa-solid fa-list"></i> Minha lista</div><button>→</button></div>
+<div class="item"><div><i class="fa-solid fa-user-pen"></i> Editar perfil</div><button>✎</button></div>
+<div class="item"><div><i class="fa-solid fa-trophy"></i> Conquistas</div><button>🏆</button></div>
+
+</div>
+
+</div>
+
+</section>
+
+</div>
+
+<script>
+function logout(){
+localStorage.clear();
+window.location.href="/";
+}
+</script>
+
+</body>
+</html>
