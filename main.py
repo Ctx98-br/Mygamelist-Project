@@ -237,3 +237,43 @@ async def remove_game(game_id: int, db: Session = Depends(get_db)):
         db.delete(game)
         db.commit()
     return RedirectResponse(url="/my-list", status_code=303)
+
+
+@app.post("/rate-game/{game_id}")
+async def rate_game(
+    game_id: int,
+    rating: int = Form(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    game = (
+        db.query(GameTable)
+        .filter(
+            GameTable.id == game_id, GameTable.owner_username == current_user.username
+        )
+        .first()
+    )
+
+    if not game:
+        raise HTTPException(status_code=404, detail="Jogo não encontrado na sua lista")
+
+    game.rating = rating
+    db.commit()
+    return {"message": "Nota atualizada!"}
+
+
+@app.get("/my-list", response_class=HTMLResponse)
+async def view_my_list(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    # Aqui o SQLAlchemy traz o objeto completo, incluindo o novo campo 'rating'
+    games = (
+        db.query(GameTable)
+        .filter(GameTable.owner_username == current_user.username)
+        .all()
+    )
+    return templates.TemplateResponse(
+        "my_list.html", {"request": request, "games": games}
+    )

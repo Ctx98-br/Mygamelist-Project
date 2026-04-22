@@ -45,10 +45,11 @@ def get_db():
 class GameTable(Base):
     __tablename__ = "my_games"
     id = Column(Integer, primary_key=True, index=True)
-    game_api_id = Column(Integer)  # ID que vem da RAWG/IGDB
+    game_api_id = Column(Integer)
     title = Column(String)
     image_url = Column(String)
     owner_username = Column(String, ForeignKey("users.username"))
+    rating = Column(Integer, default=0)
 
 
 # Cria a tabela no Postgres
