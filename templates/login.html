@@ -101,6 +101,18 @@
                 cursor: wait;
             }
 
+            .btn-outline {
+                background: transparent;
+                border: 2px solid var(--primary);
+                color: var(--primary);
+                margin-top: 12px;
+            }
+
+            .btn-outline:hover {
+                background: var(--primary);
+                color: white;
+            }
+
             .message {
                 margin-top: 12px;
                 min-height: 20px;
@@ -155,6 +167,7 @@
                 </div>
 
                 <button id="submit-btn" type="submit">Entrar</button>
+                <button type="button" class="btn-outline" onclick="window.location.href='/registro'">Não tem conta? Crie aqui</button>
                 <div id="message" class="message"></div>
             </form>
         </main>

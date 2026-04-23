@@ -207,6 +207,19 @@ font-size:14px;
 color:var(--muted);
 }
 
+/* botão de login alternativo */
+button.login-btn {
+margin-top: 12px;
+background: transparent;
+border: 2px solid var(--blue);
+color: var(--blue);
+}
+
+button.login-btn:hover {
+background: var(--blue);
+color: #fff;
+}
+
 /* link entrar */
 .links a{
 color:var(--blue);
@@ -240,7 +253,7 @@ grid-template-columns:1fr;
 </div>
 
 <!-- formulário -->
-<form>
+<form id="registerForm">
 
 <!-- linha nome e usuário -->
 <div class="row">
@@ -249,7 +262,7 @@ grid-template-columns:1fr;
 <label>Nome</label>
 <div class="input-box">
 <i class="fa-solid fa-user"></i>
-<input type="text" placeholder="Seu nome">
+<input type="text" id="fullName" placeholder="Seu nome" required>
 </div>
 </div>
 
@@ -257,7 +270,7 @@ grid-template-columns:1fr;
 <label>Usuário</label>
 <div class="input-box">
 <i class="fa-solid fa-at"></i>
-<input type="text" placeholder="Nome de usuário">
+<input type="text" id="username" placeholder="Nome de usuário" required>
 </div>
 </div>
 
@@ -268,7 +281,7 @@ grid-template-columns:1fr;
 <label>E-mail</label>
 <div class="input-box">
 <i class="fa-solid fa-envelope"></i>
-<input type="email" placeholder="seuemail@email.com">
+<input type="email" id="email" placeholder="seuemail@email.com" required>
 </div>
 </div>
 
@@ -279,7 +292,7 @@ grid-template-columns:1fr;
 <label>Senha</label>
 <div class="input-box">
 <i class="fa-solid fa-lock"></i>
-<input type="password" placeholder="********">
+<input type="password" id="password" placeholder="********" required>
 </div>
 </div>
 
@@ -287,7 +300,7 @@ grid-template-columns:1fr;
 <label>Confirmar senha</label>
 <div class="input-box">
 <i class="fa-solid fa-lock"></i>
-<input type="password" placeholder="********">
+<input type="password" id="confirmPassword" placeholder="********" required>
 </div>
 </div>
 
@@ -298,19 +311,19 @@ grid-template-columns:1fr;
 <label>Data de nascimento</label>
 <div class="input-box">
 <i class="fa-solid fa-calendar"></i>
-<input type="date">
+<input type="date" id="dateOfBirth">
 </div>
 </div>
 
 <!-- biografia -->
 <div class="form-group">
 <label>Bio do perfil</label>
-<textarea placeholder="Fale sobre você e seus jogos favoritos..."></textarea>
+<textarea id="profileBio" placeholder="Fale sobre você e seus jogos favoritos..."></textarea>
 </div>
 
 <!-- aceitar termos -->
 <div class="check">
-<input type="checkbox">
+<input type="checkbox" id="terms" required>
 <span>Concordo com os termos de uso e política de privacidade.</span>
 </div>
 
@@ -319,17 +332,62 @@ grid-template-columns:1fr;
 <i class="fa-solid fa-user-plus"></i> Criar Conta
 </button>
 
-<!-- link login -->
-<div class="links">
-Já possui conta?
-<a href="#">Entrar</a>
-</div>
+<button type="button" class="submit-btn login-btn" onclick="window.location.href='/'">
+<i class="fa-solid fa-right-to-bracket"></i> Já possui conta? Entrar
+</button>
 
 </form>
 
 </div>
 
 <script>
+document.getElementById("registerForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const fullName = document.getElementById("fullName").value;
+    const username = document.getElementById("username").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+    const dateOfBirth = document.getElementById("dateOfBirth").value;
+    const profileBio = document.getElementById("profileBio").value;
+
+    if (password !== confirmPassword) {
+        alert("As senhas não coincidem!");
+        return;
+    }
+
+    const payload = {
+        full_name: fullName,
+        username: username,
+        email: email,
+        password: password,
+        date_of_birth: dateOfBirth || null,
+        profile_bio: profileBio || null
+    };
+
+    try {
+        const response = await fetch("/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert("Conta criada com sucesso! Faça login.");
+            window.location.href = "/";
+        } else {
+            alert("Erro: " + (data.detail || "Não foi possível criar a conta."));
+        }
+    } catch (error) {
+        console.error("Erro:", error);
+        alert("Ocorreu um erro ao conectar ao servidor.");
+    }
+});
 
 /* função que troca entre claro e escuro */
 function toggleTheme(){
