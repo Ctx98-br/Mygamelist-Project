@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+
+<!-- Faz o site se adaptar ao celular -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MyGameList</title>
+
+<!-- Biblioteca de ícones -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+
+/* ===================================
+   CORES PRINCIPAIS DO SITE
+=================================== */
+:root{
+--bg:#0b1020;        /* fundo escuro */
+--bg2:#111827;       /* fundo secundário */
+--card:#111827;      /* cor dos cards */
+--text:#ffffff;      /* texto branco */
+--muted:#94a3b8;     /* texto apagado */
+--blue:#38bdf8;      /* azul principal */
+--purple:#8b5cf6;    /* roxo principal */
+}
+
+/* ===================================
+   RESET BÁSICO
+=================================== */
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+/* ===================================
+   CORPO DA PÁGINA
+=================================== */
+body{
+background:linear-gradient(135deg,#050816,#0b1020);
+color:var(--text);
+min-height:100vh;
+transition:.3s;
+}
+
+/* ===================================
+   TEMA CLARO
+   Quando o body recebe class="light"
+=================================== */
+body.light{
+--bg:#f8fafc;
+--bg2:#ffffff;
+--card:#ffffff;
+--text:#0f172a;
+--muted:#475569;
+
+background:linear-gradient(135deg,#dbeafe,#ffffff);
+}
+
+/* ===================================
+   TOPO DO SITE
+=================================== */
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:18px 40px;
+background:rgba(0,0,0,.35);
+backdrop-filter:blur(10px);
+}
+
+/* topo no tema claro */
+body.light header{
+background:rgba(255,255,255,.85);
+}
+
+/* logo */
+.logo{
+font-size:30px;
+font-weight:bold;
+color:var(--blue);
+display:flex;
+gap:10px;
+align-items:center;
+}
+
+/* menu */
+nav{
+display:flex;
+gap:12px;
+align-items:center;
+}
+
+/* links e botão */
+nav a,
+nav button{
+text-decoration:none;
+padding:10px 18px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+color:#fff;
+background:linear-gradient(135deg,var(--blue),var(--purple));
+transition:.3s;
+}
+
+/* efeito ao passar mouse */
+nav a:hover,
+nav button:hover{
+transform:translateY(-3px);
+filter:brightness(1.15);
+}
+
+/* ===================================
+   ÁREA PRINCIPAL
+=================================== */
+.hero{
+max-width:1200px;
+margin:auto;
+padding:60px 30px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:30px;
+align-items:center;
+}
+
+/* título principal */
+.texto h1{
+font-size:55px;
+line-height:1.1;
+margin-bottom:18px;
+}
+
+/* palavra destacada */
+.texto h1 span{
+color:var(--blue);
+}
+
+/* texto menor */
+.texto p{
+font-size:18px;
+color:var(--muted);
+margin-bottom:25px;
+line-height:1.6;
+}
+
+/* botões centrais */
+.botoes{
+display:flex;
+gap:15px;
+flex-wrap:wrap;
+}
+
+/* estilo dos botões */
+.botoes a{
+text-decoration:none;
+padding:14px 24px;
+border-radius:12px;
+font-weight:bold;
+transition:.3s;
+}
+
+/* botão principal */
+.btn1{
+background:linear-gradient(135deg,var(--blue),var(--purple));
+color:#fff;
+}
+
+/* botão secundário */
+.btn2{
+border:2px solid var(--blue);
+color:var(--blue);
+}
+
+/* animação mouse */
+.botoes a:hover{
+transform:translateY(-4px);
+}
+
+/* ===================================
+   CARDS LADO DIREITO
+=================================== */
+.cards{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:18px;
+}
+
+/* card individual */
+.card{
+background:var(--card);
+padding:22px;
+border-radius:18px;
+box-shadow:0 10px 25px rgba(0,0,0,.20);
+transition:.3s;
+}
+
+/* efeito no mouse */
+.card:hover{
+transform:translateY(-6px);
+border:1px solid var(--blue);
+}
+
+/* ícone do card */
+.card i{
+font-size:28px;
+margin-bottom:12px;
+color:var(--blue);
+}
+
+/* título card */
+.card h3{
+margin-bottom:10px;
+}
+
+/* texto card */
+.card p{
+color:var(--muted);
+line-height:1.5;
+}
+
+/* ===================================
+   RESPONSIVO CELULAR
+=================================== */
+@media(max-width:900px){
+
+.hero{
+grid-template-columns:1fr;
+}
+
+.cards{
+grid-template-columns:1fr;
+}
+
+.texto h1{
+font-size:40px;
+}
+
+header{
+flex-direction:column;
+gap:15px;
+}
+
+nav{
+flex-wrap:wrap;
+justify-content:center;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ==========================
+     TOPO
+========================== -->
+<header>
+
+<!-- Logo -->
+<div class="logo">
+<i class="fa-solid fa-gamepad"></i>
+MyGameList
+</div>
+
+<!-- Menu -->
+<nav>
+<a href="#">Início</a>
+<a href="#">Criar Conta</a>
+
+<!-- botão de trocar tema -->
+<button onclick="toggleTheme()" id="themeBtn">
+<i class="fa-solid fa-moon"></i> Tema
+</button>
+</nav>
+
+</header>
+
+<!-- ==========================
+     CONTEÚDO PRINCIPAL
+========================== -->
+<section class="hero">
+
+<!-- Texto da esquerda -->
+<div class="texto">
+
+<h1>Seu catálogo gamer <span>começa aqui</span></h1>
+
+<p>
+Organize seus jogos favoritos,
+descubra novos títulos e monte
+sua biblioteca pessoal.
+</p>
+
+<div class="botoes">
+<a href="#" class="btn1">Criar Conta</a>
+<a href="#" class="btn2">Saiba Mais</a>
+</div>
+
+</div>
+
+<!-- Cards da direita -->
+<div class="cards">
+
+<div class="card">
+<i class="fa-solid fa-star"></i>
+<h3>Avaliações</h3>
+<p>Veja notas da comunidade.</p>
+</div>
+
+<div class="card">
+<i class="fa-solid fa-bookmark"></i>
+<h3>Biblioteca</h3>
+<p>Salve seus jogos favoritos.</p>
+</div>
+
+<div class="card">
+<i class="fa-solid fa-fire"></i>
+<h3>Destaques</h3>
+<p>Games em alta do momento.</p>
+</div>
+
+<div class="card">
+<i class="fa-solid fa-user-plus"></i>
+<h3>Conta Grátis</h3>
+<p>Crie seu perfil gamer.</p>
+</div>
+
+</div>
+
+</section>
+
+<script>
+
+/* ===================================
+   FUNÇÃO TROCAR TEMA
+=================================== */
+function toggleTheme(){
+
+/* adiciona ou remove tema claro */
+document.body.classList.toggle("light");
+
+/* pega botão */
+let btn = document.getElementById("themeBtn");
+
+/* se estiver claro */
+if(document.body.classList.contains("light")){
+
+btn.innerHTML =
+'<i class="fa-solid fa-sun"></i> Claro';
+
+/* salva no navegador */
+localStorage.setItem("theme","light");
+
+}else{
+
+btn.innerHTML =
+'<i class="fa-solid fa-moon"></i> Escuro';
+
+localStorage.setItem("theme","dark");
+}
+
+}
+
+/* ===================================
+   QUANDO ABRIR SITE
+   mantém tema salvo
+=================================== */
+window.onload = () => {
+
+let tema = localStorage.getItem("theme");
+
+if(tema === "light"){
+
+document.body.classList.add("light");
+
+document.getElementById("themeBtn").innerHTML =
+'<i class="fa-solid fa-sun"></i> Claro';
+
+}
+
+};
+
+</script>
+
+</body>
+</html>
