@@ -1,218 +1,700 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel Administrativo | MyGameList</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect rx='14' width='64' height='64' fill='%232563eb'/%3E%3Cpath d='M18 34c0-7 5-12 12-12h4c7 0 12 5 12 12s-5 12-12 12h-4c-7 0-12-5-12-12z' fill='white'/%3E%3Ccircle cx='26' cy='34' r='3' fill='%232563eb'/%3E%3Ccircle cx='38' cy='34' r='3' fill='%232563eb'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<style>
-/* ===== VISUAL PREMIUM AVANÇADO ===== */
-/* ===== ESSA PÁGINA SERÁ USADA NO FUTURO ===== */
-body:before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 10% 20%,rgba(37,99,235,.10),transparent 25%),radial-gradient(circle at 90% 10%,rgba(14,165,233,.10),transparent 22%),radial-gradient(circle at 80% 80%,rgba(99,102,241,.10),transparent 25%);pointer-events:none;z-index:0}
-.container,.card,header{position:relative;z-index:1}
-::-webkit-scrollbar{width:10px;height:10px}
-::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#60a5fa,#2563eb);border-radius:20px}
-::-webkit-scrollbar-track{background:#e5e7eb}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Painel Administrativo do MyGameList — gerencie usuários e contas.">
+  <title>Admin | MyGameList</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    :root {
+      --bg: #050816;
+      --card: #0f172a;
+      --card-b: #1e293b;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: rgba(255, 255, 255, .07);
+      --blue: #38bdf8;
+      --purple: #818cf8;
+      --green: #34d399;
+      --danger: #f87171;
+      --gold: #fbbf24;
+      --grad: linear-gradient(135deg, #38bdf8, #818cf8);
+    }
 
-:root{--bg1:#0f172a;--bg2:#111827;--panel:#ffffff;--primary:#2563eb;--primary2:#1d4ed8;--danger:#dc2626;--success:#16a34a;--muted:#64748b;--line:#e5e7eb}
-*{box-sizing:border-box}html,body{margin:0;padding:0}body{font-family:Inter,Segoe UI,Tahoma,sans-serif;background:radial-gradient(circle at top right,#1e293b,var(--bg1) 45%,var(--bg2));min-height:100vh;color:#0f172a}
-header{position:sticky;top:0;z-index:5;background:linear-gradient(135deg,rgba(15,23,42,.96),rgba(30,41,59,.96));backdrop-filter:blur(14px);color:#fff;padding:18px 30px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.08);box-shadow:0 10px 30px rgba(0,0,0,.18)}
-header h1{margin:0;font-size:1.1rem;letter-spacing:.3px} .top-actions{display:flex;gap:10px;align-items:center} .fa-solid{margin-right:6px} h1 .fa-solid{margin-right:10px} .ghost{background:rgba(255,255,255,.12);color:#fff;box-shadow:none} .ghost:hover{background:rgba(255,255,255,.18)}
- .container{max-width:1320px;margin:36px auto;padding:0 24px}.hero{color:#fff;margin-bottom:18px} .hero h2{margin:0 0 8px;font-size:2.25rem;line-height:1.1;background:linear-gradient(135deg,#ffffff,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent} .hero p{margin:0;color:#dbeafe;font-size:1.02rem}
- .grid{display:grid;grid-template-columns:390px 1fr;gap:26px;align-items:start} .card{background:linear-gradient(180deg,#ffffff,#f8fafc);border-radius:26px;padding:28px;box-shadow:0 25px 60px rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.9);position:relative;overflow:hidden}.card:before{content:'';position:absolute;top:-80px;right:-80px;width:180px;height:180px;background:radial-gradient(circle,rgba(37,99,235,.12),transparent 70%);border-radius:50%}
-.field{margin-bottom:15px}label{display:block;margin-bottom:8px;font-weight:700;font-size:.95rem}input,select{width:100%;padding:13px 15px;border:1px solid #dbe1ea;border-radius:14px;font-size:.97rem;transition:.18s;background:#fff}input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px rgba(37,99,235,.12)}
-button{border:0;border-radius:14px;padding:12px 16px;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;font-weight:800;cursor:pointer;transition:.22s;box-shadow:0 12px 22px rgba(37,99,235,.22)}button:hover{transform:translateY(-2px) scale(1.01);filter:brightness(1.04)}.ghost{background:#eef2ff;color:#1e3a8a}.danger{background:linear-gradient(135deg,#ef4444,#dc2626)}
-.message{margin-top:12px;min-height:20px;font-weight:700}.success{color:var(--success)}.error{color:var(--danger)}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px} .stat{background:linear-gradient(135deg,#ffffff,#eff6ff);border:1px solid var(--line);padding:18px;border-radius:18px;box-shadow:0 8px 18px rgba(0,0,0,.06)}.stat b{display:block;font-size:1.35rem}.stat span{color:var(--muted);font-size:.88rem}
-table{width:100%;border-collapse:separate;border-spacing:0 12px}  .table-wrap{overflow:auto;padding:8px;border-radius:22px;background:linear-gradient(180deg,#f8fafc,#eef2ff);border:1px solid #dbeafe;box-shath,td{text-align:left;padding:16px;vertical-align:middle;border-bottom:2px solid #dbeafe} th:last-child,td:last-child{border-right:none} th{position:sticky;top:0;background:linear-gradient(135deg,#dbeafe,#eff6ff);z-index:1;color:#1e3a8a;border-bottom:2px solid #93c5fd} td strong{display:block} td small{color:#64748b} tbody tr{background:#fff;border:1px solid #bfdbfe;box-shadow:0 10px 24px rgba(0,0,0,.06);transition:.18s} tbody tr td{border-right:2px solid #eef2ff} tbody tr td:last-child{border-right:none} tbody tr:hover{transform:translateY(-2px);box-shadow:0 18px 30px rgba(0,0,0,.09)} tbody tr td:first-child{border-radius:14px 0 0 14px} tbody tr td:last-child{border-radius:0 14px 14px 0}th{color:var(--muted);font-size:.84rem;text-transform:uppercase;letter-spacing:.4px} .badge{padding:6px 12px;border-radius:999px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);color:#1d4ed8;font-size:.8rem;font-weight:800;box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}.actions{display:flex;gap:8px}.small-btn{padding:8px 10px;font-size:.86rem}
-.search{margin-bottom:14px}
-@media(max-width:980px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}@media(max-width:640px){.stats{grid-template-columns:1fr}.hero h2{font-size:1.5rem}}
-</style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(56, 189, 248, .1) 0%, transparent 30%),
+        radial-gradient(circle at 85% 85%, rgba(129, 140, 248, .1) 0%, transparent 30%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(5, 8, 22, .85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.15rem;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-brand i {
+      -webkit-text-fill-color: var(--blue);
+    }
+
+    .btn-nav {
+      border: none;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: .85rem;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: transform .18s, filter .18s;
+    }
+
+    .btn-nav:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.1);
+    }
+
+    .btn-logout {
+      background: rgba(248, 113, 113, .15);
+      color: var(--danger);
+      border: 1px solid rgba(248, 113, 113, .2);
+    }
+
+    /* CONTAINER */
+    .container {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 36px 24px;
+    }
+
+    .page-title {
+      margin-bottom: 28px;
+    }
+
+    .page-title h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    .page-title p {
+      color: var(--muted);
+    }
+
+    /* STATS */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px 24px;
+    }
+
+    .stat-card b {
+      display: block;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--blue);
+    }
+
+    .stat-card span {
+      color: var(--muted);
+      font-size: .85rem;
+    }
+
+    /* GRID */
+    .grid {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    /* CARD */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 28px;
+    }
+
+    .card h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .card>p {
+      color: var(--muted);
+      font-size: .88rem;
+      margin-bottom: 20px;
+    }
+
+    /* FORM */
+    .field {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    input,
+    select {
+      width: 100%;
+      background: var(--card-b);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: var(--text);
+      font-size: .95rem;
+      font-family: 'Inter', sans-serif;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(56, 189, 248, .1);
+    }
+
+    select option {
+      background: var(--card);
+    }
+
+    .btn-submit {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 13px;
+      background: var(--grad);
+      color: #fff;
+      font-size: .95rem;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: transform .18s, filter .18s;
+      box-shadow: 0 8px 20px rgba(56, 189, 248, .2);
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+    }
+
+    .msg {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: .88rem;
+      font-weight: 600;
+      display: none;
+    }
+
+    .msg.success {
+      display: block;
+      color: var(--green);
+      background: rgba(52, 211, 153, .1);
+      border: 1px solid rgba(52, 211, 153, .2);
+    }
+
+    .msg.error {
+      display: block;
+      color: var(--danger);
+      background: rgba(248, 113, 113, .1);
+      border: 1px solid rgba(248, 113, 113, .2);
+    }
+
+    /* TABLE */
+    .search-row {
+      margin-bottom: 14px;
+    }
+
+    .search-row input {
+      max-width: 320px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: var(--card-b);
+    }
+
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 14px 16px;
+      font-size: .88rem;
+      border-bottom: 1px solid rgba(255, 255, 255, .04);
+      vertical-align: middle;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, .02);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: .75rem;
+      font-weight: 700;
+    }
+
+    .badge-user {
+      background: rgba(56, 189, 248, .15);
+      color: var(--blue);
+    }
+
+    .badge-admin {
+      background: rgba(129, 140, 248, .15);
+      color: var(--purple);
+    }
+
+    .badge-active {
+      background: rgba(52, 211, 153, .15);
+      color: var(--green);
+    }
+
+    .badge-off {
+      background: rgba(248, 113, 113, .15);
+      color: var(--danger);
+    }
+
+    .act-btns {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-sm {
+      border: none;
+      padding: 7px 10px;
+      border-radius: 9px;
+      font-size: .78rem;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: transform .15s, filter .15s;
+    }
+
+    .btn-sm:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.1);
+    }
+
+    .btn-edit {
+      background: rgba(56, 189, 248, .15);
+      color: var(--blue);
+    }
+
+    .btn-toggle {
+      background: rgba(251, 191, 36, .15);
+      color: var(--gold);
+    }
+
+    .btn-del {
+      background: rgba(248, 113, 113, .15);
+      color: var(--danger);
+    }
+
+    /* TOAST */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .toast {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: .9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .4);
+      animation: slideIn .3s ease;
+      max-width: 320px;
+    }
+
+    .toast.success {
+      border-color: rgba(52, 211, 153, .3);
+      color: var(--green);
+    }
+
+    .toast.error {
+      border-color: rgba(248, 113, 113, .3);
+      color: var(--danger);
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @media(max-width:1050px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media(max-width:600px) {
+      .stats-row {
+        grid-template-columns: 1fr;
+      }
+
+      nav {
+        padding: 0 14px;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<header>
-<h1><i class="fa-solid fa-shield-halved"></i> Painel Administrativo - MyGameList</h1>
-<div class="top-actions"><button class="ghost"><i class="fa-solid fa-bell"></i></button><button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Sair</button></div>
-</header>
-<div class="container">
-<section class="hero"><h2><i class="fa-solid fa-chart-line"></i> Controle Administrativo</h2><p>Gerencie usuários, permissões e acompanhe indicadores do sistema em um único painel.</p></section>
-<div class="grid">
 
-<!-- CARD FORMULÁRIO -->
-<section class="card">
-<h2><i class="fa-solid fa-user-plus"></i> Novo Usuário</h2>
-<p>Cadastre usuários comuns ou administradores.</p>
-<form id="formCadastro">
-<div class="field">
-<label for="nome">Nome Completo</label>
-<input id="nome" required>
-</div>
-<div class="field">
-<label for="usuario">Usuário</label>
-<input id="usuario" required>
-</div>
-<div class="field">
-<label for="senha">Senha</label>
-<input id="senha" type="password" required>
-</div>
-<div class="field">
-<label for="tipo">Tipo de Conta</label>
-<select id="tipo">
-<option value="user">Usuário</option>
-<option value="admin">Administrador</option>
-</select>
-</div>
-<div class="field">
-<label for="codigo">Código Mestre</label>
-<input id="codigo" required>
-</div>
-<button type="submit"><i class="fa-solid fa-floppy-disk"></i> Cadastrar Usuário</button>
-<div id="msg" class="message"></div>
-</form>
-</section>
+  <nav>
+    <div class="nav-brand"><i class="fa-solid fa-shield-halved"></i> Admin | MyGameList</div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <a href="/dashboard"
+        style="color:var(--muted);text-decoration:none;font-size:.85rem;font-weight:600;padding:8px 12px;border-radius:10px;transition:.2s;"
+        onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--muted)'">
+        <i class="fa-solid fa-arrow-left"></i> Voltar
+      </a>
+      <button class="btn-nav btn-logout" onclick="logout()">
+        <i class="fa-solid fa-right-from-bracket"></i> Sair
+      </button>
+    </div>
+  </nav>
 
-<!-- CARD LISTAGEM -->
-<section class="card">
-<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px">
-<div><h2 style="margin:0"><i class="fa-solid fa-users"></i> Usuários Cadastrados</h2><p style="margin:6px 0 0;color:#64748b">Gerencie contas com visual claro e organizado.</p></div>
-<button class="ghost"><i class="fa-solid fa-file-export"></i> Exportar</button>
-</div>
-<div class="stats"><div class="stat"><b id="totalUsuarios">0</b><span>Total de usuários</span></div><div class="stat"><b id="totalAdmins">0</b><span>Administradores</span></div><div class="stat"><b id="totalComuns">0</b><span>Usuários comuns</span></div></div>
-<h2><i class="fa-solid fa-users"></i> Usuários Cadastrados</h2>
-<div class="search"><input id="busca" placeholder="Pesquisar usuário..." oninput="filtrarUsuarios()"></div>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>Nome</th>
-<th>Usuário</th>
-<th>Tipo</th>
-<th>Status</th>
-<th>Ações</th>
-</tr>
-</thead>
-<tbody id="listaUsuarios"></tbody>
-</table></div>
-</section>
+  <div class="container">
 
-</div>
-</div>
-<script>
-// Seleciona elementos principais da página
-const form = document.getElementById('formCadastro');
-const msg = document.getElementById('msg');
-const lista = document.getElementById('listaUsuarios');
+    <div class="page-title">
+      <h1><i class="fa-solid fa-shield-halved"></i> Painel Administrativo</h1>
+      <p>Gerencie usuários e contas do sistema MyGameList.</p>
+    </div>
 
-// Carrega usuários ao abrir a página
-window.addEventListener('load', carregarUsuarios);
+    <div class="stats-row">
+      <div class="stat-card"><b id="totalUsuarios">–</b><span>Total de usuários</span></div>
+      <div class="stat-card"><b id="totalAtivos">–</b><span>Usuários ativos</span></div>
+      <div class="stat-card"><b id="totalDesativados">–</b><span>Desativados</span></div>
+    </div>
 
-// Evento de envio do formulário
-form.addEventListener('submit', async function(e){
- e.preventDefault();
- msg.textContent='';
- msg.className='message';
+    <div class="grid">
 
- // Captura valores digitados
- const nome = document.getElementById('nome').value;
- const usuario = document.getElementById('usuario').value;
- const senha = document.getElementById('senha').value;
- const tipo = document.getElementById('tipo').value;
- const codigo = document.getElementById('codigo').value;
+      <!-- FORM CADASTRO -->
+      <section class="card">
+        <h2><i class="fa-solid fa-user-plus"></i> Cadastrar Usuário</h2>
+        <p>Adicione um novo usuário ao sistema. Informe o código mestre para confirmar.</p>
+        <form id="formCadastro">
+          <div class="field">
+            <label for="nome">Nome Completo</label>
+            <input id="nome" placeholder="Ex: João Silva" required />
+          </div>
+          <div class="field">
+            <label for="usuario">Usuário (login)</label>
+            <input id="usuario" placeholder="Ex: joao.silva" required />
+          </div>
+          <div class="field">
+            <label for="senha">Senha</label>
+            <input id="senha" type="password" placeholder="••••••••" required />
+          </div>
+          <div class="field">
+            <label for="tipo">Tipo de Conta</label>
+            <select id="tipo">
+              <option value="user">Usuário Comum</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="codigo">Código Mestre</label>
+            <input id="codigo" type="password" placeholder="Código de autorização" required />
+          </div>
+          <button type="submit" class="btn-submit">
+            <i class="fa-solid fa-floppy-disk"></i> Cadastrar
+          </button>
+          <div id="msg" class="msg"></div>
+        </form>
+      </section>
 
- try{
-   // Envia cadastro ao backend
-   const response = await fetch('/admin/cadastro',{
-     method:'POST',
-     headers:{'Content-Type':'application/json'},
-     body: JSON.stringify({nome,usuario,senha,tipo,codigo})
-   });
+      <!-- LISTAGEM -->
+      <section class="card">
+        <h2><i class="fa-solid fa-users"></i> Usuários Cadastrados</h2>
+        <p>Visualize, edite e gerencie todas as contas registradas.</p>
+        <div class="search-row">
+          <input id="busca" placeholder="Pesquisar por usuário ou nome..." oninput="filtrar()" />
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Usuário</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="listaUsuarios">
+              <tr>
+                <td colspan="4" style="text-align:center;color:var(--muted);padding:28px;">Carregando...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-   if(!response.ok){
-     throw new Error('Erro ao cadastrar usuário');
-   }
+    </div>
+  </div>
 
-   msg.textContent='Usuário cadastrado com sucesso!';
-   msg.classList.add('success');
-   form.reset();
-   carregarUsuarios(); // atualiza tabela
- }catch(error){
-   msg.textContent=error.message;
-   msg.classList.add('error');
- }
-});
+  <div class="toast-container" id="toast-container"></div>
 
-// Função que busca usuários no backend
-async function carregarUsuarios(){
- try{
-   const response = await fetch('/admin/usuarios');
-   const usuarios = await response.json();
+  <script>
+    const form = document.getElementById('formCadastro');
+    const msg = document.getElementById('msg');
+    const lista = document.getElementById('listaUsuarios');
+    let cacheUsuarios = [];
 
-   lista.innerHTML='';
+    window.addEventListener('load', carregarUsuarios);
 
-   window.listaCache = usuarios;
-   document.getElementById('totalUsuarios').textContent = usuarios.length;
-   document.getElementById('totalAdmins').textContent = usuarios.filter(u=>u.tipo==='admin').length;
-   document.getElementById('totalComuns').textContent = usuarios.filter(u=>u.tipo==='user').length;
-   usuarios.forEach(item => {
-     const status = item.ativo === false ? 'Desativado' : 'Ativo';
-     lista.innerHTML += `
-       <tr>
-         <td><strong>${item.nome || '-'}</strong><small>ID interno</small></td>
-         <td><strong>${item.usuario}</strong><small>Login do sistema</small></td>
-         <td><span class='badge'>${item.tipo === 'admin' ? 'Administrador' : 'Usuário'}</span></td>
-         <td><span class='badge'>${status}</span></td><td class='actions'>
-           <button class='small-btn' onclick="excluirUsuario('${item.usuario}')"><button class='small-btn ghost' onclick="editarUsuario('${item.usuario}')"><i class='fa-solid fa-pen'></i> Editar</button>
-           <button class='small-btn danger' onclick="desativarUsuario('${item.usuario}')"><i class='fa-solid fa-user-slash'></i> Desativar</button>
-           <button class='small-btn danger' onclick="excluirUsuario('${item.usuario}')"><i class='fa-solid fa-trash'></i> Excluir</button>
-         </td>
-       </tr>`;
-   });
- }catch(error){
-   lista.innerHTML='<tr><td colspan="4">Erro ao carregar usuários.</td></tr>';
- }
-}
+    // ====== Cadastro ======
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      msg.className = 'msg';
+      msg.textContent = '';
 
-// Função para excluir usuário
-async function editarUsuario(usuario){
- const novoNome = prompt('Novo nome para ' + usuario + ':');
- if(!novoNome) return;
- fetch('/admin/usuarios/' + usuario,{
-   method:'PUT',
-   headers:{'Content-Type':'application/json'},
-   body: JSON.stringify({nome: novoNome})
- }).then(()=>carregarUsuarios());
-}
+      const payload = {
+        nome: document.getElementById('nome').value,
+        usuario: document.getElementById('usuario').value,
+        senha: document.getElementById('senha').value,
+        tipo: document.getElementById('tipo').value,
+        codigo: document.getElementById('codigo').value,
+      };
 
-function desativarUsuario(usuario){
- if(!confirm('Desativar usuário ' + usuario + '?')) return;
- fetch('/admin/usuarios/' + usuario + '/status',{
-   method:'PATCH',
-   headers:{'Content-Type':'application/json'},
-   body: JSON.stringify({ativo:false})
- }).then(()=>carregarUsuarios());
-}
+      try {
+        const res = await fetch('/admin/cadastro', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Erro ao cadastrar');
+        msg.textContent = '✅ ' + data.message;
+        msg.className = 'msg success';
+        form.reset();
+        carregarUsuarios();
+        showToast('Usuário criado com sucesso!', 'success');
+      } catch (err) {
+        msg.textContent = '❌ ' + err.message;
+        msg.className = 'msg error';
+      }
+    });
 
-function excluirUsuario(usuario){
- if(!confirm('Deseja excluir ' + usuario + '?')) return;
+    // ====== Carregar usuários ======
+    async function carregarUsuarios() {
+      try {
+        const res = await fetch('/admin/usuarios');
+        const usuarios = await res.json();
+        cacheUsuarios = usuarios;
 
- await fetch('/admin/usuarios/' + usuario,{method:'DELETE'});
- carregarUsuarios();
-}
+        document.getElementById('totalUsuarios').textContent = usuarios.length;
+        document.getElementById('totalAtivos').textContent = usuarios.filter(u => u.ativo).length;
+        document.getElementById('totalDesativados').textContent = usuarios.filter(u => !u.ativo).length;
 
-// Função de logout simples
-function filtrarUsuarios(){
- const termo = document.getElementById('busca').value.toLowerCase();
- const linhas = lista.querySelectorAll('tr');
- linhas.forEach(l=>{l.style.display = l.innerText.toLowerCase().includes(termo)?'':'none';});
-}
+        renderTabela(usuarios);
+      } catch (_e) {
+        lista.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted)">Erro ao carregar usuários.</td></tr>';
+      }
+    }
 
-function logout(){
- localStorage.clear();
- window.location.href='/';
-}
-</script>
+    function renderTabela(usuarios) {
+      if (!usuarios.length) {
+        lista.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:28px;">Nenhum usuário encontrado.</td></tr>';
+        return;
+      }
+      lista.innerHTML = usuarios.map(u => `
+    <tr>
+      <td><strong>${u.nome || '—'}</strong></td>
+      <td><span style="color:var(--blue);font-weight:600">@${u.usuario}</span></td>
+      <td>
+        <span class="badge ${u.ativo ? 'badge-active' : 'badge-off'}">
+          ${u.ativo ? 'Ativo' : 'Desativado'}
+        </span>
+      </td>
+      <td>
+        <div class="act-btns">
+          <button class="btn-sm btn-edit"   onclick="editarUsuario('${u.usuario}')">
+            <i class="fa-solid fa-pen"></i> Editar
+          </button>
+          <button class="btn-sm btn-toggle" onclick="toggleStatus('${u.usuario}', ${u.ativo})">
+            <i class="fa-solid fa-power-off"></i> ${u.ativo ? 'Desativar' : 'Ativar'}
+          </button>
+          <button class="btn-sm btn-del"    onclick="excluirUsuario('${u.usuario}')">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+    }
+
+    // ====== Filtro ======
+    function filtrar() {
+      const termo = document.getElementById('busca').value.toLowerCase();
+      const filtrado = cacheUsuarios.filter(u =>
+        u.usuario.toLowerCase().includes(termo) ||
+        (u.nome || '').toLowerCase().includes(termo)
+      );
+      renderTabela(filtrado);
+    }
+
+    // ====== Editar ======
+    async function editarUsuario(usuario) {
+      const novoNome = prompt('Novo nome completo para @' + usuario + ':');
+      if (!novoNome || !novoNome.trim()) return;
+      try {
+        const res = await fetch('/admin/usuarios/' + usuario, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nome: novoNome.trim() }),
+        });
+        if (!res.ok) throw new Error();
+        showToast('Nome atualizado!', 'success');
+        carregarUsuarios();
+      } catch (_e) { showToast('Erro ao editar usuário.', 'error'); }
+    }
+
+    // ====== Toggle Status ======
+    async function toggleStatus(usuario, ativoAtual) {
+      const acao = ativoAtual ? 'Desativar' : 'Ativar';
+      if (!confirm(acao + ' o usuário @' + usuario + '?')) return;
+      try {
+        const res = await fetch('/admin/usuarios/' + usuario + '/status', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ativo: !ativoAtual }),
+        });
+        if (!res.ok) throw new Error();
+        showToast('Status atualizado!', 'success');
+        carregarUsuarios();
+      } catch (_e) { showToast('Erro ao atualizar status.', 'error'); }
+    }
+
+    // ====== Excluir ======
+    async function excluirUsuario(usuario) {
+      if (!confirm('Excluir permanentemente @' + usuario + '? Esta ação não pode ser desfeita!')) return;
+      try {
+        const res = await fetch('/admin/usuarios/' + usuario, { method: 'DELETE' });
+        if (!res.ok) throw new Error();
+        showToast('Usuário excluído.', 'success');
+        carregarUsuarios();
+      } catch (_e) { showToast('Erro ao excluir usuário.', 'error'); }
+    }
+
+    // ====== Toast ======
+    function showToast(msg, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast ' + type;
+      toast.textContent = msg;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3200);
+    }
+
+    // ====== Logout ======
+    function logout() {
+      localStorage.removeItem('access_token');
+      document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      fetch('/logout', { method: 'POST' }).finally(() => { window.location.href = '/login'; });
+    }
+  </script>
 </body>
+
 </html>

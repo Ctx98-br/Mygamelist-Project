@@ -1,79 +1,436 @@
 <!doctype html>
-<html>
-    <head>
-        <title>Minha Lista - MyGameList</title>
-        <style>
-            body {
-                font-family: sans-serif;
-                background: #121212;
-                color: white;
-                text-align: center;
-            }
-            nav {
-                background: #1e1e1e;
-                padding: 15px;
-                margin-bottom: 20px;
-            }
-            .game-container {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 20px;
-            }
-            .game-card {
-                background: #252525;
-                padding: 15px;
-                border-radius: 10px;
-                width: 200px;
-                border: 1px solid #333;
-            }
-            .game-card img {
-                width: 100%;
-                border-radius: 5px;
-            }
-            .btn-remove {
-                background: #cf6679;
-                color: white;
-                border: none;
-                padding: 8px;
-                margin-top: 10px;
-                cursor: pointer;
-                border-radius: 5px;
-                width: 100%;
-            }
-            a {
-                color: #03dac6;
-                text-decoration: none;
-                margin: 0 10px;
-            }
-        </style>
-    </head>
-    <body>
-        <nav>
-            <a href="/dashboard">🔍 Buscar Novos</a>
-            <a href="/my-list">📚 Minha Lista</a>
-        </nav>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Veja e gerencie sua coleção de jogos no MyGameList." />
+  <title>Minha Lista | MyGameList</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    :root {
+      --bg:     #050816;
+      --nav:    rgba(5,8,22,.85);
+      --card:   #0f172a;
+      --card-b: #1e293b;
+      --text:   #e2e8f0;
+      --muted:  #94a3b8;
+      --border: rgba(255,255,255,.07);
+      --blue:   #38bdf8;
+      --purple: #818cf8;
+      --green:  #34d399;
+      --danger: #f87171;
+      --gold:   #fbbf24;
+      --grad:   linear-gradient(135deg, #38bdf8, #818cf8);
+    }
 
-        <h1>Minha Coleção Particular</h1>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        <div class="game-container">
-            {% for game in games %}
-            <div class="game-card">
-                <img src="{{ game.image_url }}" alt="{{ game.title }}" />
-                <h4>{{ game.title }}</h4>
-                <form action="/remove-from-catalog/{{ game.id }}" method="post">
-                    <button type="submit" class="btn-remove">🗑️ Remover</button>
-                </form>
-            </div>
-            {% else %}
-            <p>Sua lista está vazia. Vá em "Buscar Novos" para adicionar!</p>
-            {% endfor %}
+    body {
+      font-family: 'Inter', sans-serif;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(56,189,248,.1) 0%, transparent 30%),
+        radial-gradient(circle at 85% 85%, rgba(129,140,248,.1) 0%, transparent 30%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ===== NAV ===== */
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      background: var(--nav);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 800; font-size: 1.15rem;
+      background: var(--grad);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-brand i { -webkit-text-fill-color: var(--blue); }
+    .nav-links { display: flex; align-items: center; gap: 8px; }
+    .nav-link {
+      padding: 8px 14px; border-radius: 10px;
+      font-size: .88rem; font-weight: 600; color: var(--muted);
+      text-decoration: none; transition: color .2s, background .2s;
+    }
+    .nav-link:hover, .nav-link.active {
+      color: var(--blue); background: rgba(56,189,248,.08);
+    }
+    .nav-user { display: flex; align-items: center; gap: 10px; font-size: .88rem; font-weight: 600; color: var(--blue); }
+    .btn-nav {
+      border: none; padding: 8px 14px; border-radius: 10px;
+      font-size: .85rem; font-weight: 700; font-family: 'Inter', sans-serif;
+      cursor: pointer; transition: transform .18s, filter .18s;
+    }
+    .btn-nav:hover { transform: translateY(-1px); filter: brightness(1.1); }
+    .btn-logout { background: rgba(248,113,113,.15); color: var(--danger); border: 1px solid rgba(248,113,113,.2); }
+
+    /* ===== HEADER ===== */
+    .page-header {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 40px 24px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .page-header p { color: var(--muted); font-size: .9rem; }
+
+    /* ===== STATS BAR ===== */
+    .stats-bar {
+      max-width: 1280px;
+      margin: 0 auto 28px;
+      padding: 0 24px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .stat-chip {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .88rem;
+    }
+    .stat-chip strong { color: var(--blue); font-size: 1.1rem; font-weight: 800; }
+    .stat-chip span   { color: var(--muted); }
+
+    /* ===== GRID ===== */
+    .game-grid {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    /* ===== GAME CARD ===== */
+    .game-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: transform .22s, box-shadow .22s, border-color .22s;
+      position: relative;
+    }
+    .game-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 50px rgba(0,0,0,.5);
+      border-color: rgba(56,189,248,.2);
+    }
+    .game-card-img {
+      width: 100%; height: 148px;
+      object-fit: cover; display: block;
+      background: var(--card-b);
+    }
+    .game-card-body { padding: 14px; }
+    .game-card-title {
+      font-weight: 700; font-size: .93rem;
+      margin-bottom: 10px; line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    /* ===== STAR RATING ===== */
+    .star-rating {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+    .star {
+      font-size: 1.2rem;
+      color: var(--card-b);
+      cursor: pointer;
+      transition: color .15s, transform .15s;
+    }
+    .star:hover, .star.active { color: var(--gold); }
+    .star:hover { transform: scale(1.15); }
+    .rating-label {
+      font-size: .78rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .btn-remove {
+      width: 100%;
+      border: 1px solid rgba(248,113,113,.18);
+      border-radius: 10px;
+      padding: 10px;
+      background: rgba(248,113,113,.12);
+      color: var(--danger);
+      font-size: .85rem;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: background .18s, transform .18s;
+    }
+    .btn-remove:hover {
+      background: rgba(248,113,113,.22);
+      transform: translateY(-1px);
+    }
+
+    /* ===== NOTES ===== */
+    .notes-label {
+      font-size: .76rem; font-weight: 600;
+      color: var(--muted); text-transform: uppercase; letter-spacing: .04em;
+      margin: 10px 0 4px;
+    }
+    .notes-textarea {
+      width: 100%; height: 60px;
+      background: var(--card-b); border: 1px solid var(--border);
+      border-radius: 10px; padding: 8px 10px; resize: none;
+      color: var(--text); font-family: 'Inter', sans-serif; font-size: .82rem;
+      transition: border-color .2s;
+      margin-bottom: 10px;
+    }
+    .notes-textarea:focus {
+      outline: none; border-color: var(--purple);
+    }
+    .notes-textarea::placeholder { color: var(--muted); }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 80px 20px;
+    }
+    .empty-state .icon { font-size: 4rem; margin-bottom: 16px; opacity: .4; }
+    .empty-state h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 8px; }
+    .empty-state p  { color: var(--muted); margin-bottom: 24px; }
+    .btn-explore {
+      display: inline-block;
+      background: var(--grad);
+      color: #fff;
+      padding: 12px 28px;
+      border-radius: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform .18s, filter .18s;
+    }
+    .btn-explore:hover { transform: translateY(-2px); filter: brightness(1.08); }
+
+    /* ===== TOAST ===== */
+    .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
+    .toast {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px 18px;
+      font-size: .9rem; font-weight: 600;
+      display: flex; align-items: center; gap: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.4);
+      animation: slideIn .3s ease; max-width: 320px;
+    }
+    .toast.success { border-color: rgba(52,211,153,.3); color: var(--green); }
+    .toast.error   { border-color: rgba(248,113,113,.3); color: var(--danger); }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    @media (max-width: 640px) {
+      .page-header h1 { font-size: 1.5rem; }
+      nav { padding: 0 14px; }
+      .nav-link { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-brand"><i class="fa-solid fa-gamepad"></i> MyGameList</div>
+    <div class="nav-links">
+      <a href="/dashboard" class="nav-link"><i class="fa-solid fa-compass"></i> Explorar</a>
+      <a href="/my-list"   class="nav-link active"><i class="fa-solid fa-list"></i> Minha Lista</a>
+      <a href="/forum"     class="nav-link"><i class="fa-solid fa-comments"></i> Fórum</a>
+      <a href="/perfil"    class="nav-link"><i class="fa-solid fa-user"></i> Perfil</a>
+    </div>
+    <div class="nav-user">
+      <span id="user-display">...</span>
+      <button class="btn-nav btn-logout" onclick="logout()">
+        <i class="fa-solid fa-right-from-bracket"></i> Sair
+      </button>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div>
+      <h1><i class="fa-solid fa-bookmark"></i> Minha Coleção</h1>
+      <p>Todos os jogos que você adicionou à sua lista</p>
+    </div>
+    <a href="/dashboard" class="btn-explore">
+      <i class="fa-solid fa-plus"></i> Adicionar mais jogos
+    </a>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-chip">
+      <strong>{{ games | length }}</strong>
+      <span>jogo(s) na lista</span>
+    </div>
+    {% set rated_count = namespace(value=0) %}
+    {% for g in games %}{% if g.rating and g.rating > 0 %}{% set rated_count.value = rated_count.value + 1 %}{% endif %}{% endfor %}
+    <div class="stat-chip">
+      <i class="fa-solid fa-star" style="color:var(--gold)"></i>
+      <strong>{{ rated_count.value }}</strong>
+      <span>avaliado(s)</span>
+    </div>
+  </div>
+
+  <div class="game-grid">
+    {% for game in games %}
+    <div class="game-card" id="card-{{ game.id }}">
+      <img
+        class="game-card-img"
+        src="{{ game.image_url or 'https://via.placeholder.com/300x150/0f172a/38bdf8?text=Sem+Imagem' }}"
+        alt="{{ game.title }}"
+        loading="lazy"
+      />
+      <div class="game-card-body">
+        <div class="game-card-title">{{ game.title }}</div>
+
+        <!-- Avaliação por estrelas -->
+        <div class="star-rating" id="stars-{{ game.id }}" data-gameid="{{ game.id }}" data-current="{{ game.rating or 0 }}">
+          {% for i in range(1, 6) %}
+          <span
+            class="star {% if game.rating and i <= game.rating %}active{% endif %}"
+            data-val="{{ i }}"
+            onclick="rateGame({{ game.id }}, {{ i }}, this)"
+          >★</span>
+          {% endfor %}
         </div>
-        <script>
-            // Se não tiver token, volta pro login antes de carregar a página
-            if (!localStorage.getItem("access_token")) {
-                window.location.href = "/";
-            }
-        </script>
-    </body>
+        <div class="rating-label" id="rating-label-{{ game.id }}">
+          {% if game.rating and game.rating > 0 %}
+            Sua nota: {{ game.rating }}/5
+          {% else %}
+            Clique para avaliar
+          {% endif %}
+        </div>
+
+        <!-- Notas pessoais -->
+        <div class="notes-label"><i class="fa-solid fa-note-sticky"></i> Minha Nota</div>
+        <textarea
+          class="notes-textarea"
+          id="notes-{{ game.id }}"
+          placeholder="Adicione uma anotação pessoal..."
+          onblur="saveNotes({{ game.id }}, this.value)"
+        >{{ game.notes or '' }}</textarea>
+
+        <!-- Remover -->
+        <form action="/remove-from-catalog/{{ game.id }}" method="post">
+          <button type="submit" class="btn-remove">
+            <i class="fa-solid fa-trash"></i> Remover da Lista
+          </button>
+        </form>
+      </div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="icon">📭</div>
+      <h2>Sua lista está vazia</h2>
+      <p>Explore jogos e adicione os seus favoritos aqui!</p>
+      <a href="/dashboard" class="btn-explore">
+        <i class="fa-solid fa-compass"></i> Explorar Jogos
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script>
+    // ====== Auth ======
+    async function loadUserInfo() {
+      const token = localStorage.getItem('access_token');
+      if (!token) { window.location.href = '/login'; return; }
+      try {
+        const res = await fetch('/users/me/', { headers: { 'Authorization': 'Bearer ' + token } });
+        if (!res.ok) { logout(); return; }
+        const data = await res.json();
+        document.getElementById('user-display').textContent =
+          'Olá, ' + (data.full_name || data.username);
+      } catch (_e) {
+        document.getElementById('user-display').textContent = 'Usuário';
+      }
+    }
+
+    // ====== Notes ======
+    async function saveNotes(gameId, notes) {
+      const token = localStorage.getItem('access_token');
+      try {
+        const res = await fetch('/api/my-list/' + gameId + '/notes', {
+          method: 'PATCH',
+          headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ notes: notes || null }),
+        });
+        if (!res.ok) throw new Error();
+        showToast('\uD83D\uDCDD Nota salva!', 'success');
+      } catch (_e) {
+        showToast('\u274C Erro ao salvar nota', 'error');
+      }
+    }
+
+    // ====== Rating ======
+    async function rateGame(gameId, rating, clickedStar) {
+      const token = localStorage.getItem('access_token');
+      const container = document.getElementById('stars-' + gameId);
+      const label     = document.getElementById('rating-label-' + gameId);
+      const stars     = container.querySelectorAll('.star');
+
+      // Atualiza visual imediatamente
+      stars.forEach((s, idx) => {
+        s.classList.toggle('active', idx < rating);
+      });
+      label.textContent = 'Sua nota: ' + rating + '/5';
+
+      try {
+        const fd = new FormData();
+        fd.append('rating', rating);
+        const res = await fetch('/rate-game/' + gameId, {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + token },
+          body: fd,
+        });
+        if (!res.ok) throw new Error();
+        showToast('⭐ Nota ' + rating + '/5 salva!', 'success');
+      } catch (_e) {
+        showToast('❌ Erro ao salvar nota', 'error');
+      }
+    }
+
+    // ====== Toast ======
+    function showToast(msg, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast ' + type;
+      toast.textContent = msg;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3200);
+    }
+
+    // ====== Logout ======
+    function logout() {
+      localStorage.removeItem('access_token');
+      document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      fetch('/logout', { method: 'POST' }).finally(() => { window.location.href = '/login'; });
+    }
+
+    loadUserInfo();
+  </script>
+</body>
 </html>
