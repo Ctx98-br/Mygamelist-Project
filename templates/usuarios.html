@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Seu perfil gamer no MyGameList — estatísticas, conquistas e coleção.">
+<title>Perfil | MyGameList</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root{
+  --bg:#050816; --nav:rgba(5,8,22,.85);
+  --card:#0f172a; --card-b:#1e293b;
+  --text:#e2e8f0; --muted:#94a3b8; --border:rgba(255,255,255,.07);
+  --blue:#38bdf8; --purple:#818cf8; --green:#34d399;
+  --danger:#f87171; --gold:#fbbf24;
+  --grad:linear-gradient(135deg,#38bdf8,#818cf8);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Inter',sans-serif;
+  background:
+    radial-gradient(circle at 15% 10%,rgba(56,189,248,.1) 0%,transparent 30%),
+    radial-gradient(circle at 85% 85%,rgba(129,140,248,.1) 0%,transparent 30%),
+    var(--bg);
+  color:var(--text);min-height:100vh;
+}
+
+/* ===== NAV ===== */
+nav{
+  position:sticky;top:0;z-index:50;
+  background:var(--nav);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-brand{
+  display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.15rem;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.nav-brand i{-webkit-text-fill-color:var(--blue);}
+.nav-links{display:flex;align-items:center;gap:8px;}
+.nav-link{
+  padding:8px 14px;border-radius:10px;font-size:.88rem;font-weight:600;
+  color:var(--muted);text-decoration:none;transition:color .2s,background .2s;
+}
+.nav-link:hover,.nav-link.active{color:var(--blue);background:rgba(56,189,248,.08);}
+.btn-nav{
+  border:none;padding:8px 14px;border-radius:10px;
+  font-size:.85rem;font-weight:700;font-family:'Inter',sans-serif;
+  cursor:pointer;transition:transform .18s,filter .18s;
+}
+.btn-nav:hover{transform:translateY(-1px);filter:brightness(1.1);}
+.btn-logout{background:rgba(248,113,113,.15);color:var(--danger);border:1px solid rgba(248,113,113,.2);}
+
+/* ===== CONTAINER ===== */
+.container{max-width:1100px;margin:0 auto;padding:36px 24px 60px;}
+
+/* ===== PROFILE HERO ===== */
+.profile-hero{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:24px;padding:32px;margin-bottom:22px;
+  display:flex;align-items:center;gap:24px;flex-wrap:wrap;
+  position:relative;overflow:hidden;
+}
+.profile-hero::before{
+  content:'';position:absolute;top:-60px;right:-60px;
+  width:220px;height:220px;
+  background:radial-gradient(circle,rgba(56,189,248,.12),transparent 70%);
+  border-radius:50%;pointer-events:none;
+}
+.avatar{
+  width:90px;height:90px;border-radius:50%;
+  background:var(--grad);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.2rem;font-weight:800;color:#fff;
+  box-shadow:0 12px 32px rgba(56,189,248,.3);
+  flex-shrink:0;position:relative;z-index:1;
+}
+.profile-info{flex:1;min-width:0;position:relative;z-index:1;}
+.profile-info h1{font-size:1.6rem;font-weight:800;margin-bottom:4px;}
+.profile-info .username{color:var(--blue);font-size:.92rem;font-weight:600;margin-bottom:6px;}
+.profile-info .bio{color:var(--muted);font-size:.88rem;line-height:1.5;}
+.profile-info .meta{
+  display:flex;gap:12px;margin-top:10px;flex-wrap:wrap;
+}
+.meta-item{
+  display:flex;align-items:center;gap:5px;
+  font-size:.8rem;color:var(--muted);
+}
+.meta-item i{color:var(--blue);}
+
+.profile-actions{display:flex;gap:8px;flex-shrink:0;position:relative;z-index:1;}
+.btn-edit-profile{
+  border:1.5px solid var(--border);background:transparent;
+  color:var(--muted);border-radius:10px;padding:9px 16px;
+  font-size:.85rem;font-weight:700;font-family:'Inter',sans-serif;
+  cursor:pointer;transition:border-color .2s,color .2s,background .2s;
+}
+.btn-edit-profile:hover{border-color:var(--blue);color:var(--blue);background:rgba(56,189,248,.06);}
+
+/* ===== STATS ===== */
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:14px;margin-bottom:22px;
+}
+.stat-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:18px;padding:18px 20px;text-align:center;
+  transition:transform .2s,border-color .2s;
+}
+.stat-card:hover{transform:translateY(-3px);border-color:rgba(56,189,248,.2);}
+.stat-card .stat-icon{font-size:1.4rem;margin-bottom:6px;}
+.stat-card strong{
+  display:block;font-size:1.5rem;font-weight:800;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:2px;
+}
+.stat-card span{color:var(--muted);font-size:.78rem;}
+
+/* ===== GRID PRINCIPAL ===== */
+.main-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+/* ===== CARD ===== */
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:22px;
+}
+.card-title{
+  font-size:.95rem;font-weight:700;
+  margin-bottom:16px;display:flex;align-items:center;gap:8px;
+}
+
+/* ===== LISTAS ===== */
+.list-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);
+  font-size:.88rem;
+}
+.list-item:last-child{border-bottom:none;}
+.list-item .label{display:flex;align-items:center;gap:8px;color:var(--muted);}
+.list-item .value{font-weight:600;color:var(--text);}
+
+/* ===== GAMES RECENTES ===== */
+.recent-games{display:flex;flex-direction:column;gap:10px;}
+.game-row{
+  display:flex;align-items:center;gap:12px;
+  padding:10px;border-radius:12px;background:var(--card-b);
+  transition:background .2s;
+}
+.game-row:hover{background:rgba(56,189,248,.06);}
+.game-row img{
+  width:48px;height:36px;border-radius:8px;object-fit:cover;
+  background:var(--card);flex-shrink:0;
+}
+.game-row .game-info{flex:1;min-width:0;}
+.game-row .game-name{font-size:.88rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.game-row .game-rating{font-size:.76rem;color:var(--gold);}
+
+/* ===== CONQUISTAS ===== */
+.achievements{display:flex;flex-wrap:wrap;gap:10px;}
+.achievement{
+  background:var(--card-b);border:1px solid var(--border);
+  border-radius:14px;padding:12px 16px;
+  display:flex;align-items:center;gap:8px;
+  font-size:.84rem;font-weight:600;
+  transition:border-color .2s,transform .2s;
+}
+.achievement:hover{border-color:rgba(56,189,248,.25);transform:translateY(-2px);}
+.achievement .ach-icon{font-size:1.3rem;}
+
+/* ===== PROGRESS ===== */
+.progress-section{margin-top:14px;}
+.progress-label{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:.82rem;margin-bottom:6px;
+}
+.progress-label span{color:var(--muted);}
+.progress-label strong{color:var(--blue);}
+.progress-bar{
+  height:8px;background:var(--card-b);border-radius:999px;overflow:hidden;margin-bottom:12px;
+}
+.progress-fill{
+  height:100%;border-radius:999px;
+  background:var(--grad);
+  transition:width .6s ease;
+}
+
+/* ===== LOADING SKELETON ===== */
+.skeleton{
+  background:linear-gradient(90deg,var(--card-b) 25%,rgba(255,255,255,.05) 50%,var(--card-b) 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.4s infinite;
+  border-radius:8px;
+}
+@keyframes shimmer{from{background-position:200% 0;}to{background-position:-200% 0;}}
+
+@media(max-width:900px){.main-grid{grid-template-columns:1fr;}}
+@media(max-width:640px){
+  nav{padding:0 14px;}.nav-link{display:none;}
+  .profile-hero{flex-direction:column;text-align:center;}
+  .profile-info .meta{justify-content:center;}
+  .stats-grid{grid-template-columns:repeat(3,1fr);}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand"><i class="fa-solid fa-gamepad"></i> MyGameList</div>
+  <div class="nav-links">
+    <a href="/dashboard" class="nav-link"><i class="fa-solid fa-compass"></i> Explorar</a>
+    <a href="/my-list"   class="nav-link"><i class="fa-solid fa-list"></i> Minha Lista</a>
+    <a href="/forum"     class="nav-link"><i class="fa-solid fa-comments"></i> Fórum</a>
+    <a href="/perfil"    class="nav-link active"><i class="fa-solid fa-user"></i> Perfil</a>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <button class="btn-nav btn-logout" onclick="logout()">
+      <i class="fa-solid fa-right-from-bracket"></i> Sair
+    </button>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- HERO DO PERFIL -->
+  <div class="profile-hero" id="profile-hero">
+    <div class="avatar" id="avatar-initials">?</div>
+    <div class="profile-info">
+      <h1 id="profile-fullname"><span class="skeleton" style="width:180px;height:28px;display:inline-block;"></span></h1>
+      <div class="username" id="profile-username">@carregando...</div>
+      <div class="bio" id="profile-bio" style="color:var(--muted);font-style:italic;">Carregando perfil...</div>
+      <div class="meta">
+        <span class="meta-item" id="profile-email"><i class="fa-solid fa-envelope"></i> —</span>
+        <span class="meta-item" id="profile-dob"><i class="fa-solid fa-calendar"></i> —</span>
+      </div>
+    </div>
+    <div class="profile-actions">
+      <button class="btn-edit-profile" onclick="editarPerfil()">
+        <i class="fa-solid fa-pen"></i> Editar Perfil
+      </button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">🎮</div>
+      <strong id="stat-jogos">—</strong>
+      <span>Jogos na lista</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⭐</div>
+      <strong id="stat-avaliados">—</strong>
+      <span>Avaliados</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🏆</div>
+      <strong>Lv 12</strong>
+      <span>Nível gamer</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🔥</div>
+      <strong>7</strong>
+      <span>Dias de streak</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <strong>34</strong>
+      <span>Seguidores</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📈</div>
+      <strong id="stat-media">—</strong>
+      <span>Nota média</span>
+    </div>
+  </div>
+
+  <!-- GRID PRINCIPAL -->
+  <div class="main-grid">
+
+    <!-- Jogos Recentes -->
+    <div class="card">
+      <div class="card-title">
+        <i class="fa-solid fa-clock" style="color:var(--blue)"></i> Jogos Recentes
+      </div>
+      <div class="recent-games" id="recent-games">
+        <div style="color:var(--muted);font-size:.88rem;text-align:center;padding:20px 0;">
+          Carregando...
+        </div>
+      </div>
+    </div>
+
+    <!-- Meta Mensal -->
+    <div class="card">
+      <div class="card-title">
+        <i class="fa-solid fa-rocket" style="color:var(--purple)"></i> Meta do Mês
+      </div>
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:16px;">
+        Complete 3 jogos este mês e desbloqueie o badge <strong style="color:var(--gold)">🌟 Lendário</strong>.
+      </p>
+      <div class="progress-section">
+        <div class="progress-label">
+          <span>Jogos concluídos</span>
+          <strong id="meta-jogos">2 / 3</strong>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:66%"></div></div>
+
+        <div class="progress-label">
+          <span>Horas jogadas</span>
+          <strong>18h / 30h</strong>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:60%;background:linear-gradient(135deg,#34d399,#059669)"></div></div>
+
+        <div class="progress-label">
+          <span>Avaliações feitas</span>
+          <strong id="progress-ratings">—</strong>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="fill-ratings" style="width:0%;background:linear-gradient(135deg,#fbbf24,#d97706)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Conquistas -->
+    <div class="card">
+      <div class="card-title">
+        <i class="fa-solid fa-medal" style="color:var(--gold)"></i> Conquistas
+      </div>
+      <div class="achievements">
+        <div class="achievement"><span class="ach-icon">🎮</span> Primeiro Jogo</div>
+        <div class="achievement"><span class="ach-icon">⭐</span> Primeiro Review</div>
+        <div class="achievement"><span class="ach-icon">🔥</span> 7 dias de streak</div>
+        <div class="achievement"><span class="ach-icon" id="ach-10">🔒</span> <span id="ach-10-label" style="color:var(--muted)">10 Jogos</span></div>
+        <div class="achievement" style="border-color:rgba(251,191,36,.2)"><span class="ach-icon">🏆</span> Top Avaliador</div>
+      </div>
+    </div>
+
+    <!-- Info da Conta -->
+    <div class="card">
+      <div class="card-title">
+        <i class="fa-solid fa-circle-info" style="color:var(--blue)"></i> Informações da Conta
+      </div>
+      <div>
+        <div class="list-item">
+          <span class="label"><i class="fa-solid fa-at"></i> Usuário</span>
+          <span class="value" id="info-username">—</span>
+        </div>
+        <div class="list-item">
+          <span class="label"><i class="fa-solid fa-envelope"></i> E-mail</span>
+          <span class="value" id="info-email">—</span>
+        </div>
+        <div class="list-item">
+          <span class="label"><i class="fa-solid fa-calendar"></i> Nascimento</span>
+          <span class="value" id="info-dob">—</span>
+        </div>
+        <div class="list-item">
+          <span class="label"><i class="fa-solid fa-shield"></i> Status</span>
+          <span class="value" style="color:var(--green)"><i class="fa-solid fa-circle" style="font-size:.6rem"></i> Ativo</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let userData = null;
+let gamesData = [];
+
+async function loadProfile() {
+  const token = localStorage.getItem('access_token');
+  if (!token) { window.location.href = '/login'; return; }
+
+  try {
+    // Carrega dados do usuário
+    const resUser = await fetch('/users/me/', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (!resUser.ok) { logout(); return; }
+    userData = await resUser.json();
+
+    renderUserInfo(userData);
+
+    // Carrega lista de jogos do usuário
+    const resGames = await fetch('/my-list', {
+      headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' }
+    });
+    // A rota /my-list retorna HTML; buscamos via cookie automaticamente
+    // Para estatísticas, contamos pela API do backend se disponível
+    // Aqui usamos uma rota auxiliar: pegamos jogos via cookie (acesso direto)
+    await loadGamesStats(token);
+
+  } catch (err) {
+    console.error('Erro ao carregar perfil', err);
+  }
+}
+
+function renderUserInfo(user) {
+  const initials = (user.full_name || user.username || '?')
+    .split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+
+  document.getElementById('avatar-initials').textContent = initials;
+  document.getElementById('profile-fullname').textContent = user.full_name || user.username;
+  document.getElementById('profile-username').textContent = '@' + user.username;
+  document.getElementById('profile-bio').textContent = user.profile_bio || 'Sem bio configurada.';
+
+  document.getElementById('profile-email').innerHTML =
+    '<i class="fa-solid fa-envelope"></i> ' + (user.email || '—');
+  document.getElementById('profile-dob').innerHTML =
+    '<i class="fa-solid fa-calendar"></i> ' + (formatDate(user.date_of_birth) || '—');
+
+  document.getElementById('info-username').textContent = user.username;
+  document.getElementById('info-email').textContent    = user.email || '—';
+  document.getElementById('info-dob').textContent      = formatDate(user.date_of_birth) || '—';
+}
+
+async function loadGamesStats(token) {
+  try {
+    const res = await fetch('/api/my-games', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (!res.ok) { renderRecentGames([]); return; }
+
+    const games = await res.json();
+    gamesData = games;
+
+    const total     = games.length;
+    const avaliados = games.filter(g => g.rating && g.rating > 0);
+    const media     = avaliados.length
+      ? (avaliados.reduce((s, g) => s + g.rating, 0) / avaliados.length).toFixed(1)
+      : '—';
+
+    document.getElementById('stat-jogos').textContent     = total;
+    document.getElementById('stat-avaliados').textContent = avaliados.length;
+    document.getElementById('stat-media').textContent     = media !== '—' ? media + '/5' : '—';
+
+    // Progresso de avaliações (meta: 10)
+    const pct = Math.min((avaliados.length / 10) * 100, 100).toFixed(0);
+    document.getElementById('progress-ratings').textContent = avaliados.length + ' / 10';
+    document.getElementById('fill-ratings').style.width = pct + '%';
+
+    // Conquista 10 jogos
+    if (total >= 10) {
+      document.getElementById('ach-10').textContent       = '🎯';
+      document.getElementById('ach-10-label').textContent = '10 Jogos';
+      document.getElementById('ach-10-label').style.color = '';
+    }
+
+    renderRecentGames(games);
+  } catch(e) {
+    console.error(e);
+    renderRecentGames([]);
+  }
+}
+
+function renderRecentGames(games) {
+  const container = document.getElementById('recent-games');
+  if (!games || games.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:24px 0;color:var(--muted);font-size:.88rem;">
+        <i class="fa-solid fa-gamepad" style="font-size:2rem;opacity:.3;display:block;margin-bottom:8px;"></i>
+        Nenhum jogo na lista ainda.<br>
+        <a href="/dashboard" style="color:var(--blue);text-decoration:none;font-weight:600;margin-top:6px;display:inline-block;">
+          Explorar jogos →
+        </a>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = games.slice(0, 5).map(g => `
+    <div class="game-row">
+      <img src="${g.image_url || ''}" alt="${g.title}" onerror="this.src=''" />
+      <div class="game-info">
+        <div class="game-name">${g.title}</div>
+        <div class="game-rating">${g.rating ? '★'.repeat(g.rating) + '☆'.repeat(5 - g.rating) : 'Sem avaliação'}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return null;
+  try {
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.toLocaleDateString('pt-BR');
+  } catch (_e) { return dateStr; }
+}
+
+function editarPerfil() {
+  alert('✏️ Funcionalidade de edição de perfil em desenvolvimento!');
+}
+
+function logout() {
+  localStorage.removeItem('access_token');
+  document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+  fetch('/logout', { method: 'POST' }).finally(() => { window.location.href = '/login'; });
+}
+
+loadProfile();
+</script>
+</body>
+</html>
