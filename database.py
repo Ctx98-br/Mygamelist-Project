@@ -21,6 +21,8 @@ class UserTable(Base):
     full_name = Column(String)
     hashed_password = Column(String)
     disabled = Column(Boolean, default=False)
+    date_of_birth = Column(String, nullable=True)
+    profile_bio = Column(String, nullable=True)
 
 
 class UserCreate(BaseModel):
@@ -28,6 +30,8 @@ class UserCreate(BaseModel):
     email: str
     password: str  # Senha limpa que vem do formulário
     full_name: str | None = None
+    date_of_birth: str | None = None
+    profile_bio: str | None = None
 
 
 # Cria a tabela no Postgres

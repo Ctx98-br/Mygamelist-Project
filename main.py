@@ -44,6 +44,8 @@ class User(BaseModel):
     username: str
     email: str | None = None
     full_name: str | None = None
+    date_of_birth: str | None = None
+    profile_bio: str | None = None
     disabled: bool | None = None
 
 
@@ -151,6 +153,8 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
         email=user.email,
         full_name=user.full_name,
         hashed_password=get_password_hash(user.password),
+        date_of_birth=user.date_of_birth,
+        profile_bio=user.profile_bio,
     )
     db.add(db_user)
     db.commit()
@@ -164,6 +168,11 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
 async def login_page(request: Request):
     # Agora usamos TemplateResponse em vez de FileResponse
     return templates.TemplateResponse(request=request, name="login.html", context={})
+
+
+@app.get("/registro", response_class=HTMLResponse)
+async def registro_page(request: Request):
+    return templates.TemplateResponse(request=request, name="registro.html", context={})
 
 
 @app.get("/users/me/")  # <-- Verifique se a barra final está aqui
