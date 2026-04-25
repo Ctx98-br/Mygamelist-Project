@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Painel Administrativo do MyGameList — gerencie usuários e contas.">
+  <title>Admin | MyGameList</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    :root {
+      --bg: #050816;
+      --card: #0f172a;
+      --card-b: #1e293b;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: rgba(255, 255, 255, .07);
+      --blue: #38bdf8;
+      --purple: #818cf8;
+      --green: #34d399;
+      --danger: #f87171;
+      --gold: #fbbf24;
+      --grad: linear-gradient(135deg, #38bdf8, #818cf8);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(56, 189, 248, .1) 0%, transparent 30%),
+        radial-gradient(circle at 85% 85%, rgba(129, 140, 248, .1) 0%, transparent 30%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(5, 8, 22, .85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.15rem;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-brand i {
+      -webkit-text-fill-color: var(--blue);
+    }
+
+    .btn-nav {
+      border: none;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: .85rem;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: transform .18s, filter .18s;
+    }
+
+    .btn-nav:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.1);
+    }
+
+    .btn-logout {
+      background: rgba(248, 113, 113, .15);
+      color: var(--danger);
+      border: 1px solid rgba(248, 113, 113, .2);
+    }
+
+    /* CONTAINER */
+    .container {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 36px 24px;
+    }
+
+    .page-title {
+      margin-bottom: 28px;
+    }
+
+    .page-title h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    .page-title p {
+      color: var(--muted);
+    }
+
+    /* STATS */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px 24px;
+    }
+
+    .stat-card b {
+      display: block;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--blue);
+    }
+
+    .stat-card span {
+      color: var(--muted);
+      font-size: .85rem;
+    }
+
+    /* GRID */
+    .grid {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    /* CARD */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 28px;
+    }
+
+    .card h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .card>p {
+      color: var(--muted);
+      font-size: .88rem;
+      margin-bottom: 20px;
+    }
+
+    /* FORM */
+    .field {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    input,
+    select {
+      width: 100%;
+      background: var(--card-b);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: var(--text);
+      font-size: .95rem;
+      font-family: 'Inter', sans-serif;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(56, 189, 248, .1);
+    }
+
+    select option {
+      background: var(--card);
+    }
+
+    .btn-submit {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 13px;
+      background: var(--grad);
+      color: #fff;
+      font-size: .95rem;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: transform .18s, filter .18s;
+      box-shadow: 0 8px 20px rgba(56, 189, 248, .2);
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+    }
+
+    .msg {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: .88rem;
+      font-weight: 600;
+      display: none;
+    }
+
+    .msg.success {
+      display: block;
+      color: var(--green);
+      background: rgba(52, 211, 153, .1);
+      border: 1px solid rgba(52, 211, 153, .2);
+    }
+
+    .msg.error {
+      display: block;
+      color: var(--danger);
+      background: rgba(248, 113, 113, .1);
+      border: 1px solid rgba(248, 113, 113, .2);
+    }
+
+    /* TABLE */
+    .search-row {
+      margin-bottom: 14px;
+    }
+
+    .search-row input {
+      max-width: 320px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: var(--card-b);
+    }
+
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 14px 16px;
+      font-size: .88rem;
+      border-bottom: 1px solid rgba(255, 255, 255, .04);
+      vertical-align: middle;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, .02);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: .75rem;
+      font-weight: 700;
+    }
+
+    .badge-user {
+      background: rgba(56, 189, 248, .15);
+      color: var(--blue);
+    }
+
+    .badge-admin {
+      background: rgba(129, 140, 248, .15);
+      color: var(--purple);
+    }
+
+    .badge-active {
+      background: rgba(52, 211, 153, .15);
+      color: var(--green);
+    }
+
+    .badge-off {
+      background: rgba(248, 113, 113, .15);
+      color: var(--danger);
+    }
+
+    .act-btns {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-sm {
+      border: none;
+      padding: 7px 10px;
+      border-radius: 9px;
+      font-size: .78rem;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: transform .15s, filter .15s;
+    }
+
+    .btn-sm:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.1);
+    }
+
+    .btn-edit {
+      background: rgba(56, 189, 248, .15);
+      color: var(--blue);
+    }
+
+    .btn-toggle {
+      background: rgba(251, 191, 36, .15);
+      color: var(--gold);
+    }
+
+    .btn-del {
+      background: rgba(248, 113, 113, .15);
+      color: var(--danger);
+    }
+
+    /* TOAST */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .toast {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: .9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .4);
+      animation: slideIn .3s ease;
+      max-width: 320px;
+    }
+
+    .toast.success {
+      border-color: rgba(52, 211, 153, .3);
+      color: var(--green);
+    }
+
+    .toast.error {
+      border-color: rgba(248, 113, 113, .3);
+      color: var(--danger);
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @media(max-width:1050px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media(max-width:600px) {
+      .stats-row {
+        grid-template-columns: 1fr;
+      }
+
+      nav {
+        padding: 0 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <div class="nav-brand"><i class="fa-solid fa-shield-halved"></i> Admin | MyGameList</div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <a href="/dashboard"
+        style="color:var(--muted);text-decoration:none;font-size:.85rem;font-weight:600;padding:8px 12px;border-radius:10px;transition:.2s;"
+        onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--muted)'">
+        <i class="fa-solid fa-arrow-left"></i> Voltar
+      </a>
+      <button class="btn-nav btn-logout" onclick="logout()">
+        <i class="fa-solid fa-right-from-bracket"></i> Sair
+      </button>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <div class="page-title">
+      <h1><i class="fa-solid fa-shield-halved"></i> Painel Administrativo</h1>
+      <p>Gerencie usuários e contas do sistema MyGameList.</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card"><b id="totalUsuarios">–</b><span>Total de usuários</span></div>
+      <div class="stat-card"><b id="totalAtivos">–</b><span>Usuários ativos</span></div>
+      <div class="stat-card"><b id="totalDesativados">–</b><span>Desativados</span></div>
+    </div>
+
+    <div class="grid">
+
+      <!-- FORM CADASTRO -->
+      <section class="card">
+        <h2><i class="fa-solid fa-user-plus"></i> Cadastrar Usuário</h2>
+        <p>Adicione um novo usuário ao sistema. Informe o código mestre para confirmar.</p>
+        <form id="formCadastro">
+          <div class="field">
+            <label for="nome">Nome Completo</label>
+            <input id="nome" placeholder="Ex: João Silva" required />
+          </div>
+          <div class="field">
+            <label for="usuario">Usuário (login)</label>
+            <input id="usuario" placeholder="Ex: joao.silva" required />
+          </div>
+          <div class="field">
+            <label for="senha">Senha</label>
+            <input id="senha" type="password" placeholder="••••••••" required />
+          </div>
+          <div class="field">
+            <label for="tipo">Tipo de Conta</label>
+            <select id="tipo">
+              <option value="user">Usuário Comum</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="codigo">Código Mestre</label>
+            <input id="codigo" type="password" placeholder="Código de autorização" required />
+          </div>
+          <button type="submit" class="btn-submit">
+            <i class="fa-solid fa-floppy-disk"></i> Cadastrar
+          </button>
+          <div id="msg" class="msg"></div>
+        </form>
+      </section>
+
+      <!-- LISTAGEM -->
+      <section class="card">
+        <h2><i class="fa-solid fa-users"></i> Usuários Cadastrados</h2>
+        <p>Visualize, edite e gerencie todas as contas registradas.</p>
+        <div class="search-row">
+          <input id="busca" placeholder="Pesquisar por usuário ou nome..." oninput="filtrar()" />
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Usuário</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="listaUsuarios">
+              <tr>
+                <td colspan="4" style="text-align:center;color:var(--muted);padding:28px;">Carregando...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script>
+    const form = document.getElementById('formCadastro');
+    const msg = document.getElementById('msg');
+    const lista = document.getElementById('listaUsuarios');
+    let cacheUsuarios = [];
+
+    window.addEventListener('load', carregarUsuarios);
+
+    // ====== Cadastro ======
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      msg.className = 'msg';
+      msg.textContent = '';
+
+      const payload = {
+        nome: document.getElementById('nome').value,
+        usuario: document.getElementById('usuario').value,
+        senha: document.getElementById('senha').value,
+        tipo: document.getElementById('tipo').value,
+        codigo: document.getElementById('codigo').value,
+      };
+
+      try {
+        const res = await fetch('/admin/cadastro', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Erro ao cadastrar');
+        msg.textContent = '✅ ' + data.message;
+        msg.className = 'msg success';
+        form.reset();
+        carregarUsuarios();
+        showToast('Usuário criado com sucesso!', 'success');
+      } catch (err) {
+        msg.textContent = '❌ ' + err.message;
+        msg.className = 'msg error';
+      }
+    });
+
+    // ====== Carregar usuários ======
+    async function carregarUsuarios() {
+      try {
+        const res = await fetch('/admin/usuarios');
+        const usuarios = await res.json();
+        cacheUsuarios = usuarios;
+
+        document.getElementById('totalUsuarios').textContent = usuarios.length;
+        document.getElementById('totalAtivos').textContent = usuarios.filter(u => u.ativo).length;
+        document.getElementById('totalDesativados').textContent = usuarios.filter(u => !u.ativo).length;
+
+        renderTabela(usuarios);
+      } catch (_e) {
+        lista.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted)">Erro ao carregar usuários.</td></tr>';
+      }
+    }
+
+    function renderTabela(usuarios) {
+      if (!usuarios.length) {
+        lista.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:28px;">Nenhum usuário encontrado.</td></tr>';
+        return;
+      }
+      lista.innerHTML = usuarios.map(u => `
+    <tr>
+      <td><strong>${u.nome || '—'}</strong></td>
+      <td><span style="color:var(--blue);font-weight:600">@${u.usuario}</span></td>
+      <td>
+        <span class="badge ${u.ativo ? 'badge-active' : 'badge-off'}">
+          ${u.ativo ? 'Ativo' : 'Desativado'}
+        </span>
+      </td>
+      <td>
+        <div class="act-btns">
+          <button class="btn-sm btn-edit"   onclick="editarUsuario('${u.usuario}')">
+            <i class="fa-solid fa-pen"></i> Editar
+          </button>
+          <button class="btn-sm btn-toggle" onclick="toggleStatus('${u.usuario}', ${u.ativo})">
+            <i class="fa-solid fa-power-off"></i> ${u.ativo ? 'Desativar' : 'Ativar'}
+          </button>
+          <button class="btn-sm btn-del"    onclick="excluirUsuario('${u.usuario}')">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+    }
+
+    // ====== Filtro ======
+    function filtrar() {
+      const termo = document.getElementById('busca').value.toLowerCase();
+      const filtrado = cacheUsuarios.filter(u =>
+        u.usuario.toLowerCase().includes(termo) ||
+        (u.nome || '').toLowerCase().includes(termo)
+      );
+      renderTabela(filtrado);
+    }
+
+    // ====== Editar ======
+    async function editarUsuario(usuario) {
+      const novoNome = prompt('Novo nome completo para @' + usuario + ':');
+      if (!novoNome || !novoNome.trim()) return;
+      try {
+        const res = await fetch('/admin/usuarios/' + usuario, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nome: novoNome.trim() }),
+        });
+        if (!res.ok) throw new Error();
+        showToast('Nome atualizado!', 'success');
+        carregarUsuarios();
+      } catch (_e) { showToast('Erro ao editar usuário.', 'error'); }
+    }
+
+    // ====== Toggle Status ======
+    async function toggleStatus(usuario, ativoAtual) {
+      const acao = ativoAtual ? 'Desativar' : 'Ativar';
+      if (!confirm(acao + ' o usuário @' + usuario + '?')) return;
+      try {
+        const res = await fetch('/admin/usuarios/' + usuario + '/status', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ativo: !ativoAtual }),
+        });
+        if (!res.ok) throw new Error();
+        showToast('Status atualizado!', 'success');
+        carregarUsuarios();
+      } catch (_e) { showToast('Erro ao atualizar status.', 'error'); }
+    }
+
+    // ====== Excluir ======
+    async function excluirUsuario(usuario) {
+      if (!confirm('Excluir permanentemente @' + usuario + '? Esta ação não pode ser desfeita!')) return;
+      try {
+        const res = await fetch('/admin/usuarios/' + usuario, { method: 'DELETE' });
+        if (!res.ok) throw new Error();
+        showToast('Usuário excluído.', 'success');
+        carregarUsuarios();
+      } catch (_e) { showToast('Erro ao excluir usuário.', 'error'); }
+    }
+
+    // ====== Toast ======
+    function showToast(msg, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast ' + type;
+      toast.textContent = msg;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3200);
+    }
+
+    // ====== Logout ======
+    function logout() {
+      localStorage.removeItem('access_token');
+      document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      fetch('/logout', { method: 'POST' }).finally(() => { window.location.href = '/login'; });
+    }
+  </script>
+</body>
+
+</html>

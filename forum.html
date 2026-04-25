@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Fórum da comunidade MyGameList — discuta jogos, comente e interaja.">
+<title>Fórum | MyGameList</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root{
+  --bg:#050816; --nav:rgba(5,8,22,.85);
+  --card:#0f172a; --card-b:#1e293b;
+  --text:#e2e8f0; --muted:#94a3b8; --border:rgba(255,255,255,.07);
+  --blue:#38bdf8; --purple:#818cf8; --green:#34d399;
+  --danger:#f87171; --gold:#fbbf24;
+  --grad:linear-gradient(135deg,#38bdf8,#818cf8);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Inter',sans-serif;
+  background:
+    radial-gradient(circle at 15% 10%,rgba(56,189,248,.1) 0%,transparent 30%),
+    radial-gradient(circle at 85% 85%,rgba(129,140,248,.1) 0%,transparent 30%),
+    var(--bg);
+  color:var(--text);min-height:100vh;
+}
+nav{
+  position:sticky;top:0;z-index:50;
+  background:var(--nav);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.15rem;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-brand i{-webkit-text-fill-color:var(--blue);}
+.nav-links{display:flex;align-items:center;gap:8px;}
+.nav-link{padding:8px 14px;border-radius:10px;font-size:.88rem;font-weight:600;color:var(--muted);text-decoration:none;transition:color .2s,background .2s;}
+.nav-link:hover,.nav-link.active{color:var(--blue);background:rgba(56,189,248,.08);}
+.btn-nav{border:none;padding:8px 14px;border-radius:10px;font-size:.85rem;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:transform .18s,filter .18s;}
+.btn-nav:hover{transform:translateY(-1px);filter:brightness(1.1);}
+.btn-logout{background:rgba(248,113,113,.15);color:var(--danger);border:1px solid rgba(248,113,113,.2);}
+
+.wrapper{max-width:1100px;margin:0 auto;padding:32px 24px 60px;display:grid;grid-template-columns:2fr 1fr;gap:20px;align-items:start;}
+
+/* CARD GENÉRICO */
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;}
+.card-title{font-size:.95rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+
+/* POST BOX */
+.post-box textarea{
+  width:100%;height:90px;background:var(--card-b);
+  border:1px solid var(--border);border-radius:12px;
+  color:var(--text);font-family:'Inter',sans-serif;font-size:.92rem;
+  padding:12px;resize:none;margin-bottom:12px;
+  transition:border-color .2s,box-shadow .2s;
+}
+.post-box textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px rgba(56,189,248,.1);}
+.post-box textarea::placeholder{color:var(--muted);}
+.post-actions{display:flex;gap:8px;}
+.btn{border:none;border-radius:10px;padding:10px 16px;font-size:.85rem;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:transform .18s,filter .18s;}
+.btn:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.1);}
+.btn:disabled{opacity:.6;cursor:wait;}
+.btn-publish{background:var(--grad);color:#fff;box-shadow:0 8px 18px rgba(56,189,248,.2);}
+
+/* FEED */
+#feed{display:flex;flex-direction:column;gap:14px;}
+.post{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;border-left:3px solid transparent;transition:border-left-color .2s;}
+.post:hover{border-left-color:var(--blue);}
+.post-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.post-author{font-weight:700;font-size:.88rem;color:var(--blue);}
+.post-time{font-size:.75rem;color:var(--muted);}
+.post-content{font-size:.9rem;line-height:1.55;margin-bottom:10px;}
+.post-footer{display:flex;gap:14px;font-size:.8rem;color:var(--muted);}
+.post-footer button{
+  background:none;border:none;color:var(--muted);font-family:'Inter',sans-serif;
+  font-size:.8rem;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;
+  transition:color .2s,background .2s;
+}
+.post-footer button:hover{color:var(--blue);background:rgba(56,189,248,.08);}
+.post-footer .btn-like:hover{color:var(--danger);}
+
+/* COMMENTS */
+.comments-section{margin-top:14px;display:none;border-top:1px solid var(--border);padding-top:12px;}
+.comments-section.open{display:block;}
+.comment{background:var(--card-b);border-radius:12px;padding:12px;border-left:3px solid var(--purple);margin-bottom:8px;}
+.comment .c-header{display:flex;justify-content:space-between;margin-bottom:4px;}
+.comment .c-author{font-weight:700;font-size:.82rem;color:var(--purple);}
+.comment .c-time{font-size:.72rem;color:var(--muted);}
+.comment p{font-size:.86rem;color:var(--muted);margin-bottom:6px;}
+.comment .btn-like-c{
+  background:none;border:none;color:var(--muted);font-family:'Inter',sans-serif;
+  font-size:.76rem;font-weight:600;cursor:pointer;padding:2px 6px;border-radius:6px;
+  transition:color .2s,background .2s;
+}
+.comment .btn-like-c:hover{color:var(--danger);background:rgba(248,113,113,.08);}
+
+.comment-form{display:flex;gap:8px;margin-top:10px;}
+.comment-form textarea{
+  flex:1;height:44px;background:var(--card);border:1px solid var(--border);
+  border-radius:10px;padding:10px;color:var(--text);font-family:'Inter',sans-serif;
+  font-size:.84rem;resize:none;transition:border-color .2s;
+}
+.comment-form textarea:focus{outline:none;border-color:var(--purple);}
+.comment-form textarea::placeholder{color:var(--muted);}
+.btn-comment{background:rgba(129,140,248,.2);color:var(--purple);border:1px solid rgba(129,140,248,.25);border-radius:10px;padding:8px 14px;font-size:.82rem;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;white-space:nowrap;transition:background .2s;}
+.btn-comment:hover{background:rgba(129,140,248,.3);}
+
+/* STAR RATING (comments) */
+.star-select{display:flex;gap:3px;margin-bottom:6px;}
+.star-select .star-btn{
+  background:none;border:none;color:var(--card-b);font-size:1.1rem;
+  cursor:pointer;transition:color .15s,transform .15s;padding:0;
+}
+.star-select .star-btn:hover,.star-select .star-btn.active{color:var(--gold);}
+.star-select .star-btn:hover{transform:scale(1.15);}
+.comment-stars{color:var(--gold);font-size:.78rem;margin-bottom:4px;}
+.comment-form-wrap{margin-top:10px;}
+.comment-form-wrap .comment-form{display:flex;gap:8px;}
+
+.empty-feed{text-align:center;padding:40px;color:var(--muted);font-size:.9rem;}
+
+/* SIDEBAR */
+.sidebar-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px;margin-bottom:14px;}
+.sidebar-card h3{font-size:.92rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+.rank-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.86rem;}
+.rank-item:last-child{border-bottom:none;}
+.tag{font-size:.7rem;padding:2px 8px;border-radius:999px;font-weight:700;}
+.tag-top{background:rgba(251,191,36,.15);color:var(--gold);}
+.tag-active{background:rgba(52,211,153,.15);color:var(--green);}
+.hot-game{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.86rem;}
+.hot-game:last-child{border-bottom:none;}
+
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:999;display:flex;flex-direction:column;gap:8px;}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 16px;font-size:.88rem;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.4);animation:slideIn .3s ease;max-width:300px;}
+.toast.success{border-color:rgba(52,211,153,.3);color:var(--green);}
+.toast.error{border-color:rgba(248,113,113,.3);color:var(--danger);}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+@media(max-width:900px){.wrapper{grid-template-columns:1fr;}}
+@media(max-width:640px){nav{padding:0 14px;}.nav-link{display:none;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand"><i class="fa-solid fa-gamepad"></i> MyGameList</div>
+  <div class="nav-links">
+    <a href="/dashboard" class="nav-link"><i class="fa-solid fa-compass"></i> Explorar</a>
+    <a href="/my-list"   class="nav-link"><i class="fa-solid fa-list"></i> Minha Lista</a>
+    <a href="/forum"     class="nav-link active"><i class="fa-solid fa-comments"></i> Fórum</a>
+    <a href="/perfil"    class="nav-link"><i class="fa-solid fa-user"></i> Perfil</a>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span id="user-display" style="font-size:.88rem;font-weight:600;color:var(--blue)">...</span>
+    <button class="btn-nav btn-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
+  </div>
+</nav>
+
+<div class="wrapper">
+
+  <!-- FEED -->
+  <div>
+    <!-- Criar tópico -->
+    <div class="post-box card" style="margin-bottom:16px;">
+      <div class="card-title"><i class="fa-solid fa-pen" style="color:var(--blue)"></i> Criar Tópico</div>
+      <textarea id="newPostText" placeholder="Compartilhe algo sobre jogos, dúvidas ou novidades..."></textarea>
+      <div class="post-actions">
+        <button class="btn btn-publish" id="btn-publish" onclick="publicar()">
+          <i class="fa-solid fa-paper-plane"></i> Publicar
+        </button>
+      </div>
+    </div>
+
+    <!-- Feed de posts -->
+    <div id="feed"><div class="empty-feed"><i class="fa-solid fa-spinner fa-spin"></i> Carregando tópicos...</div></div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div>
+    <div class="sidebar-card">
+      <h3><i class="fa-solid fa-trophy" style="color:var(--gold)"></i> Top Autores</h3>
+      <div id="ranking-list"><div style="color:var(--muted);font-size:.82rem">Carregando...</div></div>
+    </div>
+
+    <div class="sidebar-card">
+      <h3><i class="fa-solid fa-fire" style="color:var(--danger)"></i> Jogos em Alta</h3>
+      <div id="trending-list"><div style="color:var(--muted);font-size:.82rem">Carregando...</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+let currentUser = null;
+
+// ── Auth ──────────────────────────────────────────────────────────────────────
+async function init() {
+  const token = localStorage.getItem('access_token');
+  if (!token) { window.location.href = '/login'; return; }
+  try {
+    const res = await fetch('/users/me/', { headers: { 'Authorization': 'Bearer ' + token } });
+    if (!res.ok) { logout(); return; }
+    currentUser = await res.json();
+    document.getElementById('user-display').textContent = 'Olá, ' + (currentUser.full_name || currentUser.username);
+  } catch (_e) {
+    document.getElementById('user-display').textContent = 'Usuário';
+  }
+  loadPosts();
+  loadTrending();
+}
+
+// ── Posts ─────────────────────────────────────────────────────────────────────
+async function loadPosts() {
+  try {
+    const res = await fetch('/api/forum/posts');
+    const posts = await res.json();
+    renderPosts(posts);
+    renderRanking(posts);
+  } catch (_e) {
+    document.getElementById('feed').innerHTML = '<div class="empty-feed">Erro ao carregar tópicos.</div>';
+  }
+}
+
+function renderPosts(posts) {
+  const feed = document.getElementById('feed');
+  if (!posts.length) {
+    feed.innerHTML = '<div class="empty-feed"><i class="fa-solid fa-comments" style="font-size:2rem;opacity:.3;display:block;margin-bottom:10px"></i>Nenhum tópico ainda. Seja o primeiro!</div>';
+    return;
+  }
+  feed.innerHTML = posts.map(function(p) {
+    return '<div class="post" id="post-' + p.id + '">'
+      + '<div class="post-header">'
+      + '<span class="post-author">🎮 ' + p.author_name + '</span>'
+      + '<span class="post-time">' + formatTime(p.created_at) + '</span>'
+      + '</div>'
+      + '<div class="post-content">' + escapeHtml(p.content) + '</div>'
+      + '<div class="post-footer">'
+      + '<button class="btn-like" onclick="likePost(' + p.id + ', this)">'
+      + '<i class="fa-solid fa-heart"></i> <span class="like-count">' + p.likes + '</span>'
+      + '</button>'
+      + '<button onclick="toggleComments(' + p.id + ')">'
+      + '<i class="fa-solid fa-comment"></i> <span id="cc-' + p.id + '">' + p.comment_count + '</span> comentário(s)'
+      + '</button>'
+      + '</div>'
+      + '<div class="comments-section" id="cs-' + p.id + '">'
+      + '<div id="comments-list-' + p.id + '" style="margin-bottom:10px"></div>'
+      + '<div class="comment-form">'
+      + '<textarea id="reply-' + p.id + '" placeholder="Escreva um comentário..."></textarea>'
+      + '<button class="btn-comment" onclick="addComment(' + p.id + ')"><i class="fa-solid fa-reply"></i></button>'
+      + '</div>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+// ── Ranking sidebar ────────────────────────────────────────────────────────────
+function renderRanking(posts) {
+  const counts = {};
+  posts.forEach(function(p) {
+    counts[p.author_name] = (counts[p.author_name] || 0) + 1;
+  });
+  const sorted = Object.entries(counts).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 5);
+  const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+  const el = document.getElementById('ranking-list');
+  if (!sorted.length) { el.innerHTML = '<div style="color:var(--muted);font-size:.82rem">Sem dados.</div>'; return; }
+  el.innerHTML = sorted.map(function(entry, i) {
+    return '<div class="rank-item"><span>' + medals[i] + ' ' + entry[0] + '</span>'
+      + '<span class="tag tag-' + (i === 0 ? 'top' : 'active') + '">' + entry[1] + ' post(s)</span></div>';
+  }).join('');
+}
+
+// ── Trending sidebar ───────────────────────────────────────────────────────────
+async function loadTrending() {
+  try {
+    const res = await fetch('/api/community/trending');
+    const games = await res.json();
+    const el = document.getElementById('trending-list');
+    if (!games.length) { el.innerHTML = '<div style="color:var(--muted);font-size:.82rem">Nenhum jogo ainda.</div>'; return; }
+    el.innerHTML = games.slice(0, 5).map(function(g) {
+      return '<div class="hot-game"><span style="font-size:1.1rem">🎮</span><span>' + g.title + '</span></div>';
+    }).join('');
+  } catch (_e) {
+    document.getElementById('trending-list').innerHTML = '<div style="color:var(--muted);font-size:.82rem">Indisponível.</div>';
+  }
+}
+
+// ── Publicar post ─────────────────────────────────────────────────────────────
+async function publicar() {
+  const token = localStorage.getItem('access_token');
+  const texto = document.getElementById('newPostText').value.trim();
+  if (!texto) { showToast('Escreva algo antes de publicar!', 'error'); return; }
+  const btn = document.getElementById('btn-publish');
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/forum/posts', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: texto }),
+    });
+    if (!res.ok) throw new Error();
+    document.getElementById('newPostText').value = '';
+    showToast('✅ Tópico publicado!', 'success');
+    loadPosts();
+  } catch (_e) {
+    showToast('❌ Erro ao publicar.', 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ── Like post ─────────────────────────────────────────────────────────────────
+async function likePost(postId, btn) {
+  const token = localStorage.getItem('access_token');
+  try {
+    const res = await fetch('/api/forum/posts/' + postId + '/like', {
+      method: 'POST', headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    btn.querySelector('.like-count').textContent = data.likes;
+    btn.style.color = 'var(--danger)';
+  } catch (_e) { showToast('Erro ao curtir.', 'error'); }
+}
+
+// ── Toggle comentários ────────────────────────────────────────────────────────
+async function toggleComments(postId) {
+  const section = document.getElementById('cs-' + postId);
+  if (section.classList.contains('open')) {
+    section.classList.remove('open');
+    return;
+  }
+  section.classList.add('open');
+  const token = localStorage.getItem('access_token');
+  try {
+    const res = await fetch('/api/forum/posts/' + postId + '/comments', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const comments = await res.json();
+    renderComments(postId, comments);
+  } catch (_e) { showToast('Erro ao carregar comentários.', 'error'); }
+}
+
+function renderComments(postId, comments) {
+  const el = document.getElementById('comments-list-' + postId);
+  if (!comments.length) { el.innerHTML = '<div style="color:var(--muted);font-size:.82rem;margin-bottom:8px">Sem comentários ainda.</div>'; return; }
+  el.innerHTML = comments.map(function(c) {
+    return '<div class="comment" id="comment-' + c.id + '">'
+      + '<div class="c-header"><span class="c-author">@' + c.author_name + '</span><span class="c-time">' + formatTime(c.created_at) + '</span></div>'
+      + '<p>' + escapeHtml(c.content) + '</p>'
+      + '<button class="btn-like-c" onclick="likeComment(' + postId + ', ' + c.id + ', this)">'
+      + '<i class="fa-solid fa-heart"></i> <span class="like-count">' + c.likes + '</span>'
+      + '</button>'
+      + '</div>';
+  }).join('');
+}
+
+// ── Adicionar comentário ──────────────────────────────────────────────────────
+async function addComment(postId) {
+  const token = localStorage.getItem('access_token');
+  const textarea = document.getElementById('reply-' + postId);
+  const texto = textarea.value.trim();
+  if (!texto) return;
+  try {
+    const res = await fetch('/api/forum/posts/' + postId + '/comments', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: texto }),
+    });
+    if (!res.ok) throw new Error();
+    textarea.value = '';
+    showToast('💬 Comentário adicionado!', 'success');
+    // Recarrega os comentários do post
+    const res2 = await fetch('/api/forum/posts/' + postId + '/comments', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const comments = await res2.json();
+    renderComments(postId, comments);
+    document.getElementById('cc-' + postId).textContent = comments.length;
+  } catch (_e) { showToast('Erro ao comentar.', 'error'); }
+}
+
+// ── Like comentário ───────────────────────────────────────────────────────────
+async function likeComment(postId, commentId, btn) {
+  const token = localStorage.getItem('access_token');
+  try {
+    const res = await fetch('/api/forum/posts/' + postId + '/comments/' + commentId + '/like', {
+      method: 'POST', headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    btn.querySelector('.like-count').textContent = data.likes;
+    btn.style.color = 'var(--danger)';
+  } catch (_e) { showToast('Erro ao curtir.', 'error'); }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function formatTime(iso) {
+  if (!iso) return '';
+  try {
+    const d = new Date(iso);
+    return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  } catch (_e) { return iso; }
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function showToast(msg, type) {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast ' + (type || 'success');
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(function() { t.remove(); }, 3200);
+}
+
+function logout() {
+  localStorage.removeItem('access_token');
+  document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+  fetch('/logout', { method: 'POST' }).finally(function() { window.location.href = '/login'; });
+}
+
+init();
+</script>
+</body>
+</html>
