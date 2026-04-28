@@ -389,13 +389,7 @@ async function loadProfile() {
 
     renderUserInfo(userData);
 
-    // Carrega lista de jogos do usuário
-    const resGames = await fetch('/my-list', {
-      headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' }
-    });
-    // A rota /my-list retorna HTML; buscamos via cookie automaticamente
-    // Para estatísticas, contamos pela API do backend se disponível
-    // Aqui usamos uma rota auxiliar: pegamos jogos via cookie (acesso direto)
+    // Carrega estatísticas e jogos do perfil via API dedicada
     await loadGamesStats(token);
 
   } catch (err) {

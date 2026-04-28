@@ -61,6 +61,7 @@ class ForumPost(Base):
     author_username  = Column(String,   ForeignKey("users.username"))
     created_at       = Column(DateTime, default=datetime.utcnow)
     likes            = Column(Integer,  default=0)
+    is_anonymous     = Column(Boolean,  default=False)
 
 
 # ── Fórum: comentários ────────────────────────────────────────────────────────
@@ -73,6 +74,7 @@ class ForumComment(Base):
     created_at      = Column(DateTime, default=datetime.utcnow)
     likes           = Column(Integer,  default=0)
     rating          = Column(Integer,  default=0)   # avaliação por estrelas (0-5)
+    is_anonymous    = Column(Boolean,  default=False)
 
 
 # ── Pydantic para cadastro ────────────────────────────────────────────────────
@@ -95,3 +97,20 @@ def get_db():
 
 # Cria todas as tabelas (idempotente)
 Base.metadata.create_all(bind=engine)
+
+# Migração segura: adiciona colunas novas em tabelas já existentes
+def _safe_add_column(table: str, column: str, definition: str):
+    """Tenta adicionar uma coluna; ignora se já existir."""
+    with engine.connect() as conn:
+        try:
+            conn.execute(
+                __import__("sqlalchemy").text(
+                    f"ALTER TABLE {table} ADD COLUMN {column} {definition}"
+                )
+            )
+            conn.commit()
+        except Exception:
+            pass  # coluna já existe
+
+_safe_add_column("forum_posts",     "is_anonymous", "BOOLEAN NOT NULL DEFAULT FALSE")
+_safe_add_column("forum_comments",  "is_anonymous", "BOOLEAN NOT NULL DEFAULT FALSE")

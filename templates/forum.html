@@ -59,11 +59,35 @@ nav{
 }
 .post-box textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px rgba(56,189,248,.1);}
 .post-box textarea::placeholder{color:var(--muted);}
-.post-actions{display:flex;gap:8px;}
+.post-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .btn{border:none;border-radius:10px;padding:10px 16px;font-size:.85rem;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:transform .18s,filter .18s;}
 .btn:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.1);}
 .btn:disabled{opacity:.6;cursor:wait;}
 .btn-publish{background:var(--grad);color:#fff;box-shadow:0 8px 18px rgba(56,189,248,.2);}
+
+/* ANON TOGGLE */
+.anon-toggle{display:flex;align-items:center;gap:8px;margin-left:auto;cursor:pointer;user-select:none;}
+.anon-toggle input[type=checkbox]{display:none;}
+.toggle-track{
+  width:38px;height:20px;background:var(--card-b);border:1px solid var(--border);
+  border-radius:999px;position:relative;transition:background .2s,border-color .2s;
+  flex-shrink:0;
+}
+.toggle-thumb{
+  position:absolute;top:2px;left:2px;width:14px;height:14px;
+  background:var(--muted);border-radius:50%;transition:transform .2s,background .2s;
+}
+.anon-toggle input:checked ~ .toggle-track{background:rgba(129,140,248,.25);border-color:var(--purple);}
+.anon-toggle input:checked ~ .toggle-track .toggle-thumb{transform:translateX(18px);background:var(--purple);}
+.anon-label{font-size:.8rem;font-weight:600;color:var(--muted);transition:color .2s;}
+.anon-toggle:has(input:checked) .anon-label{color:var(--purple);}
+/* badge anon no feed */
+.badge-anon{display:inline-flex;align-items:center;gap:4px;font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(129,140,248,.15);color:var(--purple);margin-left:6px;}
+/* anon author style */
+.post-author.anon{color:var(--muted);font-style:italic;}
+.c-author.anon{color:var(--muted);font-style:italic;}
+/* comment anon toggle row */
+.comment-anon-row{display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:6px;}
 
 /* FEED */
 #feed{display:flex;flex-direction:column;gap:14px;}
@@ -172,6 +196,11 @@ nav{
         <button class="btn btn-publish" id="btn-publish" onclick="publicar()">
           <i class="fa-solid fa-paper-plane"></i> Publicar
         </button>
+        <label class="anon-toggle" title="Oculta seu nome e exibe 'Anônimo' para todos">
+          <input type="checkbox" id="postAnon">
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          <span class="anon-label"><i class="fa-solid fa-user-secret"></i> Anônimo</span>
+        </label>
       </div>
     </div>
 
@@ -233,9 +262,12 @@ function renderPosts(posts) {
     return;
   }
   feed.innerHTML = posts.map(function(p) {
+    var authorHtml = p.is_anonymous
+      ? '<span class="post-author anon"><i class="fa-solid fa-user-secret"></i> Anônimo</span><span class="badge-anon">anon</span>'
+      : '<span class="post-author">🎮 ' + p.author_name + '</span>';
     return '<div class="post" id="post-' + p.id + '">'
       + '<div class="post-header">'
-      + '<span class="post-author">🎮 ' + p.author_name + '</span>'
+      + '<div style="display:flex;align-items:center;gap:6px">' + authorHtml + '</div>'
       + '<span class="post-time">' + formatTime(p.created_at) + '</span>'
       + '</div>'
       + '<div class="post-content">' + escapeHtml(p.content) + '</div>'
@@ -252,6 +284,13 @@ function renderPosts(posts) {
       + '<div class="comment-form">'
       + '<textarea id="reply-' + p.id + '" placeholder="Escreva um comentário..."></textarea>'
       + '<button class="btn-comment" onclick="addComment(' + p.id + ')"><i class="fa-solid fa-reply"></i></button>'
+      + '</div>'
+      + '<div class="comment-anon-row">'
+      + '<label class="anon-toggle" title="Comentar anonimamente">'
+      + '<input type="checkbox" id="replyAnon-' + p.id + '">'
+      + '<span class="toggle-track"><span class="toggle-thumb"></span></span>'
+      + '<span class="anon-label"><i class="fa-solid fa-user-secret"></i> Anônimo</span>'
+      + '</label>'
       + '</div>'
       + '</div>'
       + '</div>';
@@ -294,17 +333,19 @@ async function publicar() {
   const token = localStorage.getItem('access_token');
   const texto = document.getElementById('newPostText').value.trim();
   if (!texto) { showToast('Escreva algo antes de publicar!', 'error'); return; }
+  const isAnon = document.getElementById('postAnon').checked;
   const btn = document.getElementById('btn-publish');
   btn.disabled = true;
   try {
     const res = await fetch('/api/forum/posts', {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: texto }),
+      body: JSON.stringify({ content: texto, is_anonymous: isAnon }),
     });
     if (!res.ok) throw new Error();
     document.getElementById('newPostText').value = '';
-    showToast('✅ Tópico publicado!', 'success');
+    document.getElementById('postAnon').checked = false;
+    showToast(isAnon ? '🕵️ Tópico publicado anonimamente!' : '✅ Tópico publicado!', 'success');
     loadPosts();
   } catch (_e) {
     showToast('❌ Erro ao publicar.', 'error');
@@ -348,8 +389,11 @@ function renderComments(postId, comments) {
   const el = document.getElementById('comments-list-' + postId);
   if (!comments.length) { el.innerHTML = '<div style="color:var(--muted);font-size:.82rem;margin-bottom:8px">Sem comentários ainda.</div>'; return; }
   el.innerHTML = comments.map(function(c) {
+    var authorHtml = c.is_anonymous
+      ? '<span class="c-author anon"><i class="fa-solid fa-user-secret"></i> Anônimo</span><span class="badge-anon">anon</span>'
+      : '<span class="c-author">@' + c.author_name + '</span>';
     return '<div class="comment" id="comment-' + c.id + '">'
-      + '<div class="c-header"><span class="c-author">@' + c.author_name + '</span><span class="c-time">' + formatTime(c.created_at) + '</span></div>'
+      + '<div class="c-header"><div style="display:flex;align-items:center;gap:5px">' + authorHtml + '</div><span class="c-time">' + formatTime(c.created_at) + '</span></div>'
       + '<p>' + escapeHtml(c.content) + '</p>'
       + '<button class="btn-like-c" onclick="likeComment(' + postId + ', ' + c.id + ', this)">'
       + '<i class="fa-solid fa-heart"></i> <span class="like-count">' + c.likes + '</span>'
@@ -364,16 +408,18 @@ async function addComment(postId) {
   const textarea = document.getElementById('reply-' + postId);
   const texto = textarea.value.trim();
   if (!texto) return;
+  const anonEl = document.getElementById('replyAnon-' + postId);
+  const isAnon = anonEl ? anonEl.checked : false;
   try {
     const res = await fetch('/api/forum/posts/' + postId + '/comments', {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: texto }),
+      body: JSON.stringify({ content: texto, is_anonymous: isAnon }),
     });
     if (!res.ok) throw new Error();
     textarea.value = '';
-    showToast('💬 Comentário adicionado!', 'success');
-    // Recarrega os comentários do post
+    if (anonEl) anonEl.checked = false;
+    showToast(isAnon ? '🕵️ Comentário anônimo adicionado!' : '💬 Comentário adicionado!', 'success');
     const res2 = await fetch('/api/forum/posts/' + postId + '/comments', {
       headers: { 'Authorization': 'Bearer ' + token }
     });

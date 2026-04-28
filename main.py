@@ -68,11 +68,13 @@ class AdminStatusUpdate(BaseModel):
 
 class ForumPostCreate(BaseModel):
     content: str
+    is_anonymous: bool = False
 
 
 class ForumCommentCreate(BaseModel):
     content: str
     rating: int = 0  # 0-5 estrelas
+    is_anonymous: bool = False
 
 
 class GameNotesUpdate(BaseModel):
@@ -334,7 +336,8 @@ async def remove_game(
     if game:
         db.delete(game)
         db.commit()
-    return RedirectResponse(url="/my-list", status_code=303)
+        return {"status": "success", "message": "Jogo removido"}
+    raise HTTPException(status_code=404, detail="Jogo não encontrado na sua lista")
 
 
 @app.post("/rate-game/{game_id}")
@@ -445,14 +448,20 @@ async def forum_list_posts(db: Session = Depends(get_db)):
     for p in posts:
         author = db.query(UserTable).filter(UserTable.username == p.author_username).first()
         count = db.query(ForumComment).filter(ForumComment.post_id == p.id).count()
+        # Se anônimo, oculta o nome do autor
+        if p.is_anonymous:
+            display_name = "Anônimo"
+        else:
+            display_name = author.full_name or p.author_username if author else p.author_username
         result.append({
             "id": p.id,
             "content": p.content,
-            "author_username": p.author_username,
-            "author_name": author.full_name or p.author_username if author else p.author_username,
+            "author_username": p.author_username if not p.is_anonymous else None,
+            "author_name": display_name,
             "created_at": p.created_at.isoformat() if p.created_at else None,
             "likes": p.likes,
             "comment_count": count,
+            "is_anonymous": p.is_anonymous,
         })
     return result
 
@@ -465,7 +474,11 @@ async def forum_create_post(
 ):
     if not payload.content.strip():
         raise HTTPException(status_code=400, detail="Conteúdo não pode ser vazio")
-    post = ForumPost(content=payload.content.strip(), author_username=current_user.username)
+    post = ForumPost(
+        content=payload.content.strip(),
+        author_username=current_user.username,
+        is_anonymous=payload.is_anonymous,
+    )
     db.add(post)
     db.commit()
     db.refresh(post)
@@ -503,14 +516,20 @@ async def forum_list_comments(post_id: int, db: Session = Depends(get_db)):
     result = []
     for c in comments:
         author = db.query(UserTable).filter(UserTable.username == c.author_username).first()
+        # Se anônimo, oculta o nome do autor
+        if c.is_anonymous:
+            display_name = "Anônimo"
+        else:
+            display_name = author.full_name or c.author_username if author else c.author_username
         result.append({
             "id": c.id,
             "content": c.content,
-            "author_username": c.author_username,
-            "author_name": author.full_name or c.author_username if author else c.author_username,
+            "author_username": c.author_username if not c.is_anonymous else None,
+            "author_name": display_name,
             "created_at": c.created_at.isoformat() if c.created_at else None,
             "likes": c.likes,
             "rating": c.rating or 0,
+            "is_anonymous": c.is_anonymous,
         })
     return result
 
@@ -532,6 +551,7 @@ async def forum_add_comment(
         content=payload.content.strip(),
         author_username=current_user.username,
         rating=rating,
+        is_anonymous=payload.is_anonymous,
     )
     db.add(comment)
     db.commit()

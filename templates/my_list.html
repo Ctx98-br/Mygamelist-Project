@@ -332,11 +332,9 @@
         >{{ game.notes or '' }}</textarea>
 
         <!-- Remover -->
-        <form action="/remove-from-catalog/{{ game.id }}" method="post">
-          <button type="submit" class="btn-remove">
-            <i class="fa-solid fa-trash"></i> Remover da Lista
-          </button>
-        </form>
+        <button type="button" class="btn-remove" onclick="removeGame({{ game.id }}, this)">
+          <i class="fa-solid fa-trash"></i> Remover da Lista
+        </button>
       </div>
     </div>
     {% else %}
@@ -366,6 +364,31 @@
           'Olá, ' + (data.full_name || data.username);
       } catch (_e) {
         document.getElementById('user-display').textContent = 'Usuário';
+      }
+    }
+
+    // ====== Remove Game ======
+    async function removeGame(gameId, btn) {
+      if (!confirm('Remover este jogo da sua lista?')) return;
+      const token = localStorage.getItem('access_token');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Removendo...';
+      try {
+        const res = await fetch('/remove-from-catalog/' + gameId, {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + token },
+        });
+        if (res.ok || res.redirected) {
+          const card = document.getElementById('card-' + gameId);
+          if (card) card.remove();
+          showToast('\uD83D\uDDD1\uFE0F Jogo removido da lista.', 'success');
+        } else {
+          throw new Error();
+        }
+      } catch (_e) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-trash"></i> Remover da Lista';
+        showToast('\u274C Erro ao remover o jogo.', 'error');
       }
     }
 
