@@ -10,3 +10,6 @@ psycopg2-binary
 python-dotenv
 requests
 jinja2
+authlib
+itsdangerous
+httpx

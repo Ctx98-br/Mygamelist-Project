@@ -1,3 +1,5 @@
+import os
+import secrets
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Annotated
@@ -5,6 +7,9 @@ from sqlalchemy import func as sqlfunc
 
 import jwt
 import requests
+from authlib.integrations.starlette_client import OAuth
+from starlette.middleware.sessions import SessionMiddleware
+
 from fastapi import Depends, FastAPI, Form, HTTPException, Request, Response, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.security import (
@@ -28,11 +33,29 @@ API_KEY = "35feb255f6ac4b88a3ed5cee84341acd"
 BASE_URL = "https://api.rawg.io/api/games"
 
 app = FastAPI(strict_slashes=False)
+app.add_middleware(SessionMiddleware, secret_key=os.getenv("SESSION_SECRET", secrets.token_urlsafe(32)))
+
 BASE_DIR = Path(__file__).resolve().parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 password_hash = PasswordHash.recommended()
 DUMMY_HASH = password_hash.hash("dummypassword")
+
+# --- CONFIGURAÇÃO GOOGLE OAUTH ---
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "http://localhost:8000/auth/google/callback")
+
+oauth = OAuth()
+oauth.register(
+    name='google',
+    client_id=GOOGLE_CLIENT_ID,
+    client_secret=GOOGLE_CLIENT_SECRET,
+    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+    client_kwargs={
+        'scope': 'openid email profile'
+    }
+)
 
 
 # --- MODELOS PYDANTIC ---
@@ -206,6 +229,83 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
 async def logout(response: Response):
     response.delete_cookie("access_token")
     return {"message": "Logout realizado com sucesso"}
+
+
+@app.get("/auth/google/login")
+async def login_via_google(request: Request):
+    """Inicia o fluxo de login OAuth do Google."""
+    redirect_uri = GOOGLE_REDIRECT_URI
+    return await oauth.google.authorize_redirect(request, redirect_uri)
+
+
+@app.get("/auth/google/callback")
+async def auth_via_google_callback(request: Request, db: Session = Depends(get_db)):
+    """Recebe o callback do Google e processa o usuário."""
+    try:
+        token = await oauth.google.authorize_access_token(request)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Erro na autenticação do Google: {str(e)}")
+
+    user_info = token.get('userinfo')
+    if not user_info:
+        raise HTTPException(status_code=400, detail="Não foi possível obter as informações do usuário")
+
+    email = user_info.get("email")
+    name = user_info.get("name")
+    
+    # Verifica se usuário já existe
+    user = db.query(UserTable).filter(UserTable.email == email).first()
+    
+    if not user:
+        # Cria novo usuário baseando-se no e-mail
+        base_username = email.split('@')[0]
+        username = base_username
+        
+        # Resolve conflitos de username
+        counter = 1
+        while db.query(UserTable).filter(UserTable.username == username).first():
+            username = f"{base_username}{counter}"
+            counter += 1
+            
+        user = UserTable(
+            username=username,
+            email=email,
+            full_name=name,
+            hashed_password=get_password_hash(secrets.token_urlsafe(16)), # Senha forte inacessível
+            disabled=False
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+    # Emite o JWT padrão e gera a sessão
+    access_token = create_access_token(data={"sub": user.username})
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Autenticando...</title>
+      </head>
+      <body style="background: #050816; color: #fff; font-family: sans-serif; display: grid; place-items: center; height: 100vh; margin: 0;">
+        <h2>Completando login...</h2>
+        <script>
+          localStorage.setItem("access_token", "{access_token}");
+          window.location.href = "/dashboard";
+        </script>
+      </body>
+    </html>
+    """
+    
+    response = HTMLResponse(content=html_content)
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=False,
+        max_age=1800,
+        samesite="lax",
+    )
+    return response
 
 
 # --- ROTAS DE PÁGINAS ---
