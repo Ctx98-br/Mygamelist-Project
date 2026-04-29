@@ -114,3 +114,5 @@ def _safe_add_column(table: str, column: str, definition: str):
 
 _safe_add_column("forum_posts",     "is_anonymous", "BOOLEAN NOT NULL DEFAULT FALSE")
 _safe_add_column("forum_comments",  "is_anonymous", "BOOLEAN NOT NULL DEFAULT FALSE")
+_safe_add_column("users",           "date_of_birth", "VARCHAR")
+_safe_add_column("users",           "profile_bio", "VARCHAR")

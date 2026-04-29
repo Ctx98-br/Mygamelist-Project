@@ -1,5 +1,7 @@
 import os
 import secrets
+import smtplib
+from email.mime.text import MIMEText
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Annotated
@@ -22,6 +24,9 @@ from jwt.exceptions import InvalidTokenError
 from pwdlib import PasswordHash
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from database import ForumComment, ForumPost, GameTable, GameView, UserCreate, UserTable, get_db
 
@@ -62,6 +67,15 @@ oauth.register(
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
 
 
 class User(BaseModel):
@@ -326,6 +340,16 @@ async def registro_page(request: Request):
     return templates.TemplateResponse(request=request, name="registro.html", context={})
 
 
+@app.get("/forgot-password", response_class=HTMLResponse)
+async def forgot_password_page(request: Request):
+    return templates.TemplateResponse(request=request, name="forgot_password.html", context={})
+
+
+@app.get("/reset-password", response_class=HTMLResponse)
+async def reset_password_page(request: Request):
+    return templates.TemplateResponse(request=request, name="reset_password.html", context={})
+
+
 @app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard_page(request: Request, search: str | None = None):
     games = []
@@ -386,6 +410,66 @@ async def read_users_me(
         profile_bio=current_user.profile_bio,
         disabled=current_user.disabled,
     )
+
+
+@app.post("/api/forgot-password")
+async def forgot_password(payload: ForgotPasswordRequest, request: Request, db: Session = Depends(get_db)):
+    user = db.query(UserTable).filter(UserTable.email == payload.email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="E-mail não encontrado.")
+
+    # Gera um token JWT com expiração de 30 minutos e flag "reset"
+    token_data = {"sub": user.email, "type": "reset"}
+    reset_token = create_access_token(data=token_data, expires_delta=timedelta(minutes=30))
+
+    base_url = str(request.base_url).rstrip("/")
+    reset_link = f"{base_url}/reset-password?token={reset_token}"
+    load_dotenv()
+    
+    smtp_email = os.getenv("SMTP_EMAIL")
+    smtp_password = os.getenv("SMTP_PASSWORD")
+
+    if not smtp_email or not smtp_password:
+        raise HTTPException(status_code=500, detail="Servidor não configurado para envio de e-mails (SMTP_EMAIL e SMTP_PASSWORD vazios).")
+
+    try:
+        msg = MIMEText(f"Olá,\n\nVocê solicitou a redefinição de sua senha. Clique no link abaixo para criar uma nova senha:\n{reset_link}\n\nEste link expira em 30 minutos.\n\nSe você não solicitou, apenas ignore este e-mail.")
+        msg['Subject'] = "Recuperação de Senha - MyGameList"
+        msg['From'] = f"MyGameList <{smtp_email}>"
+        msg['To'] = user.email
+
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.starttls()
+            server.login(smtp_email, smtp_password)
+            server.send_message(msg)
+    except Exception as e:
+        print(f"Erro ao enviar e-mail SMTP: {e}")
+        raise HTTPException(status_code=500, detail="Ocorreu um erro ao tentar enviar o e-mail.")
+
+    return {"message": "Se o e-mail estiver cadastrado, um link de recuperação foi enviado."}
+
+
+@app.post("/api/reset-password")
+async def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db)):
+    try:
+        token_data = jwt.decode(payload.token, SECRET_KEY, algorithms=[ALGORITHM])
+        if token_data.get("type") != "reset":
+            raise InvalidTokenError()
+        email = token_data.get("sub")
+    except InvalidTokenError:
+        raise HTTPException(status_code=400, detail="Token inválido ou expirado.")
+
+    user = db.query(UserTable).filter(UserTable.email == email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+
+    if len(payload.new_password) < 6:
+        raise HTTPException(status_code=400, detail="A senha deve ter no mínimo 6 caracteres.")
+
+    user.hashed_password = get_password_hash(payload.new_password)
+    db.commit()
+
+    return {"message": "Senha redefinida com sucesso."}
 
 
 @app.post("/add-to-catalog/")
