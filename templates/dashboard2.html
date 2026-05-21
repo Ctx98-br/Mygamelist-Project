@@ -218,13 +218,109 @@
       margin-bottom: 12px;
     }
     .game-card-rating {
-      color: var(--gold);
       font-size: .82rem;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
     }
+    .rating-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(251,191,36,.1);
+      border: 1px solid rgba(251,191,36,.25);
+      border-radius: 8px;
+      padding: 3px 9px;
+      color: var(--gold);
+      font-size: .79rem;
+      font-weight: 700;
+      cursor: help;
+      position: relative;
+      transition: background .18s, border-color .18s;
+    }
+    .rating-badge:hover {
+      background: rgba(251,191,36,.18);
+      border-color: rgba(251,191,36,.45);
+    }
+    .rating-badge .rb-stars {
+      display: flex;
+      gap: 1px;
+      font-size: .72rem;
+    }
+    .rating-badge .rb-stars .rs { color: rgba(251,191,36,.25); }
+    .rating-badge .rb-stars .rs.on { color: var(--gold); }
+    /* Tooltip do badge */
+    .rating-badge .rb-popup {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      background: #0d1b2e;
+      border: 1px solid rgba(251,191,36,.3);
+      border-radius: 12px;
+      padding: 10px 14px;
+      min-width: 170px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.6);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .rating-badge:hover .rb-popup { display: block; }
+    .rating-badge .rb-popup::after {
+      content: '';
+      position: absolute;
+      top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(251,191,36,.3);
+    }
+    .rb-popup .rbp-title {
+      font-size: .7rem; font-weight: 700;
+      color: var(--gold); text-transform: uppercase;
+      letter-spacing: .05em; margin-bottom: 7px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .rb-popup .rbp-row {
+      display: flex; justify-content: space-between;
+      font-size: .78rem; margin-bottom: 3px;
+    }
+    .rb-popup .rbp-key { color: var(--muted); }
+    .rb-popup .rbp-val { font-weight: 700; color: var(--text); }
+    /* filtro dashboard */
+    .dash-filter-bar {
+      max-width: 1280px;
+      margin: 0 auto 18px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .dash-filter-bar .filter-label {
+      font-size: .8rem; font-weight: 700;
+      color: var(--muted); text-transform: uppercase;
+      letter-spacing: .05em; margin-right: 4px;
+    }
+    .dash-fbtn {
+      display: flex; align-items: center; gap: 5px;
+      padding: 6px 13px; border-radius: 10px;
+      border: 1px solid var(--border); background: var(--card);
+      color: var(--muted); font-size: .81rem; font-weight: 600;
+      font-family: 'Inter', sans-serif; cursor: pointer;
+      transition: color .18s, background .18s, border-color .18s, transform .18s;
+    }
+    .dash-fbtn:hover { color: var(--gold); border-color: rgba(251,191,36,.3); background: rgba(251,191,36,.06); transform: translateY(-1px); }
+    .dash-fbtn.fa  { color: var(--blue); border-color: rgba(56,189,248,.35); background: rgba(56,189,248,.08); }
+    .dash-fbtn.fac { color: var(--gold); border-color: rgba(251,191,36,.4); background: rgba(251,191,36,.1); }
+    .dash-filter-divider { width: 1px; height: 22px; background: var(--border); margin: 0 2px; }
+    .game-card[data-hidden="true"] { display: none; }
+    .no-dash-results {
+      display: none; grid-column: 1/-1;
+      text-align: center; padding: 50px 20px;
+    }
+    .no-dash-results p { color: var(--muted); margin-bottom: 14px; font-size: .9rem; }
 
     .btn-add {
       width: 100%;
@@ -390,11 +486,33 @@
     Exibindo <span>{{ games|length }}</span> resultado(s) para
     "<span>{{ request.query_params.get('search', '') }}</span>"
   </div>
+
+  <!-- Filtros de avaliação RAWG/Steam para resultados da busca -->
+  <div class="dash-filter-bar" id="dash-filter-bar">
+    <span class="filter-label"><i class="fa-brands fa-steam" style="color:#66c0f4"></i> Filtrar por nota Steam:</span>
+    <button class="dash-fbtn fa" id="dfilter-all" onclick="dashFilter('all')">
+      <i class="fa-solid fa-layer-group"></i> Todos
+    </button>
+    <div class="dash-filter-divider"></div>
+    <button class="dash-fbtn" id="dfilter-4" onclick="dashFilter(4)">
+      ★★★★+ &nbsp;<span style="opacity:.7;font-size:.75rem">(≥ 4.0)</span>
+    </button>
+    <button class="dash-fbtn" id="dfilter-3" onclick="dashFilter(3)">
+      ★★★+ &nbsp;<span style="opacity:.7;font-size:.75rem">(≥ 3.0)</span>
+    </button>
+    <button class="dash-fbtn" id="dfilter-2" onclick="dashFilter(2)">
+      ★★+ &nbsp;<span style="opacity:.7;font-size:.75rem">(≥ 2.0)</span>
+    </button>
+    <div class="dash-filter-divider"></div>
+    <button class="dash-fbtn" id="dfilter-nr" onclick="dashFilter('nr')" style="font-size:.79rem">
+      <i class="fa-regular fa-star"></i> Sem nota
+    </button>
+  </div>
   {% endif %}
 
   <div class="game-grid" id="game-grid">
     {% for game in games %}
-    <div class="game-card" id="card-{{ game.id }}">
+    <div class="game-card" id="card-{{ game.id }}" data-rawg-rating="{{ game.rating or 0 }}">
       <img
         class="game-card-img"
         src="{{ game.background_image or 'https://via.placeholder.com/300x150/0f172a/38bdf8?text=Sem+Imagem' }}"
@@ -407,9 +525,45 @@
           <i class="fa-regular fa-calendar"></i>
           {{ game.released or 'Data desconhecida' }}
         </div>
+        <!-- Badge de avaliação Steam/RAWG com tooltip ao hover -->
         {% if game.rating %}
+        {% set r = game.rating | float %}
+        {% set filled = (r + 0.5) | int %}
         <div class="game-card-rating">
-          <i class="fa-solid fa-star"></i> {{ game.rating }}/5
+          <div class="rating-badge">
+            <i class="fa-brands fa-steam" style="color:#66c0f4;font-size:.78rem"></i>
+            <span class="rb-stars">
+              {% for i in range(1,6) %}
+                <span class="rs{% if i <= filled %} on{% endif %}">★</span>
+              {% endfor %}
+            </span>
+            <span>{{ "%.2f"|format(r) }}/5</span>
+            <!-- Tooltip popup -->
+            <div class="rb-popup">
+              <div class="rbp-title"><i class="fa-brands fa-steam"></i> Avaliação Steam / RAWG</div>
+              <div class="rbp-row">
+                <span class="rbp-key">Nota:</span>
+                <span class="rbp-val" style="color:var(--gold)">{{ "%.2f"|format(r) }} / 5</span>
+              </div>
+              <div class="rbp-row">
+                <span class="rbp-key">Estrelas:</span>
+                <span class="rbp-val">
+                  {% for i in range(1,6) %}{% if i <= filled %}★{% else %}☆{% endif %}{% endfor %}
+                </span>
+              </div>
+              {% if game.ratings_count %}
+              <div class="rbp-row">
+                <span class="rbp-key">Votos:</span>
+                <span class="rbp-val">{{ game.ratings_count }}</span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <div class="game-card-rating" style="color:var(--muted);font-size:.78rem">
+          <i class="fa-brands fa-steam" style="color:#66c0f4"></i>
+          <span>Sem avaliação</span>
         </div>
         {% endif %}
         <button
@@ -428,6 +582,14 @@
       <p>Digite o nome de um jogo acima para começar sua busca</p>
     </div>
     {% endfor %}
+
+    <!-- Sem resultados no filtro -->
+    <div class="no-dash-results" id="no-dash-results">
+      <p>Nenhum jogo encontrado com essa faixa de avaliação.</p>
+      <button class="dash-fbtn fa" onclick="dashFilter('all')">
+        <i class="fa-solid fa-layer-group"></i> Ver todos
+      </button>
+    </div>
   </div>
 
   <div class="toast-container" id="toast-container"></div>
@@ -540,6 +702,42 @@
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-plus"></i> Adicionar à Lista';
         showToast('❌ Erro de conexão.', 'error');
+      }
+    }
+
+    // ====== Filtro por nota Steam/RAWG ======
+    function dashFilter(val) {
+      // Atualiza botões
+      document.querySelectorAll('.dash-fbtn').forEach(b => b.classList.remove('fa', 'fac'));
+      if (val === 'all') {
+        document.getElementById('dfilter-all').classList.add('fa');
+      } else if (val === 'nr') {
+        document.getElementById('dfilter-nr').classList.add('fac');
+      } else {
+        const btn = document.getElementById('dfilter-' + val);
+        if (btn) btn.classList.add('fac');
+      }
+
+      // Filtra cards
+      const cards = document.querySelectorAll('.game-card[data-rawg-rating]');
+      cards.forEach(card => {
+        const r = parseFloat(card.dataset.rawgRating) || 0;
+        let show = false;
+        if (val === 'all') {
+          show = true;
+        } else if (val === 'nr') {
+          show = (r === 0);
+        } else {
+          show = (r >= val);
+        }
+        card.setAttribute('data-hidden', show ? 'false' : 'true');
+      });
+
+      // Mensagem sem resultados
+      const noRes = document.getElementById('no-dash-results');
+      if (noRes) {
+        const visible = document.querySelectorAll('.game-card[data-hidden="false"]').length;
+        noRes.style.display = (visible === 0 && cards.length > 0) ? 'block' : 'none';
       }
     }
 
