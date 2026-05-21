@@ -85,6 +85,7 @@ class User(BaseModel):
     date_of_birth: str | None = None
     profile_bio: str | None = None
     disabled: bool | None = None
+    is_admin: bool = False
 
 
 class AdminUserCreate(BaseModel):
@@ -189,6 +190,18 @@ async def get_current_active_user(
 ):
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Usuário desativado")
+    return current_user
+
+
+async def get_current_admin(
+    current_user: Annotated[UserTable, Depends(get_current_active_user)],
+):
+    """Exige que o usuário autenticado seja administrador."""
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Acesso negado: área restrita a administradores.",
+        )
     return current_user
 
 
@@ -409,6 +422,7 @@ async def read_users_me(
         date_of_birth=current_user.date_of_birth,
         profile_bio=current_user.profile_bio,
         disabled=current_user.disabled,
+        is_admin=current_user.is_admin or False,
     )
 
 
@@ -551,22 +565,30 @@ async def rate_game(
 
 
 @app.get("/admin/usuarios")
-async def admin_list_users(db: Session = Depends(get_db)):
+async def admin_list_users(
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_admin),
+):
     users = db.query(UserTable).all()
     return [
         {
             "usuario": u.username,
             "nome": u.full_name or "",
             "email": u.email or "",
-            "tipo": "user",
+            "tipo": "admin" if u.is_admin else "user",
             "ativo": not u.disabled,
+            "is_admin": u.is_admin or False,
         }
         for u in users
     ]
 
 
 @app.post("/admin/cadastro")
-async def admin_create_user(payload: AdminUserCreate, db: Session = Depends(get_db)):
+async def admin_create_user(
+    payload: AdminUserCreate,
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_admin),
+):
     ADMIN_MASTER_CODE = "mgl-admin-2025"
     if payload.codigo != ADMIN_MASTER_CODE:
         raise HTTPException(status_code=403, detail="Código mestre inválido")
@@ -580,6 +602,7 @@ async def admin_create_user(payload: AdminUserCreate, db: Session = Depends(get_
         email=f"{payload.usuario}@admin.local",
         hashed_password=get_password_hash(payload.senha),
         disabled=False,
+        is_admin=(payload.tipo == "admin"),
     )
     db.add(new_user)
     db.commit()
@@ -588,7 +611,10 @@ async def admin_create_user(payload: AdminUserCreate, db: Session = Depends(get_
 
 @app.put("/admin/usuarios/{username}")
 async def admin_update_user(
-    username: str, payload: AdminUserUpdate, db: Session = Depends(get_db)
+    username: str,
+    payload: AdminUserUpdate,
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_admin),
 ):
     user = db.query(UserTable).filter(UserTable.username == username).first()
     if not user:
@@ -601,7 +627,10 @@ async def admin_update_user(
 
 @app.patch("/admin/usuarios/{username}/status")
 async def admin_toggle_user_status(
-    username: str, payload: AdminStatusUpdate, db: Session = Depends(get_db)
+    username: str,
+    payload: AdminStatusUpdate,
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_admin),
 ):
     user = db.query(UserTable).filter(UserTable.username == username).first()
     if not user:
@@ -612,13 +641,63 @@ async def admin_toggle_user_status(
 
 
 @app.delete("/admin/usuarios/{username}")
-async def admin_delete_user(username: str, db: Session = Depends(get_db)):
+async def admin_delete_user(
+    username: str,
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_admin),
+):
     user = db.query(UserTable).filter(UserTable.username == username).first()
     if not user:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    # Não permite excluir a si mesmo
+    if user.username == current_user.username:
+        raise HTTPException(status_code=400, detail="Não é possível excluir sua própria conta")
     db.delete(user)
     db.commit()
     return {"message": "Usuário excluído"}
+
+
+class AdminToggleAdmin(BaseModel):
+    is_admin: bool
+
+
+@app.patch("/admin/usuarios/{username}/toggle-admin")
+async def admin_toggle_admin(
+    username: str,
+    payload: AdminToggleAdmin,
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_admin),
+):
+    user = db.query(UserTable).filter(UserTable.username == username).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    # Não permite rebaixar a si mesmo
+    if user.username == current_user.username and not payload.is_admin:
+        raise HTTPException(status_code=400, detail="Não é possível remover seus próprios privilégios de admin")
+    user.is_admin = payload.is_admin
+    db.commit()
+    action = "promovido a administrador" if payload.is_admin else "removido de administrador"
+    return {"message": f"Usuário {username} {action}."}
+
+
+class PromoteAdminRequest(BaseModel):
+    codigo: str
+
+
+@app.post("/api/admin/promote-self")
+async def promote_self_to_admin(
+    payload: PromoteAdminRequest,
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_active_user),
+):
+    """Permite que um usuário se torne admin informando o código mestre.
+    Útil para configurar o primeiro admin do sistema."""
+    ADMIN_MASTER_CODE = "mgl-admin-2025"
+    if payload.codigo != ADMIN_MASTER_CODE:
+        raise HTTPException(status_code=403, detail="Código mestre inválido")
+    current_user.is_admin = True
+    db.commit()
+    return {"message": f"Parabéns, {current_user.username} agora é administrador!"}
 
 
 # ─────────────────────────────────────────────────────────────────────────────

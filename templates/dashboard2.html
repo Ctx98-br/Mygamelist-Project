@@ -440,6 +440,9 @@
       <a href="/my-list"   class="nav-link"><i class="fa-solid fa-list"></i> Minha Lista</a>
       <a href="/forum"     class="nav-link"><i class="fa-solid fa-comments"></i> Fórum</a>
       <a href="/perfil"    class="nav-link"><i class="fa-solid fa-user"></i> Perfil</a>
+      <a href="/admin"     class="nav-link" id="admin-link" style="display:none;color:var(--purple)">
+        <i class="fa-solid fa-shield-halved"></i> Admin
+      </a>
     </div>
     <div class="nav-user">
       <span id="user-display">Carregando...</span>
@@ -608,6 +611,11 @@
         const data = await res.json();
         document.getElementById('user-display').textContent =
           'Olá, ' + (data.full_name || data.username);
+        // Exibe link Admin se for administrador
+        if (data.is_admin) {
+          const adminLink = document.getElementById('admin-link');
+          if (adminLink) adminLink.style.display = '';
+        }
       } catch (_e) {
         document.getElementById('user-display').textContent = 'Usuário';
       }

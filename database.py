@@ -21,13 +21,14 @@ Base = declarative_base()
 # ── Usuários ──────────────────────────────────────────────────────────────────
 class UserTable(Base):
     __tablename__ = "users"
-    username      = Column(String,  primary_key=True, index=True)
-    email         = Column(String,  unique=True, index=True)
-    full_name     = Column(String)
+    username        = Column(String,  primary_key=True, index=True)
+    email           = Column(String,  unique=True, index=True)
+    full_name       = Column(String)
     hashed_password = Column(String)
-    disabled      = Column(Boolean, default=False)
-    date_of_birth = Column(String,  nullable=True)
-    profile_bio   = Column(String,  nullable=True)
+    disabled        = Column(Boolean, default=False)
+    date_of_birth   = Column(String,  nullable=True)
+    profile_bio     = Column(String,  nullable=True)
+    is_admin        = Column(Boolean, default=False, nullable=False)
 
 
 # ── Jogos do usuário ──────────────────────────────────────────────────────────
@@ -116,3 +117,4 @@ _safe_add_column("forum_posts",     "is_anonymous", "BOOLEAN NOT NULL DEFAULT FA
 _safe_add_column("forum_comments",  "is_anonymous", "BOOLEAN NOT NULL DEFAULT FALSE")
 _safe_add_column("users",           "date_of_birth", "VARCHAR")
 _safe_add_column("users",           "profile_bio", "VARCHAR")
+_safe_add_column("users",           "is_admin", "BOOLEAN NOT NULL DEFAULT FALSE")

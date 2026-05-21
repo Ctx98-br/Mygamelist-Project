@@ -26,11 +26,7 @@
       --grad: linear-gradient(135deg, #38bdf8, #818cf8);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Inter', sans-serif;
@@ -44,106 +40,96 @@
 
     /* NAV */
     nav {
-      position: sticky;
-      top: 0;
-      z-index: 50;
+      position: sticky; top: 0; z-index: 50;
       background: rgba(5, 8, 22, .85);
       backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border);
-      padding: 0 24px;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      padding: 0 24px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
     }
-
     .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 800;
-      font-size: 1.15rem;
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 800; font-size: 1.15rem;
       background: var(--grad);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
-
-    .nav-brand i {
-      -webkit-text-fill-color: var(--blue);
+    .nav-brand i { -webkit-text-fill-color: var(--purple); }
+    .nav-right { display: flex; gap: 8px; align-items: center; }
+    .nav-link-back {
+      color: var(--muted); text-decoration: none;
+      font-size: .85rem; font-weight: 600;
+      padding: 8px 12px; border-radius: 10px;
+      transition: color .2s, background .2s;
     }
-
+    .nav-link-back:hover { color: var(--blue); background: rgba(56,189,248,.08); }
+    .nav-user-tag {
+      display: flex; align-items: center; gap: 6px;
+      font-size: .82rem; font-weight: 700; color: var(--purple);
+      background: rgba(129,140,248,.1); border: 1px solid rgba(129,140,248,.2);
+      border-radius: 10px; padding: 6px 12px;
+    }
     .btn-nav {
-      border: none;
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-size: .85rem;
-      font-weight: 700;
-      font-family: 'Inter', sans-serif;
-      cursor: pointer;
+      border: none; padding: 8px 14px; border-radius: 10px;
+      font-size: .85rem; font-weight: 700; font-family: 'Inter', sans-serif;
+      cursor: pointer; transition: transform .18s, filter .18s;
+    }
+    .btn-nav:hover { transform: translateY(-1px); filter: brightness(1.1); }
+    .btn-logout { background: rgba(248, 113, 113, .15); color: var(--danger); border: 1px solid rgba(248,113,113,.2); }
+
+    /* ACCESS DENIED */
+    .access-denied {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      text-align: center;
+      padding: 40px;
+    }
+    .access-denied .icon { font-size: 4rem; margin-bottom: 20px; opacity: .5; }
+    .access-denied h2 { font-size: 1.6rem; font-weight: 800; color: var(--danger); margin-bottom: 10px; }
+    .access-denied p { color: var(--muted); margin-bottom: 24px; }
+    .btn-back {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--grad); color: #fff; text-decoration: none;
+      padding: 12px 24px; border-radius: 12px; font-weight: 700;
       transition: transform .18s, filter .18s;
     }
-
-    .btn-nav:hover {
-      transform: translateY(-1px);
-      filter: brightness(1.1);
-    }
-
-    .btn-logout {
-      background: rgba(248, 113, 113, .15);
-      color: var(--danger);
-      border: 1px solid rgba(248, 113, 113, .2);
-    }
+    .btn-back:hover { transform: translateY(-2px); filter: brightness(1.08); }
 
     /* CONTAINER */
-    .container {
-      max-width: 1320px;
-      margin: 0 auto;
-      padding: 36px 24px;
-    }
+    .container { max-width: 1320px; margin: 0 auto; padding: 36px 24px; }
 
-    .page-title {
-      margin-bottom: 28px;
-    }
-
+    .page-title { margin-bottom: 28px; }
     .page-title h1 {
-      font-size: 2rem;
-      font-weight: 800;
+      font-size: 2rem; font-weight: 800;
       background: var(--grad);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       margin-bottom: 6px;
     }
-
-    .page-title p {
-      color: var(--muted);
-    }
+    .page-title p { color: var(--muted); }
 
     /* STATS */
     .stats-row {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 14px;
       margin-bottom: 28px;
     }
-
     .stat-card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 18px;
       padding: 20px 24px;
+      display: flex; align-items: center; gap: 14px;
     }
-
-    .stat-card b {
-      display: block;
-      font-size: 1.8rem;
-      font-weight: 800;
-      color: var(--blue);
+    .stat-card .stat-icon {
+      font-size: 1.5rem; width: 42px; height: 42px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 12px;
     }
-
-    .stat-card span {
-      color: var(--muted);
-      font-size: .85rem;
-    }
+    .stat-card b { display: block; font-size: 1.8rem; font-weight: 800; color: var(--blue); }
+    .stat-card span { color: var(--muted); font-size: .85rem; }
 
     /* GRID */
     .grid {
@@ -160,281 +146,125 @@
       border-radius: 22px;
       padding: 28px;
     }
-
-    .card h2 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    .card>p {
-      color: var(--muted);
-      font-size: .88rem;
-      margin-bottom: 20px;
-    }
+    .card h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 6px; }
+    .card > p { color: var(--muted); font-size: .88rem; margin-bottom: 20px; }
 
     /* FORM */
-    .field {
-      margin-bottom: 16px;
-    }
-
+    .field { margin-bottom: 16px; }
     label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: .82rem;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .04em;
+      display: block; margin-bottom: 8px;
+      font-size: .82rem; font-weight: 600;
+      color: var(--muted); text-transform: uppercase; letter-spacing: .04em;
     }
-
-    input,
-    select {
+    input, select {
       width: 100%;
       background: var(--card-b);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 14px;
-      color: var(--text);
-      font-size: .95rem;
+      border-radius: 12px; padding: 12px 14px;
+      color: var(--text); font-size: .95rem;
       font-family: 'Inter', sans-serif;
       transition: border-color .2s, box-shadow .2s;
     }
-
-    input:focus,
-    select:focus {
-      outline: none;
-      border-color: var(--blue);
+    input:focus, select:focus {
+      outline: none; border-color: var(--blue);
       box-shadow: 0 0 0 4px rgba(56, 189, 248, .1);
     }
-
-    select option {
-      background: var(--card);
-    }
-
+    select option { background: var(--card); }
     .btn-submit {
-      width: 100%;
-      border: none;
-      border-radius: 12px;
-      padding: 13px;
-      background: var(--grad);
-      color: #fff;
-      font-size: .95rem;
-      font-weight: 700;
-      font-family: 'Inter', sans-serif;
-      cursor: pointer;
-      transition: transform .18s, filter .18s;
+      width: 100%; border: none; border-radius: 12px; padding: 13px;
+      background: var(--grad); color: #fff;
+      font-size: .95rem; font-weight: 700; font-family: 'Inter', sans-serif;
+      cursor: pointer; transition: transform .18s, filter .18s;
       box-shadow: 0 8px 20px rgba(56, 189, 248, .2);
     }
-
-    .btn-submit:hover {
-      transform: translateY(-2px);
-      filter: brightness(1.08);
-    }
-
+    .btn-submit:hover { transform: translateY(-2px); filter: brightness(1.08); }
     .msg {
-      margin-top: 12px;
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-size: .88rem;
-      font-weight: 600;
-      display: none;
+      margin-top: 12px; padding: 10px 14px; border-radius: 10px;
+      font-size: .88rem; font-weight: 600; display: none;
     }
+    .msg.success { display: block; color: var(--green); background: rgba(52,211,153,.1); border: 1px solid rgba(52,211,153,.2); }
+    .msg.error   { display: block; color: var(--danger); background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.2); }
 
-    .msg.success {
-      display: block;
-      color: var(--green);
-      background: rgba(52, 211, 153, .1);
-      border: 1px solid rgba(52, 211, 153, .2);
+    /* PROMOTE SECTION */
+    .promote-section {
+      margin-top: 24px; padding-top: 20px;
+      border-top: 1px solid var(--border);
     }
-
-    .msg.error {
-      display: block;
-      color: var(--danger);
-      background: rgba(248, 113, 113, .1);
-      border: 1px solid rgba(248, 113, 113, .2);
+    .promote-section h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; color: var(--gold); }
+    .promote-section p  { color: var(--muted); font-size: .83rem; margin-bottom: 14px; }
+    .btn-promote {
+      width: 100%; border: 1px solid rgba(251,191,36,.2);
+      border-radius: 12px; padding: 11px;
+      background: rgba(251,191,36,.1); color: var(--gold);
+      font-size: .9rem; font-weight: 700; font-family: 'Inter', sans-serif;
+      cursor: pointer; transition: background .18s, transform .18s;
     }
+    .btn-promote:hover { background: rgba(251,191,36,.18); transform: translateY(-1px); }
 
     /* TABLE */
-    .search-row {
-      margin-bottom: 14px;
-    }
-
-    .search-row input {
-      max-width: 320px;
-    }
-
-    .table-wrap {
-      overflow-x: auto;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    thead {
-      background: var(--card-b);
-    }
-
+    .search-row { margin-bottom: 14px; }
+    .search-row input { max-width: 320px; }
+    .table-wrap { overflow-x: auto; border-radius: 14px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: var(--card-b); }
     th {
-      padding: 12px 16px;
-      text-align: left;
-      font-size: .78rem;
-      font-weight: 700;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .05em;
+      padding: 12px 16px; text-align: left;
+      font-size: .78rem; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .05em;
       border-bottom: 1px solid var(--border);
     }
-
     td {
-      padding: 14px 16px;
-      font-size: .88rem;
+      padding: 14px 16px; font-size: .88rem;
       border-bottom: 1px solid rgba(255, 255, 255, .04);
       vertical-align: middle;
     }
-
-    tbody tr:last-child td {
-      border-bottom: none;
-    }
-
-    tbody tr:hover {
-      background: rgba(255, 255, 255, .02);
-    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: rgba(255, 255, 255, .02); }
 
     .badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: .75rem;
-      font-weight: 700;
+      display: inline-block; padding: 4px 10px;
+      border-radius: 999px; font-size: .75rem; font-weight: 700;
     }
+    .badge-user    { background: rgba(56,189,248,.15);  color: var(--blue); }
+    .badge-admin   { background: rgba(129,140,248,.15); color: var(--purple); }
+    .badge-active  { background: rgba(52,211,153,.15);  color: var(--green); }
+    .badge-off     { background: rgba(248,113,113,.15); color: var(--danger); }
 
-    .badge-user {
-      background: rgba(56, 189, 248, .15);
-      color: var(--blue);
-    }
+    .email-cell { color: var(--muted); font-size: .82rem; }
 
-    .badge-admin {
-      background: rgba(129, 140, 248, .15);
-      color: var(--purple);
-    }
-
-    .badge-active {
-      background: rgba(52, 211, 153, .15);
-      color: var(--green);
-    }
-
-    .badge-off {
-      background: rgba(248, 113, 113, .15);
-      color: var(--danger);
-    }
-
-    .act-btns {
-      display: flex;
-      gap: 6px;
-    }
-
+    .act-btns { display: flex; gap: 6px; flex-wrap: wrap; }
     .btn-sm {
-      border: none;
-      padding: 7px 10px;
-      border-radius: 9px;
-      font-size: .78rem;
-      font-weight: 700;
-      font-family: 'Inter', sans-serif;
-      cursor: pointer;
-      transition: transform .15s, filter .15s;
+      border: none; padding: 7px 10px; border-radius: 9px;
+      font-size: .78rem; font-weight: 700; font-family: 'Inter', sans-serif;
+      cursor: pointer; transition: transform .15s, filter .15s;
     }
-
-    .btn-sm:hover {
-      transform: translateY(-1px);
-      filter: brightness(1.1);
-    }
-
-    .btn-edit {
-      background: rgba(56, 189, 248, .15);
-      color: var(--blue);
-    }
-
-    .btn-toggle {
-      background: rgba(251, 191, 36, .15);
-      color: var(--gold);
-    }
-
-    .btn-del {
-      background: rgba(248, 113, 113, .15);
-      color: var(--danger);
-    }
+    .btn-sm:hover { transform: translateY(-1px); filter: brightness(1.1); }
+    .btn-edit   { background: rgba(56,189,248,.15);  color: var(--blue); }
+    .btn-toggle { background: rgba(251,191,36,.15);  color: var(--gold); }
+    .btn-promo  { background: rgba(129,140,248,.15); color: var(--purple); }
+    .btn-del    { background: rgba(248,113,113,.15); color: var(--danger); }
 
     /* TOAST */
-    .toast-container {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 999;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
+    .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
     .toast {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px 18px;
-      font-size: .9rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, .4);
-      animation: slideIn .3s ease;
-      max-width: 320px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px 18px;
+      font-size: .9rem; font-weight: 600;
+      display: flex; align-items: center; gap: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.4);
+      animation: slideIn .3s ease; max-width: 320px;
     }
-
-    .toast.success {
-      border-color: rgba(52, 211, 153, .3);
-      color: var(--green);
-    }
-
-    .toast.error {
-      border-color: rgba(248, 113, 113, .3);
-      color: var(--danger);
-    }
-
-    @keyframes slideIn {
-      from {
-        transform: translateX(100%);
-        opacity: 0;
-      }
-
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
-    }
+    .toast.success { border-color: rgba(52,211,153,.3); color: var(--green); }
+    .toast.error   { border-color: rgba(248,113,113,.3); color: var(--danger); }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
     @media(max-width:1050px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-
-      .stats-row {
-        grid-template-columns: 1fr 1fr;
-      }
+      .grid { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
     }
-
     @media(max-width:600px) {
-      .stats-row {
-        grid-template-columns: 1fr;
-      }
-
-      nav {
-        padding: 0 14px;
-      }
+      .stats-row { grid-template-columns: 1fr; }
+      nav { padding: 0 14px; }
     }
   </style>
 </head>
@@ -443,11 +273,13 @@
 
   <nav>
     <div class="nav-brand"><i class="fa-solid fa-shield-halved"></i> Admin | MyGameList</div>
-    <div style="display:flex;gap:8px;align-items:center;">
-      <a href="/dashboard"
-        style="color:var(--muted);text-decoration:none;font-size:.85rem;font-weight:600;padding:8px 12px;border-radius:10px;transition:.2s;"
-        onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--muted)'">
-        <i class="fa-solid fa-arrow-left"></i> Voltar
+    <div class="nav-right">
+      <span class="nav-user-tag" id="admin-tag" style="display:none">
+        <i class="fa-solid fa-user-shield"></i>
+        <span id="admin-name">Admin</span>
+      </span>
+      <a href="/dashboard" class="nav-link-back">
+        <i class="fa-solid fa-arrow-left"></i> Voltar ao App
       </a>
       <button class="btn-nav btn-logout" onclick="logout()">
         <i class="fa-solid fa-right-from-bracket"></i> Sair
@@ -455,7 +287,16 @@
     </div>
   </nav>
 
-  <div class="container">
+  <!-- Acesso negado (mostrado se não for admin) -->
+  <div class="access-denied" id="access-denied">
+    <div class="icon">🔒</div>
+    <h2>Acesso Negado</h2>
+    <p>Você não tem permissão para acessar o painel administrativo.</p>
+    <a href="/dashboard" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Voltar ao Dashboard</a>
+  </div>
+
+  <!-- Conteúdo admin (oculto até verificar permissão) -->
+  <div class="container" id="admin-content" style="display:none">
 
     <div class="page-title">
       <h1><i class="fa-solid fa-shield-halved"></i> Painel Administrativo</h1>
@@ -463,9 +304,22 @@
     </div>
 
     <div class="stats-row">
-      <div class="stat-card"><b id="totalUsuarios">–</b><span>Total de usuários</span></div>
-      <div class="stat-card"><b id="totalAtivos">–</b><span>Usuários ativos</span></div>
-      <div class="stat-card"><b id="totalDesativados">–</b><span>Desativados</span></div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(56,189,248,.12)"><i class="fa-solid fa-users" style="color:var(--blue)"></i></div>
+        <div><b id="totalUsuarios">–</b><span>Total de usuários</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(52,211,153,.12)"><i class="fa-solid fa-circle-check" style="color:var(--green)"></i></div>
+        <div><b id="totalAtivos">–</b><span>Usuários ativos</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(248,113,113,.12)"><i class="fa-solid fa-ban" style="color:var(--danger)"></i></div>
+        <div><b id="totalDesativados">–</b><span>Desativados</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(129,140,248,.12)"><i class="fa-solid fa-user-shield" style="color:var(--purple)"></i></div>
+        <div><b id="totalAdmins">–</b><span>Administradores</span></div>
+      </div>
     </div>
 
     <div class="grid">
@@ -498,11 +352,29 @@
             <label for="codigo">Código Mestre</label>
             <input id="codigo" type="password" placeholder="Código de autorização" required />
           </div>
-          <button type="submit" class="btn-submit">
+          <button type="submit" class="btn-submit" id="btn-cadastrar">
             <i class="fa-solid fa-floppy-disk"></i> Cadastrar
           </button>
           <div id="msg" class="msg"></div>
         </form>
+
+        <!-- Seção: Promover admin -->
+        <div class="promote-section">
+          <h3><i class="fa-solid fa-crown"></i> Promover a Administrador</h3>
+          <p>Promova um usuário já existente a administrador informando o código mestre.</p>
+          <div class="field">
+            <label for="promote-user">Usuário</label>
+            <input id="promote-user" placeholder="Nome de usuário" />
+          </div>
+          <div class="field">
+            <label for="promote-code">Código Mestre</label>
+            <input id="promote-code" type="password" placeholder="Código de autorização" />
+          </div>
+          <button class="btn-promote" onclick="promoverAdmin()">
+            <i class="fa-solid fa-user-shield"></i> Promover a Admin
+          </button>
+          <div id="msg-promote" class="msg"></div>
+        </div>
       </section>
 
       <!-- LISTAGEM -->
@@ -510,7 +382,7 @@
         <h2><i class="fa-solid fa-users"></i> Usuários Cadastrados</h2>
         <p>Visualize, edite e gerencie todas as contas registradas.</p>
         <div class="search-row">
-          <input id="busca" placeholder="Pesquisar por usuário ou nome..." oninput="filtrar()" />
+          <input id="busca" placeholder="Pesquisar por usuário, nome ou e-mail..." oninput="filtrar()" />
         </div>
         <div class="table-wrap">
           <table>
@@ -518,13 +390,15 @@
               <tr>
                 <th>Nome</th>
                 <th>Usuário</th>
+                <th>E-mail</th>
+                <th>Tipo</th>
                 <th>Status</th>
                 <th>Ações</th>
               </tr>
             </thead>
             <tbody id="listaUsuarios">
               <tr>
-                <td colspan="4" style="text-align:center;color:var(--muted);padding:28px;">Carregando...</td>
+                <td colspan="6" style="text-align:center;color:var(--muted);padding:28px;">Carregando...</td>
               </tr>
             </tbody>
           </table>
@@ -537,100 +411,148 @@
   <div class="toast-container" id="toast-container"></div>
 
   <script>
-    const form = document.getElementById('formCadastro');
-    const msg = document.getElementById('msg');
+    const form  = document.getElementById('formCadastro');
+    const msg   = document.getElementById('msg');
     const lista = document.getElementById('listaUsuarios');
-    let cacheUsuarios = [];
+    let cacheUsuarios  = [];
+    let currentUsername = '';
 
-    window.addEventListener('load', carregarUsuarios);
+    // ====== Verificar autenticação e permissão de admin ======
+    async function checkAuth() {
+      const token = localStorage.getItem('access_token');
+      if (!token) { window.location.href = '/login'; return; }
+
+      try {
+        const res  = await fetch('/users/me/', { headers: { 'Authorization': 'Bearer ' + token } });
+        if (!res.ok) { logout(); return; }
+        const data = await res.json();
+
+        currentUsername = data.username;
+
+        if (!data.is_admin) {
+          // Não é admin — mostrar tela de acesso negado
+          document.getElementById('access-denied').style.display = 'flex';
+          return;
+        }
+
+        // É admin — mostrar conteúdo
+        document.getElementById('admin-tag').style.display = 'flex';
+        document.getElementById('admin-name').textContent   = data.full_name || data.username;
+        document.getElementById('admin-content').style.display = '';
+        carregarUsuarios();
+      } catch (_e) {
+        logout();
+      }
+    }
 
     // ====== Cadastro ======
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
       msg.className = 'msg';
       msg.textContent = '';
+      const btn = document.getElementById('btn-cadastrar');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Cadastrando...';
 
+      const token   = localStorage.getItem('access_token');
       const payload = {
-        nome: document.getElementById('nome').value,
+        nome:    document.getElementById('nome').value,
         usuario: document.getElementById('usuario').value,
-        senha: document.getElementById('senha').value,
-        tipo: document.getElementById('tipo').value,
-        codigo: document.getElementById('codigo').value,
+        senha:   document.getElementById('senha').value,
+        tipo:    document.getElementById('tipo').value,
+        codigo:  document.getElementById('codigo').value,
       };
 
       try {
-        const res = await fetch('/admin/cadastro', {
+        const res  = await fetch('/admin/cadastro', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
           body: JSON.stringify(payload),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.detail || 'Erro ao cadastrar');
         msg.textContent = '✅ ' + data.message;
-        msg.className = 'msg success';
+        msg.className   = 'msg success';
         form.reset();
         carregarUsuarios();
         showToast('Usuário criado com sucesso!', 'success');
       } catch (err) {
         msg.textContent = '❌ ' + err.message;
-        msg.className = 'msg error';
+        msg.className   = 'msg error';
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Cadastrar';
       }
     });
 
     // ====== Carregar usuários ======
     async function carregarUsuarios() {
+      const token = localStorage.getItem('access_token');
       try {
-        const res = await fetch('/admin/usuarios');
+        const res      = await fetch('/admin/usuarios', { headers: { 'Authorization': 'Bearer ' + token } });
+        if (!res.ok) throw new Error();
         const usuarios = await res.json();
-        cacheUsuarios = usuarios;
+        cacheUsuarios  = usuarios;
 
-        document.getElementById('totalUsuarios').textContent = usuarios.length;
-        document.getElementById('totalAtivos').textContent = usuarios.filter(u => u.ativo).length;
-        document.getElementById('totalDesativados').textContent = usuarios.filter(u => !u.ativo).length;
+        document.getElementById('totalUsuarios').textContent   = usuarios.length;
+        document.getElementById('totalAtivos').textContent     = usuarios.filter(u => u.ativo).length;
+        document.getElementById('totalDesativados').textContent= usuarios.filter(u => !u.ativo).length;
+        document.getElementById('totalAdmins').textContent     = usuarios.filter(u => u.is_admin).length;
 
         renderTabela(usuarios);
       } catch (_e) {
-        lista.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted)">Erro ao carregar usuários.</td></tr>';
+        lista.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted)">Erro ao carregar usuários.</td></tr>';
       }
     }
 
     function renderTabela(usuarios) {
       if (!usuarios.length) {
-        lista.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:28px;">Nenhum usuário encontrado.</td></tr>';
+        lista.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:28px;">Nenhum usuário encontrado.</td></tr>';
         return;
       }
       lista.innerHTML = usuarios.map(u => `
-    <tr>
-      <td><strong>${u.nome || '—'}</strong></td>
-      <td><span style="color:var(--blue);font-weight:600">@${u.usuario}</span></td>
-      <td>
-        <span class="badge ${u.ativo ? 'badge-active' : 'badge-off'}">
-          ${u.ativo ? 'Ativo' : 'Desativado'}
-        </span>
-      </td>
-      <td>
-        <div class="act-btns">
-          <button class="btn-sm btn-edit"   onclick="editarUsuario('${u.usuario}')">
-            <i class="fa-solid fa-pen"></i> Editar
-          </button>
-          <button class="btn-sm btn-toggle" onclick="toggleStatus('${u.usuario}', ${u.ativo})">
-            <i class="fa-solid fa-power-off"></i> ${u.ativo ? 'Desativar' : 'Ativar'}
-          </button>
-          <button class="btn-sm btn-del"    onclick="excluirUsuario('${u.usuario}')">
-            <i class="fa-solid fa-trash"></i>
-          </button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
+        <tr>
+          <td><strong>${u.nome || '—'}</strong></td>
+          <td><span style="color:var(--blue);font-weight:600">@${u.usuario}</span></td>
+          <td class="email-cell">${u.email || '—'}</td>
+          <td>
+            <span class="badge ${u.is_admin ? 'badge-admin' : 'badge-user'}">
+              ${u.is_admin ? '🛡 Admin' : '👤 User'}
+            </span>
+          </td>
+          <td>
+            <span class="badge ${u.ativo ? 'badge-active' : 'badge-off'}">
+              ${u.ativo ? 'Ativo' : 'Desativado'}
+            </span>
+          </td>
+          <td>
+            <div class="act-btns">
+              <button class="btn-sm btn-edit" onclick="editarUsuario('${u.usuario}')">
+                <i class="fa-solid fa-pen"></i> Editar
+              </button>
+              <button class="btn-sm btn-toggle" onclick="toggleStatus('${u.usuario}', ${u.ativo})">
+                <i class="fa-solid fa-power-off"></i> ${u.ativo ? 'Desativar' : 'Ativar'}
+              </button>
+              <button class="btn-sm btn-promo" onclick="toggleAdmin('${u.usuario}', ${u.is_admin})" title="${u.is_admin ? 'Remover admin' : 'Tornar admin'}">
+                <i class="fa-solid fa-user-shield"></i>
+              </button>
+              ${u.usuario !== currentUsername ? `
+              <button class="btn-sm btn-del" onclick="excluirUsuario('${u.usuario}')">
+                <i class="fa-solid fa-trash"></i>
+              </button>` : `<span style="font-size:.72rem;color:var(--muted);padding:4px 6px">você</span>`}
+            </div>
+          </td>
+        </tr>
+      `).join('');
     }
 
     // ====== Filtro ======
     function filtrar() {
-      const termo = document.getElementById('busca').value.toLowerCase();
+      const termo    = document.getElementById('busca').value.toLowerCase();
       const filtrado = cacheUsuarios.filter(u =>
         u.usuario.toLowerCase().includes(termo) ||
-        (u.nome || '').toLowerCase().includes(termo)
+        (u.nome  || '').toLowerCase().includes(termo) ||
+        (u.email || '').toLowerCase().includes(termo)
       );
       renderTabela(filtrado);
     }
@@ -639,10 +561,11 @@
     async function editarUsuario(usuario) {
       const novoNome = prompt('Novo nome completo para @' + usuario + ':');
       if (!novoNome || !novoNome.trim()) return;
+      const token = localStorage.getItem('access_token');
       try {
         const res = await fetch('/admin/usuarios/' + usuario, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
           body: JSON.stringify({ nome: novoNome.trim() }),
         });
         if (!res.ok) throw new Error();
@@ -655,10 +578,11 @@
     async function toggleStatus(usuario, ativoAtual) {
       const acao = ativoAtual ? 'Desativar' : 'Ativar';
       if (!confirm(acao + ' o usuário @' + usuario + '?')) return;
+      const token = localStorage.getItem('access_token');
       try {
         const res = await fetch('/admin/usuarios/' + usuario + '/status', {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
           body: JSON.stringify({ ativo: !ativoAtual }),
         });
         if (!res.ok) throw new Error();
@@ -667,21 +591,76 @@
       } catch (_e) { showToast('Erro ao atualizar status.', 'error'); }
     }
 
+    // ====== Toggle Admin ======
+    async function toggleAdmin(usuario, isAdminAtual) {
+      const acao = isAdminAtual ? 'remover os privilégios de administrador de' : 'tornar administrador';
+      if (!confirm(`Deseja ${acao} @${usuario}?`)) return;
+      const token = localStorage.getItem('access_token');
+      try {
+        const res = await fetch('/admin/usuarios/' + usuario + '/toggle-admin', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({ is_admin: !isAdminAtual }),
+        });
+        if (!res.ok) throw new Error((await res.json()).detail || 'Erro');
+        showToast(isAdminAtual ? 'Admin removido.' : '🛡 Admin concedido!', 'success');
+        carregarUsuarios();
+      } catch (e) { showToast('Erro: ' + e.message, 'error'); }
+    }
+
     // ====== Excluir ======
     async function excluirUsuario(usuario) {
       if (!confirm('Excluir permanentemente @' + usuario + '? Esta ação não pode ser desfeita!')) return;
+      const token = localStorage.getItem('access_token');
       try {
-        const res = await fetch('/admin/usuarios/' + usuario, { method: 'DELETE' });
-        if (!res.ok) throw new Error();
+        const res = await fetch('/admin/usuarios/' + usuario, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + token },
+        });
+        if (!res.ok) throw new Error((await res.json()).detail || 'Erro');
         showToast('Usuário excluído.', 'success');
         carregarUsuarios();
-      } catch (_e) { showToast('Erro ao excluir usuário.', 'error'); }
+      } catch (e) { showToast('Erro: ' + e.message, 'error'); }
+    }
+
+    // ====== Promover Admin (usuário existente) ======
+    async function promoverAdmin() {
+      const usuario = document.getElementById('promote-user').value.trim();
+      const codigo  = document.getElementById('promote-code').value.trim();
+      const msgEl   = document.getElementById('msg-promote');
+      msgEl.className = 'msg'; msgEl.textContent = '';
+
+      if (!usuario || !codigo) {
+        msgEl.textContent = '❌ Preencha o usuário e o código mestre.';
+        msgEl.className = 'msg error'; return;
+      }
+
+      const token = localStorage.getItem('access_token');
+      try {
+        // Usa o toggle-admin via admin API
+        const res  = await fetch('/admin/usuarios/' + usuario + '/toggle-admin', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({ is_admin: true }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Erro');
+        msgEl.textContent = '✅ ' + usuario + ' promovido a administrador!';
+        msgEl.className = 'msg success';
+        document.getElementById('promote-user').value = '';
+        document.getElementById('promote-code').value = '';
+        carregarUsuarios();
+        showToast('🛡 Admin promovido!', 'success');
+      } catch (e) {
+        msgEl.textContent = '❌ ' + e.message;
+        msgEl.className = 'msg error';
+      }
     }
 
     // ====== Toast ======
     function showToast(msg, type = 'success') {
       const container = document.getElementById('toast-container');
-      const toast = document.createElement('div');
+      const toast     = document.createElement('div');
       toast.className = 'toast ' + type;
       toast.textContent = msg;
       container.appendChild(toast);
@@ -694,6 +673,8 @@
       document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       fetch('/logout', { method: 'POST' }).finally(() => { window.location.href = '/login'; });
     }
+
+    checkAuth();
   </script>
 </body>
 
