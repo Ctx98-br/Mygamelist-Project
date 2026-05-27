@@ -220,6 +220,9 @@ nav{
     <a href="/my-list"   class="nav-link"><i class="fa-solid fa-list"></i> Minha Lista</a>
     <a href="/forum"     class="nav-link"><i class="fa-solid fa-comments"></i> Fórum</a>
     <a href="/perfil"    class="nav-link active"><i class="fa-solid fa-user"></i> Perfil</a>
+    <a href="/admin"     class="nav-link" id="admin-link" style="display:none;color:var(--purple)">
+      <i class="fa-solid fa-shield-halved"></i> Admin
+    </a>
   </div>
   <div style="display:flex;align-items:center;gap:10px;">
     <button class="btn-nav btn-logout" onclick="logout()">
@@ -405,6 +408,10 @@ function renderUserInfo(user) {
   document.getElementById('profile-fullname').textContent = user.full_name || user.username;
   document.getElementById('profile-username').textContent = '@' + user.username;
   document.getElementById('profile-bio').textContent = user.profile_bio || 'Sem bio configurada.';
+  if (user.is_admin) {
+    const adminLink = document.getElementById('admin-link');
+    if (adminLink) adminLink.style.display = '';
+  }
 
   document.getElementById('profile-email').innerHTML =
     '<i class="fa-solid fa-envelope"></i> ' + (user.email || '—');

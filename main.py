@@ -408,6 +408,16 @@ async def admin_page(request: Request):
     return templates.TemplateResponse(request=request, name="home-adm.html", context={})
 
 
+@app.get("/home-admin", response_class=RedirectResponse)
+async def redirect_home_admin():
+    return RedirectResponse(url="/admin")
+
+
+@app.get("/home-adm", response_class=RedirectResponse)
+async def redirect_home_adm():
+    return RedirectResponse(url="/admin")
+
+
 # --- ROTAS DE API ---
 
 

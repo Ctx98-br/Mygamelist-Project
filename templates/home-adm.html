@@ -292,7 +292,20 @@
     <div class="icon">🔒</div>
     <h2>Acesso Negado</h2>
     <p>Você não tem permissão para acessar o painel administrativo.</p>
-    <a href="/dashboard" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Voltar ao Dashboard</a>
+    <a href="/dashboard" class="btn-back" style="margin-bottom: 24px;"><i class="fa-solid fa-arrow-left"></i> Voltar ao Dashboard</a>
+
+    <!-- Seção de auto-promoção com Código Mestre -->
+    <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 24px; max-width: 320px; width: 100%;">
+      <h3 style="font-size: 1rem; font-weight: 700; color: var(--gold); margin-bottom: 8px;"><i class="fa-solid fa-crown"></i> Possui o Código Mestre?</h3>
+      <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 16px;">Insira o código de autorização para se promover a administrador.</p>
+      <div class="field" style="margin-bottom: 14px;">
+        <input id="denied-promote-code" type="password" placeholder="Código de autorização" style="text-align: center; border-radius: 10px;" />
+      </div>
+      <button class="btn-promote" onclick="promoverAutoAdmin()" style="width: 100%; border-radius: 10px; padding: 10px;">
+        <i class="fa-solid fa-user-shield"></i> Tornar-se Administrador
+      </button>
+      <div id="msg-denied-promote" class="msg" style="margin-top: 12px;"></div>
+    </div>
   </div>
 
   <!-- Conteúdo admin (oculto até verificar permissão) -->
@@ -672,6 +685,38 @@
       localStorage.removeItem('access_token');
       document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       fetch('/logout', { method: 'POST' }).finally(() => { window.location.href = '/login'; });
+    }
+
+    // ====== Promover Auto Admin ======
+    async function promoverAutoAdmin() {
+      const codigo = document.getElementById('denied-promote-code').value.trim();
+      const msgEl = document.getElementById('msg-denied-promote');
+      msgEl.className = 'msg'; msgEl.textContent = '';
+
+      if (!codigo) {
+        msgEl.textContent = '❌ Preencha o código mestre.';
+        msgEl.className = 'msg error'; return;
+      }
+
+      const token = localStorage.getItem('access_token');
+      try {
+        const res = await fetch('/api/admin/promote-self', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({ codigo }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Erro ao processar');
+        msgEl.textContent = '✅ ' + data.message;
+        msgEl.className = 'msg success';
+        showToast('🛡 Privilégios de admin concedidos!', 'success');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1200);
+      } catch (e) {
+        msgEl.textContent = '❌ ' + e.message;
+        msgEl.className = 'msg error';
+      }
     }
 
     checkAuth();
