@@ -41,6 +41,9 @@ class GameTable(Base):
     owner_username = Column(String, ForeignKey("users.username"))
     rating         = Column(Integer, default=0)
     notes          = Column(Text,    nullable=True)   # ← NOVO: anotações pessoais
+    category       = Column(String,  nullable=True)
+    status         = Column(String,  nullable=True)
+    platform       = Column(String,  nullable=True)
 
 
 # ── Histórico de visualizações (trending + recentes) ─────────────────────────
@@ -115,6 +118,9 @@ def _safe_add_column(table: str, column: str, definition: str):
 
 _safe_add_column("forum_posts",     "is_anonymous", "BOOLEAN NOT NULL DEFAULT FALSE")
 _safe_add_column("forum_comments",  "is_anonymous", "BOOLEAN NOT NULL DEFAULT FALSE")
+_safe_add_column("my_games",        "category", "VARCHAR")
+_safe_add_column("my_games",        "status", "VARCHAR")
+_safe_add_column("my_games",        "platform", "VARCHAR")
 _safe_add_column("users",           "date_of_birth", "VARCHAR")
 _safe_add_column("users",           "profile_bio", "VARCHAR")
 _safe_add_column("users",           "is_admin", "BOOLEAN NOT NULL DEFAULT FALSE")

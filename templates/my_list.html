@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,28 +12,32 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <style>
     :root {
-      --bg:     #050816;
-      --nav:    rgba(5,8,22,.85);
-      --card:   #0f172a;
+      --bg: #050816;
+      --nav: rgba(5, 8, 22, .85);
+      --card: #0f172a;
       --card-b: #1e293b;
-      --text:   #e2e8f0;
-      --muted:  #94a3b8;
-      --border: rgba(255,255,255,.07);
-      --blue:   #38bdf8;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: rgba(255, 255, 255, .07);
+      --blue: #38bdf8;
       --purple: #818cf8;
-      --green:  #34d399;
+      --green: #34d399;
       --danger: #f87171;
-      --gold:   #fbbf24;
-      --grad:   linear-gradient(135deg, #38bdf8, #818cf8);
+      --gold: #fbbf24;
+      --grad: linear-gradient(135deg, #38bdf8, #818cf8);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: 'Inter', sans-serif;
       background:
-        radial-gradient(circle at 15% 10%, rgba(56,189,248,.1) 0%, transparent 30%),
-        radial-gradient(circle at 85% 85%, rgba(129,140,248,.1) 0%, transparent 30%),
+        radial-gradient(circle at 15% 10%, rgba(56, 189, 248, .1) 0%, transparent 30%),
+        radial-gradient(circle at 85% 85%, rgba(129, 140, 248, .1) 0%, transparent 30%),
         var(--bg);
       color: var(--text);
       min-height: 100vh;
@@ -40,37 +45,86 @@
 
     /* ===== NAV ===== */
     nav {
-      position: sticky; top: 0; z-index: 50;
+      position: sticky;
+      top: 0;
+      z-index: 50;
       background: var(--nav);
       backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border);
-      padding: 0 24px; height: 64px;
-      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
+
     .nav-brand {
-      display: flex; align-items: center; gap: 10px;
-      font-weight: 800; font-size: 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.15rem;
       background: var(--grad);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-    .nav-brand i { -webkit-text-fill-color: var(--blue); }
-    .nav-links { display: flex; align-items: center; gap: 8px; }
+
+    .nav-brand i {
+      -webkit-text-fill-color: var(--blue);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .nav-link {
-      padding: 8px 14px; border-radius: 10px;
-      font-size: .88rem; font-weight: 600; color: var(--muted);
-      text-decoration: none; transition: color .2s, background .2s;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: .88rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color .2s, background .2s;
     }
-    .nav-link:hover, .nav-link.active {
-      color: var(--blue); background: rgba(56,189,248,.08);
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--blue);
+      background: rgba(56, 189, 248, .08);
     }
-    .nav-user { display: flex; align-items: center; gap: 10px; font-size: .88rem; font-weight: 600; color: var(--blue); }
+
+    .nav-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: .88rem;
+      font-weight: 600;
+      color: var(--blue);
+    }
+
     .btn-nav {
-      border: none; padding: 8px 14px; border-radius: 10px;
-      font-size: .85rem; font-weight: 700; font-family: 'Inter', sans-serif;
-      cursor: pointer; transition: transform .18s, filter .18s;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: .85rem;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: transform .18s, filter .18s;
     }
-    .btn-nav:hover { transform: translateY(-1px); filter: brightness(1.1); }
-    .btn-logout { background: rgba(248,113,113,.15); color: var(--danger); border: 1px solid rgba(248,113,113,.2); }
+
+    .btn-nav:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.1);
+    }
+
+    .btn-logout {
+      background: rgba(248, 113, 113, .15);
+      color: var(--danger);
+      border: 1px solid rgba(248, 113, 113, .2);
+    }
 
     /* ===== HEADER ===== */
     .page-header {
@@ -83,6 +137,7 @@
       flex-wrap: wrap;
       gap: 16px;
     }
+
     .page-header h1 {
       font-size: 2rem;
       font-weight: 800;
@@ -90,7 +145,11 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-    .page-header p { color: var(--muted); font-size: .9rem; }
+
+    .page-header p {
+      color: var(--muted);
+      font-size: .9rem;
+    }
 
     /* ===== STATS BAR ===== */
     .stats-bar {
@@ -101,6 +160,7 @@
       gap: 14px;
       flex-wrap: wrap;
     }
+
     .stat-chip {
       background: var(--card);
       border: 1px solid var(--border);
@@ -111,8 +171,16 @@
       gap: 8px;
       font-size: .88rem;
     }
-    .stat-chip strong { color: var(--blue); font-size: 1.1rem; font-weight: 800; }
-    .stat-chip span   { color: var(--muted); }
+
+    .stat-chip strong {
+      color: var(--blue);
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    .stat-chip span {
+      color: var(--muted);
+    }
 
     /* ===== FILTER BAR ===== */
     .filter-bar {
@@ -124,6 +192,7 @@
       gap: 10px;
       flex-wrap: wrap;
     }
+
     .filter-label {
       font-size: .8rem;
       font-weight: 700;
@@ -132,6 +201,7 @@
       letter-spacing: .05em;
       margin-right: 4px;
     }
+
     .filter-btn {
       display: flex;
       align-items: center;
@@ -147,27 +217,32 @@
       cursor: pointer;
       transition: color .18s, background .18s, border-color .18s, transform .18s;
     }
+
     .filter-btn:hover {
       color: var(--gold);
-      border-color: rgba(251,191,36,.3);
-      background: rgba(251,191,36,.06);
+      border-color: rgba(251, 191, 36, .3);
+      background: rgba(251, 191, 36, .06);
       transform: translateY(-1px);
     }
+
     .filter-btn.active {
       color: var(--gold);
-      border-color: rgba(251,191,36,.4);
-      background: rgba(251,191,36,.1);
+      border-color: rgba(251, 191, 36, .4);
+      background: rgba(251, 191, 36, .1);
     }
+
     .filter-btn.active-all {
       color: var(--blue);
-      border-color: rgba(56,189,248,.4);
-      background: rgba(56,189,248,.1);
+      border-color: rgba(56, 189, 248, .4);
+      background: rgba(56, 189, 248, .1);
     }
+
     .filter-btn.active-unrated {
       color: var(--muted);
-      border-color: rgba(148,163,184,.4);
-      background: rgba(148,163,184,.08);
+      border-color: rgba(148, 163, 184, .4);
+      background: rgba(148, 163, 184, .08);
     }
+
     .filter-divider {
       width: 1px;
       height: 24px;
@@ -194,25 +269,38 @@
       transition: transform .22s, box-shadow .22s, border-color .22s;
       position: relative;
     }
+
     .game-card:hover {
       transform: translateY(-6px);
-      box-shadow: 0 20px 50px rgba(0,0,0,.5);
-      border-color: rgba(56,189,248,.2);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, .5);
+      border-color: rgba(56, 189, 248, .2);
     }
+
     .game-card[data-hidden="true"] {
       display: none;
     }
+
     .game-card-img {
-      width: 100%; height: 148px;
-      object-fit: cover; display: block;
+      width: 100%;
+      height: 148px;
+      object-fit: cover;
+      display: block;
       background: var(--card-b);
     }
-    .game-card-body { padding: 14px; }
+
+    .game-card-body {
+      padding: 14px;
+    }
+
     .game-card-title {
-      font-weight: 700; font-size: .93rem;
-      margin-bottom: 10px; line-height: 1.3;
+      font-weight: 700;
+      font-size: .93rem;
+      margin-bottom: 10px;
+      line-height: 1.3;
       display: -webkit-box;
-      -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
     /* ===== STAR RATING ===== */
@@ -220,19 +308,29 @@
       position: relative;
       margin-bottom: 4px;
     }
+
     .star-rating {
       display: flex;
       gap: 4px;
       margin-bottom: 4px;
     }
+
     .star {
       font-size: 1.2rem;
       color: var(--card-b);
       cursor: pointer;
       transition: color .15s, transform .15s;
     }
-    .star:hover, .star.active { color: var(--gold); }
-    .star:hover { transform: scale(1.15); }
+
+    .star:hover,
+    .star.active {
+      color: var(--gold);
+    }
+
+    .star:hover {
+      transform: scale(1.15);
+    }
+
     .rating-label {
       font-size: .78rem;
       color: var(--muted);
@@ -251,22 +349,26 @@
       padding: 3px 8px;
       border-radius: 8px;
       border: 1px solid var(--border);
-      background: rgba(255,255,255,.03);
+      background: rgba(255, 255, 255, .03);
       transition: background .18s, border-color .18s;
       position: relative;
     }
+
     .steam-tooltip-trigger:hover {
-      background: rgba(56,189,248,.06);
-      border-color: rgba(56,189,248,.2);
+      background: rgba(56, 189, 248, .06);
+      border-color: rgba(56, 189, 248, .2);
     }
+
     .steam-tooltip-trigger .steam-icon {
       color: #66c0f4;
       font-size: .7rem;
     }
+
     .steam-tooltip-trigger .steam-score {
       color: var(--blue);
       font-weight: 700;
     }
+
     .steam-tooltip-trigger .steam-score.loading {
       color: var(--muted);
       font-style: italic;
@@ -281,16 +383,18 @@
       transform: translateX(-50%);
       z-index: 100;
       background: #0d1b2e;
-      border: 1px solid rgba(56,189,248,.3);
+      border: 1px solid rgba(56, 189, 248, .3);
       border-radius: 12px;
       padding: 10px 14px;
       min-width: 180px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.6);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .6);
       pointer-events: none;
     }
+
     .steam-tooltip-trigger:hover .steam-tooltip-popup {
       display: block;
     }
+
     .steam-tooltip-popup::after {
       content: '';
       position: absolute;
@@ -298,8 +402,9 @@
       left: 50%;
       transform: translateX(-50%);
       border: 6px solid transparent;
-      border-top-color: rgba(56,189,248,.3);
+      border-top-color: rgba(56, 189, 248, .3);
     }
+
     .steam-tooltip-popup .tt-title {
       font-size: .72rem;
       font-weight: 700;
@@ -311,6 +416,7 @@
       align-items: center;
       gap: 5px;
     }
+
     .steam-tooltip-popup .tt-row {
       display: flex;
       justify-content: space-between;
@@ -318,30 +424,40 @@
       font-size: .8rem;
       margin-bottom: 3px;
     }
+
     .steam-tooltip-popup .tt-row .tt-key {
       color: var(--muted);
     }
+
     .steam-tooltip-popup .tt-row .tt-val {
       font-weight: 700;
       color: var(--text);
     }
+
     .steam-tooltip-popup .tt-row .tt-val.gold {
       color: var(--gold);
     }
+
     .steam-tooltip-popup .tt-stars {
       display: flex;
       gap: 2px;
       font-size: .85rem;
     }
-    .steam-tooltip-popup .tt-stars .ts { color: var(--card-b); }
-    .steam-tooltip-popup .tt-stars .ts.on { color: var(--gold); }
+
+    .steam-tooltip-popup .tt-stars .ts {
+      color: var(--card-b);
+    }
+
+    .steam-tooltip-popup .tt-stars .ts.on {
+      color: var(--gold);
+    }
 
     .btn-remove {
       width: 100%;
-      border: 1px solid rgba(248,113,113,.18);
+      border: 1px solid rgba(248, 113, 113, .18);
       border-radius: 10px;
       padding: 10px;
-      background: rgba(248,113,113,.12);
+      background: rgba(248, 113, 113, .12);
       color: var(--danger);
       font-size: .85rem;
       font-weight: 700;
@@ -349,29 +465,45 @@
       cursor: pointer;
       transition: background .18s, transform .18s;
     }
+
     .btn-remove:hover {
-      background: rgba(248,113,113,.22);
+      background: rgba(248, 113, 113, .22);
       transform: translateY(-1px);
     }
 
     /* ===== NOTES ===== */
     .notes-label {
-      font-size: .76rem; font-weight: 600;
-      color: var(--muted); text-transform: uppercase; letter-spacing: .04em;
+      font-size: .76rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .04em;
       margin: 10px 0 4px;
     }
+
     .notes-textarea {
-      width: 100%; height: 60px;
-      background: var(--card-b); border: 1px solid var(--border);
-      border-radius: 10px; padding: 8px 10px; resize: none;
-      color: var(--text); font-family: 'Inter', sans-serif; font-size: .82rem;
+      width: 100%;
+      height: 60px;
+      background: var(--card-b);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      resize: none;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: .82rem;
       transition: border-color .2s;
       margin-bottom: 10px;
     }
+
     .notes-textarea:focus {
-      outline: none; border-color: var(--purple);
+      outline: none;
+      border-color: var(--purple);
     }
-    .notes-textarea::placeholder { color: var(--muted); }
+
+    .notes-textarea::placeholder {
+      color: var(--muted);
+    }
 
     /* ===== EMPTY STATE ===== */
     .empty-state {
@@ -379,9 +511,24 @@
       text-align: center;
       padding: 80px 20px;
     }
-    .empty-state .icon { font-size: 4rem; margin-bottom: 16px; opacity: .4; }
-    .empty-state h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 8px; }
-    .empty-state p  { color: var(--muted); margin-bottom: 24px; }
+
+    .empty-state .icon {
+      font-size: 4rem;
+      margin-bottom: 16px;
+      opacity: .4;
+    }
+
+    .empty-state h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
     .btn-explore {
       display: inline-block;
       background: var(--grad);
@@ -392,7 +539,11 @@
       text-decoration: none;
       transition: transform .18s, filter .18s;
     }
-    .btn-explore:hover { transform: translateY(-2px); filter: brightness(1.08); }
+
+    .btn-explore:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+    }
 
     /* ===== NO FILTER RESULTS ===== */
     .no-filter-results {
@@ -401,42 +552,101 @@
       text-align: center;
       padding: 60px 20px;
     }
-    .no-filter-results .icon { font-size: 3rem; margin-bottom: 12px; opacity: .4; }
-    .no-filter-results p { color: var(--muted); margin-bottom: 16px; }
+
+    .no-filter-results .icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+      opacity: .4;
+    }
+
+    .no-filter-results p {
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
 
     /* ===== TOAST ===== */
-    .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
-    .toast {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 14px; padding: 14px 18px;
-      font-size: .9rem; font-weight: 600;
-      display: flex; align-items: center; gap: 10px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.4);
-      animation: slideIn .3s ease; max-width: 320px;
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
-    .toast.success { border-color: rgba(52,211,153,.3); color: var(--green); }
-    .toast.error   { border-color: rgba(248,113,113,.3); color: var(--danger); }
-    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    .toast {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: .9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .4);
+      animation: slideIn .3s ease;
+      max-width: 320px;
+    }
+
+    .toast.success {
+      border-color: rgba(52, 211, 153, .3);
+      color: var(--green);
+    }
+
+    .toast.error {
+      border-color: rgba(248, 113, 113, .3);
+      color: var(--danger);
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
 
     @media (max-width: 640px) {
-      .page-header h1 { font-size: 1.5rem; }
-      nav { padding: 0 14px; }
-      .nav-link { display: none; }
-      .filter-bar { gap: 6px; }
-      .filter-btn { padding: 6px 10px; font-size: .78rem; }
+      .page-header h1 {
+        font-size: 1.5rem;
+      }
+
+      nav {
+        padding: 0 14px;
+      }
+
+      .nav-link {
+        display: none;
+      }
+
+      .filter-bar {
+        gap: 6px;
+      }
+
+      .filter-btn {
+        padding: 6px 10px;
+        font-size: .78rem;
+      }
     }
   </style>
 </head>
+
 <body>
 
   <nav>
     <div class="nav-brand"><i class="fa-solid fa-gamepad"></i> MyGameList</div>
     <div class="nav-links">
       <a href="/dashboard" class="nav-link"><i class="fa-solid fa-compass"></i> Explorar</a>
-      <a href="/my-list"   class="nav-link active"><i class="fa-solid fa-list"></i> Minha Lista</a>
-      <a href="/forum"     class="nav-link"><i class="fa-solid fa-comments"></i> Fórum</a>
-      <a href="/perfil"    class="nav-link"><i class="fa-solid fa-user"></i> Perfil</a>
-      <a href="/admin"     class="nav-link" id="admin-link" style="display:none;color:var(--purple)">
+      <a href="/my-list" class="nav-link active"><i class="fa-solid fa-list"></i> Minha Lista</a>
+      <a href="/forum" class="nav-link"><i class="fa-solid fa-comments"></i> Fórum</a>
+      <a href="/perfil" class="nav-link"><i class="fa-solid fa-user"></i> Perfil</a>
+      <a href="/admin" class="nav-link" id="admin-link" style="display:none;color:var(--purple)">
         <i class="fa-solid fa-shield-halved"></i> Admin
       </a>
     </div>
@@ -464,7 +674,8 @@
       <span>jogo(s) na lista</span>
     </div>
     {% set rated_count = namespace(value=0) %}
-    {% for g in games %}{% if g.rating and g.rating > 0 %}{% set rated_count.value = rated_count.value + 1 %}{% endif %}{% endfor %}
+    {% for g in games %}{% if g.rating and g.rating > 0 %}{% set rated_count.value = rated_count.value + 1 %}{% endif
+    %}{% endfor %}
     <div class="stat-chip">
       <i class="fa-solid fa-star" style="color:var(--gold)"></i>
       <strong>{{ rated_count.value }}</strong>
@@ -500,34 +711,111 @@
     </button>
   </div>
 
+  <!-- ===== FILTROS DE CATEGORIA ===== -->
+  <div class="filter-bar" id="category-filter-bar" style="margin-top: -14px;">
+    <span class="filter-label"><i class="fa-solid fa-tags"></i> Filtrar por Categoria:</span>
+    <select id="filter-cat-select" onchange="applyCatFilter(this.value)" style="background: var(--card-b); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; color: var(--text); font-family: 'Inter', sans-serif; cursor: pointer; outline: none; transition: border-color 0.2s;">
+      <option value="all">Todas as Categorias</option>
+      <option value="Ação">Ação</option>
+      <option value="Indie">Indie</option>
+      <option value="Aventura">Aventura</option>
+      <option value="RPG">RPG</option>
+      <option value="Tiro / FPS">Tiro / FPS</option>
+      <option value="Estratégia">Estratégia</option>
+      <option value="Casual">Casual</option>
+      <option value="Simulação">Simulação</option>
+      <option value="Arcade / Fliperama">Arcade / Fliperama</option>
+      <option value="Puzzle / Quebra-Cabeça">Puzzle / Quebra-Cabeça</option>
+      <option value="Plataforma">Plataforma</option>
+      <option value="Corrida">Corrida</option>
+      <option value="Esportes">Esportes</option>
+      <option value="Luta">Luta</option>
+      <option value="Família">Família</option>
+      <option value="Tabuleiro">Tabuleiro</option>
+      <option value="Cartas">Cartas</option>
+      <option value="MMO / Multiplayer Massivo">MMO / Multiplayer Massivo</option>
+      <option value="Outro">Outro</option>
+      <option value="none">Sem Categoria</option>
+    </select>
+  </div>
+
+  <!-- ===== FILTROS DE STATUS ===== -->
+  <div class="filter-bar" id="status-filter-bar" style="margin-top: -14px; margin-bottom: 20px;">
+    <span class="filter-label"><i class="fa-solid fa-circle-info"></i> Filtrar por Status:</span>
+    <button class="filter-btn active-all" id="filter-status-all" onclick="applyStatusFilter('all')">
+      <i class="fa-solid fa-layer-group"></i> Todos
+    </button>
+    <div class="filter-divider"></div>
+    <button class="filter-btn" id="filter-status-pretendo" onclick="applyStatusFilter('Pretendo Jogar')">Pretendo Jogar</button>
+    <button class="filter-btn" id="filter-status-jogando" onclick="applyStatusFilter('Jogando')">Jogando</button>
+    <button class="filter-btn" id="filter-status-dropado" onclick="applyStatusFilter('Dropado')">Dropado</button>
+    <button class="filter-btn" id="filter-status-recomendado" onclick="applyStatusFilter('Recomendado por Amigo')">Recomendado por Amigo</button>
+    <div class="filter-divider"></div>
+    <button class="filter-btn" id="filter-status-none" onclick="applyStatusFilter('none')">Sem Status</button>
+  </div>
+
+  <!-- ===== FILTROS DE PLATAFORMA ===== -->
+  <div class="filter-bar" id="platform-filter-bar" style="margin-top: -14px; margin-bottom: 25px;">
+    <span class="filter-label"><i class="fa-solid fa-gamepad"></i> Filtrar por Plataforma:</span>
+    <select id="filter-plat-select" onchange="applyPlatFilter(this.value)" style="background: var(--card-b); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; color: var(--text); font-family: 'Inter', sans-serif; cursor: pointer; outline: none; transition: border-color 0.2s;">
+      <option value="all">Todas as Plataformas</option>
+      <option value="PC">PC</option>
+      <option value="PlayStation 5">PlayStation 5</option>
+      <option value="PlayStation 4">PlayStation 4</option>
+      <option value="PlayStation 3">PlayStation 3</option>
+      <option value="Xbox Series X/S">Xbox Series X/S</option>
+      <option value="Xbox One">Xbox One</option>
+      <option value="Xbox 360">Xbox 360</option>
+      <option value="Nintendo Switch">Nintendo Switch</option>
+      <option value="Nintendo 3DS">Nintendo 3DS</option>
+      <option value="Nintendo DS">Nintendo DS</option>
+      <option value="Wii">Wii</option>
+      <option value="GameCube">GameCube</option>
+      <option value="Nintendo 64">Nintendo 64</option>
+      <option value="Game Boy Advance">Game Boy Advance</option>
+      <option value="DOS">DOS</option>
+      <option value="macOS">macOS</option>
+      <option value="Linux">Linux</option>
+      <option value="Android">Android</option>
+      <option value="iOS">iOS</option>
+      <option value="Outro">Outro</option>
+      <option value="none">Sem Plataforma</option>
+    </select>
+  </div>
+
   <div class="game-grid" id="game-grid">
     {% for game in games %}
-    <div class="game-card" id="card-{{ game.id }}" data-rating="{{ game.rating or 0 }}" data-gameid="{{ game.id }}" data-apiid="{{ game.game_api_id }}">
-      <img
-        class="game-card-img"
+    <div class="game-card" id="card-{{ game.id }}" data-rating="{{ game.rating or 0 }}" data-category="{{ game.category or '' }}" data-status="{{ game.status or '' }}" data-platform="{{ game.platform or '' }}" data-gameid="{{ game.id }}"
+      data-apiid="{{ game.game_api_id }}">
+      <img class="game-card-img"
         src="{{ game.image_url or 'https://via.placeholder.com/300x150/0f172a/38bdf8?text=Sem+Imagem' }}"
-        alt="{{ game.title }}"
-        loading="lazy"
-      />
+        alt="{{ game.title }}" loading="lazy" />
       <div class="game-card-body">
         <div class="game-card-title">{{ game.title }}</div>
 
+        <!-- Plataforma Badge na Lista -->
+        {% if game.platform %}
+        <div class="game-platforms" style="margin-top: 6px; margin-bottom: 6px;">
+          <span class="platform-badge" style="background: rgba(56, 189, 248, 0.1); color: var(--blue); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 6px; padding: 2px 8px; font-size: 0.75rem; font-weight: 600;">
+            <i class="fa-solid fa-gamepad"></i> {{ game.platform }}
+          </span>
+        </div>
+        {% endif %}
+
         <!-- Avaliação por estrelas (do usuário) -->
         <div class="rating-section">
-          <div class="star-rating" id="stars-{{ game.id }}" data-gameid="{{ game.id }}" data-current="{{ game.rating or 0 }}">
+          <div class="star-rating" id="stars-{{ game.id }}" data-gameid="{{ game.id }}"
+            data-current="{{ game.rating or 0 }}">
             {% for i in range(1, 6) %}
-            <span
-              class="star {% if game.rating and i <= game.rating %}active{% endif %}"
-              data-val="{{ i }}"
-              onclick="rateGame({{ game.id }}, {{ i }}, this)"
-            >★</span>
+            <span class="star {% if game.rating and i <= game.rating %}active{% endif %}" data-val="{{ i }}"
+              onclick="rateGame({{ game.id }}, {{ i }}, this)">★</span>
             {% endfor %}
           </div>
           <div class="rating-label" id="rating-label-{{ game.id }}">
             {% if game.rating and game.rating > 0 %}
-              Sua nota: {{ game.rating }}/5
+            Sua nota: {{ game.rating }}/5
             {% else %}
-              Clique para avaliar
+            Clique para avaliar
             {% endif %}
           </div>
 
@@ -549,7 +837,8 @@
                 <span class="tt-key">Estrelas:</span>
                 <span class="tt-val">
                   <span class="tt-stars" id="tt-stars-{{ game.id }}">
-                    <span class="ts">★</span><span class="ts">★</span><span class="ts">★</span><span class="ts">★</span><span class="ts">★</span>
+                    <span class="ts">★</span><span class="ts">★</span><span class="ts">★</span><span
+                      class="ts">★</span><span class="ts">★</span>
                   </span>
                 </span>
               </div>
@@ -563,12 +852,84 @@
 
         <!-- Notas pessoais -->
         <div class="notes-label"><i class="fa-solid fa-note-sticky"></i> Minha Nota</div>
-        <textarea
+        <textarea class="notes-textarea" id="notes-{{ game.id }}" placeholder="Adicione uma anotação pessoal..."
+          onblur="saveNotes({{ game.id }}, this.value)">{{ game.notes or '' }}</textarea>
+
+        <!-- Categoria -->
+        <div class="notes-label" style="margin-top: 10px;"><i class="fa-solid fa-tags"></i> Categoria</div>
+        <select
           class="notes-textarea"
-          id="notes-{{ game.id }}"
-          placeholder="Adicione uma anotação pessoal..."
-          onblur="saveNotes({{ game.id }}, this.value)"
-        >{{ game.notes or '' }}</textarea>
+          id="category-{{ game.id }}"
+          onchange="saveCategory({{ game.id }}, this.value)"
+          style="padding: 8px 10px; cursor: pointer; height: auto;"
+        >
+          <option value="" {% if not game.category %}selected{% endif %}>Sem Categoria</option>
+          <option value="Ação" {% if game.category == 'Ação' %}selected{% endif %}>Ação</option>
+          <option value="Indie" {% if game.category == 'Indie' %}selected{% endif %}>Indie</option>
+          <option value="Aventura" {% if game.category == 'Aventura' %}selected{% endif %}>Aventura</option>
+          <option value="RPG" {% if game.category == 'RPG' %}selected{% endif %}>RPG</option>
+          <option value="Tiro / FPS" {% if game.category == 'Tiro / FPS' %}selected{% endif %}>Tiro / FPS</option>
+          <option value="Estratégia" {% if game.category == 'Estratégia' %}selected{% endif %}>Estratégia</option>
+          <option value="Casual" {% if game.category == 'Casual' %}selected{% endif %}>Casual</option>
+          <option value="Simulação" {% if game.category == 'Simulação' %}selected{% endif %}>Simulação</option>
+          <option value="Arcade / Fliperama" {% if game.category == 'Arcade / Fliperama' %}selected{% endif %}>Arcade / Fliperama</option>
+          <option value="Puzzle / Quebra-Cabeça" {% if game.category == 'Puzzle / Quebra-Cabeça' %}selected{% endif %}>Puzzle / Quebra-Cabeça</option>
+          <option value="Plataforma" {% if game.category == 'Plataforma' %}selected{% endif %}>Plataforma</option>
+          <option value="Corrida" {% if game.category == 'Corrida' %}selected{% endif %}>Corrida</option>
+          <option value="Esportes" {% if game.category == 'Esportes' %}selected{% endif %}>Esportes</option>
+          <option value="Luta" {% if game.category == 'Luta' %}selected{% endif %}>Luta</option>
+          <option value="Família" {% if game.category == 'Família' %}selected{% endif %}>Família</option>
+          <option value="Tabuleiro" {% if game.category == 'Tabuleiro' %}selected{% endif %}>Tabuleiro</option>
+          <option value="Cartas" {% if game.category == 'Cartas' %}selected{% endif %}>Cartas</option>
+          <option value="MMO / Multiplayer Massivo" {% if game.category == 'MMO / Multiplayer Massivo' %}selected{% endif %}>MMO / Multiplayer Massivo</option>
+          <option value="Outro" {% if game.category == 'Outro' %}selected{% endif %}>Outro</option>
+        </select>
+
+        <!-- Status -->
+        <div class="notes-label" style="margin-top: 10px;"><i class="fa-solid fa-circle-info"></i> Status</div>
+        <select
+          class="notes-textarea"
+          id="status-{{ game.id }}"
+          onchange="saveStatus({{ game.id }}, this.value)"
+          style="padding: 8px 10px; cursor: pointer; height: auto;"
+        >
+          <option value="" {% if not game.status %}selected{% endif %}>Sem Status</option>
+          <option value="Pretendo Jogar" {% if game.status == 'Pretendo Jogar' %}selected{% endif %}>Pretendo Jogar</option>
+          <option value="Jogando" {% if game.status == 'Jogando' %}selected{% endif %}>Jogando</option>
+          <option value="Dropado" {% if game.status == 'Dropado' %}selected{% endif %}>Dropado</option>
+          <option value="Recomendado por Amigo" {% if game.status == 'Recomendado por Amigo' %}selected{% endif %}>Recomendado por Amigo</option>
+        </select>
+
+        <!-- Plataforma -->
+        <div class="notes-label" style="margin-top: 10px;"><i class="fa-solid fa-gamepad"></i> Plataforma</div>
+        <select
+          class="notes-textarea"
+          id="platform-{{ game.id }}"
+          onchange="savePlatform({{ game.id }}, this.value)"
+          style="padding: 8px 10px; cursor: pointer; height: auto;"
+        >
+          <option value="" {% if not game.platform %}selected{% endif %}>Sem Plataforma</option>
+          <option value="PC" {% if game.platform == 'PC' %}selected{% endif %}>PC</option>
+          <option value="PlayStation 5" {% if game.platform == 'PlayStation 5' %}selected{% endif %}>PlayStation 5</option>
+          <option value="PlayStation 4" {% if game.platform == 'PlayStation 4' %}selected{% endif %}>PlayStation 4</option>
+          <option value="PlayStation 3" {% if game.platform == 'PlayStation 3' %}selected{% endif %}>PlayStation 3</option>
+          <option value="Xbox Series X/S" {% if game.platform == 'Xbox Series X/S' %}selected{% endif %}>Xbox Series X/S</option>
+          <option value="Xbox One" {% if game.platform == 'Xbox One' %}selected{% endif %}>Xbox One</option>
+          <option value="Xbox 360" {% if game.platform == 'Xbox 360' %}selected{% endif %}>Xbox 360</option>
+          <option value="Nintendo Switch" {% if game.platform == 'Nintendo Switch' %}selected{% endif %}>Nintendo Switch</option>
+          <option value="Nintendo 3DS" {% if game.platform == 'Nintendo 3DS' %}selected{% endif %}>Nintendo 3DS</option>
+          <option value="Nintendo DS" {% if game.platform == 'Nintendo DS' %}selected{% endif %}>Nintendo DS</option>
+          <option value="Wii" {% if game.platform == 'Wii' %}selected{% endif %}>Wii</option>
+          <option value="GameCube" {% if game.platform == 'GameCube' %}selected{% endif %}>GameCube</option>
+          <option value="Nintendo 64" {% if game.platform == 'Nintendo 64' %}selected{% endif %}>Nintendo 64</option>
+          <option value="Game Boy Advance" {% if game.platform == 'Game Boy Advance' %}selected{% endif %}>Game Boy Advance</option>
+          <option value="DOS" {% if game.platform == 'DOS' %}selected{% endif %}>DOS</option>
+          <option value="macOS" {% if game.platform == 'macOS' %}selected{% endif %}>macOS</option>
+          <option value="Linux" {% if game.platform == 'Linux' %}selected{% endif %}>Linux</option>
+          <option value="Android" {% if game.platform == 'Android' %}selected{% endif %}>Android</option>
+          <option value="iOS" {% if game.platform == 'iOS' %}selected{% endif %}>iOS</option>
+          <option value="Outro" {% if game.platform == 'Outro' %}selected{% endif %}>Outro</option>
+        </select>
 
         <!-- Remover -->
         <button type="button" class="btn-remove" onclick="removeGame({{ game.id }}, this)">
@@ -591,7 +952,7 @@
     <div class="no-filter-results" id="no-filter-results">
       <div class="icon">🔍</div>
       <p id="no-filter-msg">Nenhum jogo com essa avaliação.</p>
-      <button class="filter-btn active-all" onclick="applyFilter('all')" style="margin:0 auto">
+      <button class="filter-btn active-all" onclick="applyFilter('all'); applyCatFilter('all'); applyStatusFilter('all'); applyPlatFilter('all');" style="margin:0 auto">
         <i class="fa-solid fa-layer-group"></i> Ver todos
       </button>
     </div>
@@ -689,49 +1050,227 @@
         });
         if (!res.ok) throw new Error();
         showToast('⭐ Nota ' + rating + '/5 salva!', 'success');
-        // Reaplicar filtro atual para atualizar visibilidade
-        const currentFilter = document.querySelector('.filter-btn.active, .filter-btn.active-all, .filter-btn.active-unrated');
-        if (currentFilter) {
-          const f = currentFilter.id.replace('filter-', '');
-          applyFilter(f === 'all' ? 'all' : (f === '0' ? 0 : parseInt(f)));
-        }
+        filterCards();
       } catch (_e) {
         showToast('❌ Erro ao salvar nota', 'error');
       }
     }
 
-    // ====== FILTROS DE AVALIAÇÃO ======
-    let currentFilter = 'all';
+    // ====== FILTROS COMBINADOS ======
+    let currentRatingFilter = 'all';
+    let currentCategoryFilter = 'all';
+    let currentStatusFilter = 'all';
+    let currentPlatformFilter = 'all';
+
+    async function saveCategory(gameId, category) {
+      const token = localStorage.getItem('access_token');
+      if (!token) return;
+      const card = document.getElementById('card-' + gameId);
+      if (card) card.dataset.category = category;
+
+      try {
+        const res = await fetch('/api/my-list/' + gameId + '/category', {
+          method: 'PATCH',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ category: category || null })
+        });
+        if (!res.ok) throw new Error();
+        showToast('🏷️ Categoria salva!', 'success');
+        filterCards();
+      } catch (_e) {
+        showToast('❌ Erro ao salvar categoria', 'error');
+      }
+    }
+
+    async function saveStatus(gameId, status) {
+      const token = localStorage.getItem('access_token');
+      if (!token) return;
+      const card = document.getElementById('card-' + gameId);
+      if (card) card.dataset.status = status;
+
+      try {
+        const res = await fetch('/api/my-list/' + gameId + '/status', {
+          method: 'PATCH',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ status: status || null })
+        });
+        if (!res.ok) throw new Error();
+        showToast('📌 Status salvo!', 'success');
+        filterCards();
+      } catch (_e) {
+        showToast('❌ Erro ao salvar status', 'error');
+      }
+    }
+
+    async function savePlatform(gameId, platform) {
+      const token = localStorage.getItem('access_token');
+      if (!token) return;
+      const card = document.getElementById('card-' + gameId);
+      if (card) card.dataset.platform = platform;
+
+      try {
+        const res = await fetch('/api/my-list/' + gameId + '/platform', {
+          method: 'PATCH',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ platform: platform || null })
+        });
+        if (!res.ok) throw new Error();
+        showToast('🎮 Plataforma salva!', 'success');
+
+        // Dynamically update the platform badge text or visibility on the card
+        let badgeContainer = card.querySelector('.game-platforms');
+        if (platform) {
+          if (!badgeContainer) {
+            badgeContainer = document.createElement('div');
+            badgeContainer.className = 'game-platforms';
+            badgeContainer.style.marginTop = '6px';
+            badgeContainer.style.marginBottom = '6px';
+            const titleEl = card.querySelector('.game-card-title');
+            titleEl.parentNode.insertBefore(badgeContainer, titleEl.nextSibling);
+          }
+          badgeContainer.innerHTML = '<span class="platform-badge" style="background: rgba(56, 189, 248, 0.1); color: var(--blue); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 6px; padding: 2px 8px; font-size: 0.75rem; font-weight: 600;"><i class="fa-solid fa-gamepad"></i> ' + platform + '</span>';
+        } else {
+          if (badgeContainer) {
+            badgeContainer.remove();
+          }
+        }
+
+        filterCards();
+      } catch (_e) {
+        showToast('❌ Erro ao salvar plataforma', 'error');
+      }
+    }
 
     function applyFilter(val) {
-      currentFilter = val;
+      currentRatingFilter = val;
+      updateFilterStyle();
+      filterCards();
+    }
 
-      // Resetar estilos dos botões
-      document.querySelectorAll('.filter-btn').forEach(btn => {
+    function applyCatFilter(val) {
+      currentCategoryFilter = val;
+      updateFilterStyle();
+      filterCards();
+    }
+
+    function applyStatusFilter(val) {
+      currentStatusFilter = val;
+      updateFilterStyle();
+      filterCards();
+    }
+
+    function applyPlatFilter(val) {
+      currentPlatformFilter = val;
+      updateFilterStyle();
+      filterCards();
+    }
+
+    function updateFilterStyle() {
+      // Rating
+      document.querySelectorAll('#filter-bar .filter-btn').forEach(btn => {
         btn.classList.remove('active', 'active-all', 'active-unrated');
       });
-
-      // Marcar botão ativo
-      if (val === 'all') {
+      if (currentRatingFilter === 'all') {
         document.getElementById('filter-all').classList.add('active-all');
-      } else if (val === 0) {
+      } else if (currentRatingFilter === 0) {
         document.getElementById('filter-0').classList.add('active-unrated');
       } else {
-        document.getElementById('filter-' + val).classList.add('active');
+        document.getElementById('filter-' + currentRatingFilter).classList.add('active');
       }
 
-      // Mostrar/ocultar cards
-      const cards = document.querySelectorAll('.game-card[data-rating]');
+      // Categoria
+      const catSelect = document.getElementById('filter-cat-select');
+      if (catSelect) {
+        catSelect.value = currentCategoryFilter;
+      }
+
+      // Status
+      document.querySelectorAll('#status-filter-bar .filter-btn').forEach(btn => {
+        btn.classList.remove('active', 'active-all', 'active-unrated');
+      });
+      if (currentStatusFilter === 'all') {
+        document.getElementById('filter-status-all').classList.add('active-all');
+      } else if (currentStatusFilter === 'none') {
+        document.getElementById('filter-status-none').classList.add('active-unrated');
+      } else {
+        const idMap = {
+          'Pretendo Jogar': 'pretendo',
+          'Jogando': 'jogando',
+          'Dropado': 'dropado',
+          'Recomendado por Amigo': 'recomendado'
+        };
+        const id = idMap[currentStatusFilter];
+        if (id) {
+          const el = document.getElementById('filter-status-' + id);
+          if (el) el.classList.add('active');
+        }
+      }
+
+      // Plataforma
+      const platSelect = document.getElementById('filter-plat-select');
+      if (platSelect) {
+        platSelect.value = currentPlatformFilter;
+      }
+    }
+
+    function filterCards() {
+      const cards = document.querySelectorAll('.game-card');
       cards.forEach(card => {
         const r = parseInt(card.dataset.rating) || 0;
-        let show = false;
-        if (val === 'all') {
-          show = true;
-        } else if (val === 0) {
-          show = (r === 0);
+        const cat = card.dataset.category || '';
+        const status = card.dataset.status || '';
+        const plat = card.dataset.platform || '';
+
+        // Avaliação
+        let matchRating = false;
+        if (currentRatingFilter === 'all') {
+          matchRating = true;
+        } else if (currentRatingFilter === 0) {
+          matchRating = (r === 0);
         } else {
-          show = (r === val);
+          matchRating = (r === currentRatingFilter);
         }
+
+        // Categoria
+        let matchCategory = false;
+        if (currentCategoryFilter === 'all') {
+          matchCategory = true;
+        } else if (currentCategoryFilter === 'none') {
+          matchCategory = (!cat || cat === 'None' || cat === 'null' || cat === '');
+        } else {
+          matchCategory = (cat === currentCategoryFilter);
+        }
+
+        // Status
+        let matchStatus = false;
+        if (currentStatusFilter === 'all') {
+          matchStatus = true;
+        } else if (currentStatusFilter === 'none') {
+          matchStatus = (!status || status === 'None' || status === 'null' || status === '');
+        } else {
+          matchStatus = (status === currentStatusFilter);
+        }
+
+        // Plataforma
+        let matchPlatform = false;
+        if (currentPlatformFilter === 'all') {
+          matchPlatform = true;
+        } else if (currentPlatformFilter === 'none') {
+          matchPlatform = (!plat || plat === 'None' || plat === 'null' || plat === '');
+        } else {
+          matchPlatform = (plat === currentPlatformFilter);
+        }
+
+        const show = matchRating && matchCategory && matchStatus && matchPlatform;
         card.setAttribute('data-hidden', show ? 'false' : 'true');
       });
 
@@ -745,13 +1284,11 @@
         noResults.style.display = (visible === 0) ? 'block' : 'none';
         const msg = document.getElementById('no-filter-msg');
         if (msg) {
-          if (currentFilter === 0) {
-            msg.textContent = 'Nenhum jogo sem avaliação.';
-          } else if (currentFilter !== 'all') {
-            msg.textContent = 'Nenhum jogo com ' + currentFilter + ' estrela(s).';
-          } else {
-            msg.textContent = 'Nenhum jogo encontrado.';
+          let text = 'Nenhum jogo encontrado.';
+          if (currentRatingFilter !== 'all' || currentCategoryFilter !== 'all' || currentStatusFilter !== 'all' || currentPlatformFilter !== 'all') {
+            text = 'Nenhum jogo atende aos filtros selecionados.';
           }
+          msg.textContent = text;
         }
       }
     }
@@ -852,4 +1389,5 @@
     initSteamTooltips();
   </script>
 </body>
+
 </html>

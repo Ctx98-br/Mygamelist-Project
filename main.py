@@ -119,6 +119,18 @@ class GameNotesUpdate(BaseModel):
     notes: str | None = None
 
 
+class GameCategoryUpdate(BaseModel):
+    category: str | None = None
+
+
+class GameStatusUpdate(BaseModel):
+    status: str | None = None
+
+
+class GamePlatformUpdate(BaseModel):
+    platform: str | None = None
+
+
 class GameViewIn(BaseModel):
     game_api_id: int
     title: str
@@ -364,10 +376,25 @@ async def reset_password_page(request: Request):
 
 
 @app.get("/dashboard", response_class=HTMLResponse)
-async def dashboard_page(request: Request, search: str | None = None):
+async def dashboard_page(
+    request: Request,
+    search: str | None = None,
+    genre: str | None = None,
+    tag: str | None = None,
+    platform: str | None = None
+):
     games = []
-    if search:
-        resp = requests.get(f"{BASE_URL}?key={API_KEY}&search={search}")
+    if search or genre or tag or platform:
+        url = f"{BASE_URL}?key={API_KEY}"
+        if search:
+            url += f"&search={search}"
+        if genre:
+            url += f"&genres={genre}"
+        if tag:
+            url += f"&tags={tag}"
+        if platform:
+            url += f"&platforms={platform}"
+        resp = requests.get(url)
         if resp.status_code == 200:
             games = resp.json().get("results", [])
 
@@ -501,6 +528,8 @@ async def add_game(
     game_id: int = Form(...),
     title: str = Form(...),
     image: str = Form(...),
+    status: str | None = Form(None),
+    platform: str | None = Form(None),
     db: Session = Depends(get_db),
     current_user: UserTable = Depends(get_current_active_user),
 ):
@@ -521,6 +550,8 @@ async def add_game(
         title=title,
         image_url=image,
         owner_username=current_user.username,
+        status=status,
+        platform=platform,
     )
     db.add(new_game)
     db.commit()
@@ -871,6 +902,60 @@ async def update_game_notes(
     return {"message": "Nota salva!", "notes": game.notes}
 
 
+@app.patch("/api/my-list/{game_id}/category")
+async def update_game_category(
+    game_id: int,
+    payload: GameCategoryUpdate,
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_active_user),
+):
+    game = db.query(GameTable).filter(
+        GameTable.id == game_id,
+        GameTable.owner_username == current_user.username,
+    ).first()
+    if not game:
+        raise HTTPException(status_code=404, detail="Jogo não encontrado na sua lista")
+    game.category = payload.category
+    db.commit()
+    return {"message": "Categoria salva!", "category": game.category}
+
+
+@app.patch("/api/my-list/{game_id}/status")
+async def update_game_status(
+    game_id: int,
+    payload: GameStatusUpdate,
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_active_user),
+):
+    game = db.query(GameTable).filter(
+        GameTable.id == game_id,
+        GameTable.owner_username == current_user.username,
+    ).first()
+    if not game:
+        raise HTTPException(status_code=404, detail="Jogo não encontrado na sua lista")
+    game.status = payload.status
+    db.commit()
+    return {"message": "Status salvo!", "status": game.status}
+
+
+@app.patch("/api/my-list/{game_id}/platform")
+async def update_game_platform(
+    game_id: int,
+    payload: GamePlatformUpdate,
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_active_user),
+):
+    game = db.query(GameTable).filter(
+        GameTable.id == game_id,
+        GameTable.owner_username == current_user.username,
+    ).first()
+    if not game:
+        raise HTTPException(status_code=404, detail="Jogo não encontrado na sua lista")
+    game.platform = payload.platform
+    db.commit()
+    return {"message": "Plataforma salva!", "platform": game.platform}
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # COMUNIDADE — Trending e Recentes
 # ─────────────────────────────────────────────────────────────────────────────
@@ -961,6 +1046,9 @@ async def api_my_games(
             "image_url": g.image_url,
             "rating": g.rating,
             "notes": g.notes,
+            "category": g.category,
+            "status": g.status,
+            "platform": g.platform,
         }
         for g in games
     ]

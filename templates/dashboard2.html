@@ -455,18 +455,93 @@
   <section class="hero">
     <h1><i class="fa-solid fa-magnifying-glass"></i> Explorar Jogos</h1>
     <p>Pesquise por título e adicione à sua coleção pessoal</p>
-    <form class="search-form" action="/dashboard" method="GET">
-      <input
-        id="search-input"
-        type="text"
-        name="search"
-        placeholder="Ex: Elden Ring, GTA VI, Hades..."
-        value="{{ request.query_params.get('search', '') }}"
-        autocomplete="off"
-      />
-      <button type="submit" class="btn-search">
-        <i class="fa-solid fa-search"></i> Buscar
-      </button>
+    <form class="search-form" action="/dashboard" method="GET" style="display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 800px; margin: 0 auto; background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border); border-radius: 20px; padding: 20px; backdrop-filter: blur(10px);">
+      <!-- Linha 1: Input de texto e Botão -->
+      <div style="display: flex; gap: 10px; width: 100%;">
+        <input
+          id="search-input"
+          type="text"
+          name="search"
+          placeholder="Ex: Elden Ring, GTA VI, Hades..."
+          value="{{ request.query_params.get('search', '') }}"
+          autocomplete="off"
+          style="flex: 1; margin: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; color: var(--text); padding: 12px 16px;"
+        />
+        <button type="submit" class="btn-search" style="margin: 0; padding: 0 25px; border-radius: 12px;">
+          <i class="fa-solid fa-search"></i> Buscar
+        </button>
+      </div>
+
+      <!-- Linha 2: Gênero e Subcategoria -->
+      <div style="display: flex; gap: 15px; width: 100%; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 6px; text-align: left;">
+          <label style="color: var(--muted); font-size: 0.8rem; font-weight: 500; display: flex; align-items: center; gap: 5px;">
+            <i class="fa-solid fa-layer-group"></i> Categoria Principal
+          </label>
+          <select name="genre" id="genre-select" onchange="toggleSubcategories(this.value)" style="background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px 15px; color: var(--text); font-family: 'Inter', sans-serif; cursor: pointer; outline: none; width: 100%;">
+            <option value="">Nenhuma</option>
+            <option value="action" {% if request.query_params.get('genre') == 'action' %}selected{% endif %}>Ação</option>
+            <option value="indie" {% if request.query_params.get('genre') == 'indie' %}selected{% endif %}>Indie</option>
+            <option value="adventure" {% if request.query_params.get('genre') == 'adventure' %}selected{% endif %}>Aventura</option>
+            <option value="role-playing-games-rpg" {% if request.query_params.get('genre') == 'role-playing-games-rpg' %}selected{% endif %}>RPG</option>
+            <option value="shooter" {% if request.query_params.get('genre') == 'shooter' %}selected{% endif %}>Tiro / FPS</option>
+            <option value="strategy" {% if request.query_params.get('genre') == 'strategy' %}selected{% endif %}>Estratégia</option>
+            <option value="casual" {% if request.query_params.get('genre') == 'casual' %}selected{% endif %}>Casual</option>
+            <option value="simulation" {% if request.query_params.get('genre') == 'simulation' %}selected{% endif %}>Simulação</option>
+            <option value="arcade" {% if request.query_params.get('genre') == 'arcade' %}selected{% endif %}>Arcade / Fliperama</option>
+            <option value="puzzle" {% if request.query_params.get('genre') == 'puzzle' %}selected{% endif %}>Puzzle / Quebra-Cabeça</option>
+            <option value="platformer" {% if request.query_params.get('genre') == 'platformer' %}selected{% endif %}>Plataforma</option>
+            <option value="racing" {% if request.query_params.get('genre') == 'racing' %}selected{% endif %}>Corrida</option>
+            <option value="sports" {% if request.query_params.get('genre') == 'sports' %}selected{% endif %}>Esportes</option>
+            <option value="fighting" {% if request.query_params.get('genre') == 'fighting' %}selected{% endif %}>Luta</option>
+            <option value="family" {% if request.query_params.get('genre') == 'family' %}selected{% endif %}>Família</option>
+            <option value="board-games" {% if request.query_params.get('genre') == 'board-games' %}selected{% endif %}>Tabuleiro</option>
+            <option value="card" {% if request.query_params.get('genre') == 'card' %}selected{% endif %}>Cartas</option>
+            <option value="massively-multiplayer" {% if request.query_params.get('genre') == 'massively-multiplayer' %}selected{% endif %}>MMO / Multiplayer Massivo</option>
+          </select>
+        </div>
+
+        <div style="flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 6px; text-align: left;">
+          <label style="color: var(--muted); font-size: 0.8rem; font-weight: 500; display: flex; align-items: center; gap: 5px;">
+            <i class="fa-solid fa-gamepad"></i> Plataforma
+          </label>
+          <select name="platform" id="platform-select" style="background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px 15px; color: var(--text); font-family: 'Inter', sans-serif; cursor: pointer; outline: none; width: 100%;">
+            <option value="">Todas as Plataformas</option>
+            <option value="4" {% if request.query_params.get('platform') == '4' %}selected{% endif %}>PC</option>
+            <option value="187" {% if request.query_params.get('platform') == '187' %}selected{% endif %}>PlayStation 5</option>
+            <option value="18" {% if request.query_params.get('platform') == '18' %}selected{% endif %}>PlayStation 4</option>
+            <option value="16" {% if request.query_params.get('platform') == '16' %}selected{% endif %}>PlayStation 3</option>
+            <option value="186" {% if request.query_params.get('platform') == '186' %}selected{% endif %}>Xbox Series X/S</option>
+            <option value="1" {% if request.query_params.get('platform') == '1' %}selected{% endif %}>Xbox One</option>
+            <option value="14" {% if request.query_params.get('platform') == '14' %}selected{% endif %}>Xbox 360</option>
+            <option value="7" {% if request.query_params.get('platform') == '7' %}selected{% endif %}>Nintendo Switch</option>
+            <option value="8" {% if request.query_params.get('platform') == '8' %}selected{% endif %}>Nintendo 3DS</option>
+            <option value="9" {% if request.query_params.get('platform') == '9' %}selected{% endif %}>Nintendo DS</option>
+            <option value="11" {% if request.query_params.get('platform') == '11' %}selected{% endif %}>Wii</option>
+            <option value="105" {% if request.query_params.get('platform') == '105' %}selected{% endif %}>GameCube</option>
+            <option value="83" {% if request.query_params.get('platform') == '83' %}selected{% endif %}>Nintendo 64</option>
+            <option value="24" {% if request.query_params.get('platform') == '24' %}selected{% endif %}>Game Boy Advance</option>
+            <option value="13" {% if request.query_params.get('platform') == '13' %}selected{% endif %}>DOS</option>
+            <option value="5" {% if request.query_params.get('platform') == '5' %}selected{% endif %}>macOS</option>
+            <option value="6" {% if request.query_params.get('platform') == '6' %}selected{% endif %}>Linux</option>
+            <option value="21" {% if request.query_params.get('platform') == '21' %}selected{% endif %}>Android</option>
+            <option value="3" {% if request.query_params.get('platform') == '3' %}selected{% endif %}>iOS</option>
+          </select>
+        </div>
+
+        <div id="subcategory-container" style="flex: 1; min-width: 200px; display: {% if request.query_params.get('genre') == 'sports' %}flex{% else %}none{% endif %}; flex-direction: column; gap: 6px; text-align: left;">
+          <label style="color: var(--muted); font-size: 0.8rem; font-weight: 500; display: flex; align-items: center; gap: 5px;">
+            <i class="fa-solid fa-tags"></i> Subcategoria (Esportes)
+          </label>
+          <select name="tag" id="tag-select" style="background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px 15px; color: var(--text); font-family: 'Inter', sans-serif; cursor: pointer; outline: none; width: 100%;">
+            <option value="">Todos os Esportes</option>
+            <option value="soccer" {% if request.query_params.get('tag') == 'soccer' %}selected{% endif %}>Futebol</option>
+            <option value="baseball" {% if request.query_params.get('tag') == 'baseball' %}selected{% endif %}>Baseball</option>
+            <option value="basketball" {% if request.query_params.get('tag') == 'basketball' %}selected{% endif %}>Basquete</option>
+            <option value="volleyball" {% if request.query_params.get('tag') == 'volleyball' %}selected{% endif %}>Vôlei</option>
+          </select>
+        </div>
+      </div>
     </form>
   </section>
 
@@ -486,8 +561,19 @@
 
   {% if games %}
   <div class="results-info">
-    Exibindo <span>{{ games|length }}</span> resultado(s) para
-    "<span>{{ request.query_params.get('search', '') }}</span>"
+    Exibindo <span>{{ games|length }}</span> resultado(s)
+    {% if request.query_params.get('search') or request.query_params.get('genre') or request.query_params.get('tag') %}
+      para
+      {% if request.query_params.get('search') %}
+        "<span>{{ request.query_params.get('search') }}</span>"
+      {% endif %}
+      {% if request.query_params.get('genre') %}
+        categoria "<span>{{ request.query_params.get('genre') }}</span>"
+      {% endif %}
+      {% if request.query_params.get('tag') %}
+        subcategoria "<span>{{ request.query_params.get('tag') }}</span>"
+      {% endif %}
+    {% endif %}
   </div>
 
   <!-- Filtros de avaliação RAWG/Steam para resultados da busca -->
@@ -569,13 +655,60 @@
           <span>Sem avaliação</span>
         </div>
         {% endif %}
-        <button
-          class="btn-add"
-          id="btn-{{ game.id }}"
-          onclick="addGame('{{ game.id }}', `{{ game.name|replace("'", "\\'") }}`, '{{ game.background_image or "" }}')"
-        >
-          <i class="fa-solid fa-plus"></i> Adicionar à Lista
-        </button>
+
+        <!-- Plataformas do jogo -->
+        {% if game.platforms %}
+        <div class="game-platforms" style="display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; margin-bottom: 6px;">
+          {% for p in game.platforms %}
+            <span class="platform-badge" style="background: rgba(56, 189, 248, 0.1); color: var(--blue); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 6px; padding: 2px 6px; font-size: 0.72rem; font-weight: 600;">
+              {{ p.platform.name }}
+            </span>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="add-flow-container" style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px; width: 100%;">
+          <div style="display: flex; gap: 6px; width: 100%;">
+            <!-- Seletor de Status -->
+            <select
+              id="status-select-{{ game.id }}"
+              class="status-select-dash"
+              style="flex: 1; background: var(--card-b); border: 1px solid var(--border); border-radius: 10px; color: var(--text); padding: 8px 10px; font-family: 'Inter', sans-serif; font-size: 0.82rem; cursor: pointer; outline: none; transition: border-color 0.2s;"
+            >
+              <option value="" disabled selected>Status...</option>
+              <option value="Pretendo Jogar">Pretendo Jogar</option>
+              <option value="Jogando">Jogando</option>
+              <option value="Dropado">Dropado</option>
+              <option value="Recomendado por Amigo">Recomendado por Amigo</option>
+            </select>
+
+            <!-- Seletor de Plataforma -->
+            <select
+              id="platform-select-{{ game.id }}"
+              class="status-select-dash"
+              style="flex: 1; background: var(--card-b); border: 1px solid var(--border); border-radius: 10px; color: var(--text); padding: 8px 10px; font-family: 'Inter', sans-serif; font-size: 0.82rem; cursor: pointer; outline: none; transition: border-color 0.2s;"
+            >
+              <option value="" disabled selected>Plataforma...</option>
+              {% if game.platforms %}
+                {% for p in game.platforms %}
+                  <option value="{{ p.platform.name }}">{{ p.platform.name }}</option>
+                {% endfor %}
+              {% else %}
+                <option value="PC">PC</option>
+                <option value="Outro">Outro</option>
+              {% endif %}
+            </select>
+          </div>
+
+          <button
+            class="btn-add"
+            id="btn-{{ game.id }}"
+            onclick="handleAddGame('{{ game.id }}', `{{ game.name|replace("'", "\\'") }}`, '{{ game.background_image or "" }}')"
+            style="width: 100%; margin-top: 0; padding: 10px 12px; font-size: 0.85rem;"
+          >
+            <i class="fa-solid fa-plus"></i> Adicionar à Lista
+          </button>
+        </div>
       </div>
     </div>
     {% else %}
@@ -669,14 +802,31 @@
       } catch (_e) { /* silencioso */ }
     }
 
-    // ====== Adicionar jogo ======
-    async function addGame(id, title, img) {
-      const token = localStorage.getItem('access_token');
-      const btn   = document.getElementById('btn-' + id);
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Adicionando...';
+    function toggleSubcategories(val) {
+      const container = document.getElementById('subcategory-container');
+      if (val === 'sports') {
+        container.style.display = 'flex';
+      } else {
+        container.style.display = 'none';
+        document.getElementById('tag-select').value = '';
+      }
+    }
 
-      // Registra visualizacao no backend (fire-and-forget)
+    // ====== Adicionar jogo ======
+    function handleAddGame(id, title, img) {
+      const statusEl = document.getElementById('status-select-' + id);
+      const platformEl = document.getElementById('platform-select-' + id);
+      const status = statusEl ? statusEl.value : '';
+      const platform = platformEl ? platformEl.value : '';
+      addGame(id, title, img, status, platform);
+    }
+
+    async function addGame(id, title, img, status = '', platform = '') {
+      const btn = document.getElementById('btn-' + id);
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+      const token = localStorage.getItem('access_token');
       if (token) {
         fetch('/api/community/view', {
           method: 'POST',
@@ -689,6 +839,12 @@
       formData.append('game_id', id);
       formData.append('title', title);
       formData.append('image', img);
+      if (status) {
+        formData.append('status', status);
+      }
+      if (platform) {
+        formData.append('platform', platform);
+      }
 
       try {
         const res = await fetch('/add-to-catalog/', {
@@ -698,9 +854,21 @@
         });
         const data = await res.json();
         if (res.ok) {
-          btn.innerHTML = '<i class="fa-solid fa-check"></i> Adicionado!';
+          let labelText = 'Adicionado';
+          if (status || platform) {
+            labelText += ' (';
+            if (status) labelText += status;
+            if (status && platform) labelText += ' - ';
+            if (platform) labelText += platform;
+            labelText += ')';
+          }
+          btn.innerHTML = '<i class="fa-solid fa-check"></i> ' + labelText;
           btn.classList.add('added');
           showToast('✅ ' + title + ' adicionado com sucesso!', 'success');
+          const selectStatus = document.getElementById('status-select-' + id);
+          if (selectStatus) selectStatus.disabled = true;
+          const selectPlatform = document.getElementById('platform-select-' + id);
+          if (selectPlatform) selectPlatform.disabled = true;
         } else {
           btn.disabled = false;
           btn.innerHTML = '<i class="fa-solid fa-plus"></i> Adicionar à Lista';
