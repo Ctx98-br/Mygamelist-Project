@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Descubra os jogos em alta na plataforma MyGameList e no mundo. Veja tendências, rankings e seus insights pessoais.">
+  <title>Em Alta 🔥 | MyGameList</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    :root {
+      --bg:     #050816;
+      --card:   #0f172a;
+      --card-b: #1e293b;
+      --text:   #e2e8f0;
+      --muted:  #94a3b8;
+      --border: rgba(255,255,255,.07);
+      --blue:   #38bdf8;
+      --purple: #818cf8;
+      --green:  #34d399;
+      --danger: #f87171;
+      --gold:   #fbbf24;
+      --orange: #fb923c;
+      --grad:   linear-gradient(135deg, #38bdf8, #818cf8);
+      --grad-fire: linear-gradient(135deg, #f97316, #ef4444);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(56,189,248,.08) 0%, transparent 35%),
+        radial-gradient(circle at 85% 85%, rgba(129,140,248,.08) 0%, transparent 35%),
+        radial-gradient(circle at 50% 50%, rgba(249,115,22,.05) 0%, transparent 50%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(5,8,22,.85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 800; font-size: 1.15rem;
+      background: var(--grad);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-brand i { -webkit-text-fill-color: var(--blue); }
+    .nav-links { display: flex; align-items: center; gap: 6px; }
+    .nav-link {
+      padding: 8px 13px; border-radius: 10px;
+      font-size: .87rem; font-weight: 600;
+      color: var(--muted); text-decoration: none;
+      transition: color .2s, background .2s;
+    }
+    .nav-link:hover { color: var(--blue); background: rgba(56,189,248,.08); }
+    .nav-link.fire { color: var(--orange); }
+    .nav-link.fire.active { background: rgba(249,115,22,.1); }
+    .nav-user { display: flex; align-items: center; gap: 10px; font-size: .88rem; font-weight: 600; color: var(--blue); }
+    .btn-nav {
+      border: none; padding: 8px 14px; border-radius: 10px;
+      font-size: .85rem; font-weight: 700; font-family: 'Inter', sans-serif;
+      cursor: pointer; transition: transform .18s, filter .18s;
+    }
+    .btn-nav:hover { transform: translateY(-1px); filter: brightness(1.1); }
+    .btn-logout { background: rgba(248,113,113,.15); color: var(--danger); border: 1px solid rgba(248,113,113,.2); }
+
+    .hero {
+      text-align: center; padding: 52px 24px 32px;
+    }
+    .hero-fire {
+      font-size: 3.5rem; line-height: 1; margin-bottom: 16px;
+      animation: flicker 2.5s ease-in-out infinite alternate;
+      display: block;
+    }
+    @keyframes flicker {
+      0% { filter: drop-shadow(0 0 8px #f97316) drop-shadow(0 0 20px #ef4444); }
+      100% { filter: drop-shadow(0 0 16px #fbbf24) drop-shadow(0 0 40px #f97316); }
+    }
+    .hero h1 {
+      font-size: 2.6rem; font-weight: 900;
+      background: var(--grad-fire);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+    .hero p { color: var(--muted); font-size: 1.05rem; max-width: 560px; margin: 0 auto; }
+
+    .container { max-width: 1320px; margin: 0 auto; padding: 0 24px 60px; }
+
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin: 40px 0 20px; flex-wrap: wrap; gap: 12px;
+    }
+    .section-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.3rem; font-weight: 800;
+    }
+    .section-title .icon-wrap {
+      width: 38px; height: 38px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; font-size: 1rem;
+    }
+    .tab-group {
+      display: flex; gap: 4px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 5px; width: fit-content; flex-wrap: wrap;
+    }
+    .tab-pill {
+      border: none; padding: 7px 14px; border-radius: 10px;
+      font-size: .8rem; font-weight: 700; font-family: 'Inter', sans-serif;
+      color: var(--muted); background: transparent; cursor: pointer;
+      transition: all .2s; white-space: nowrap;
+    }
+    .tab-pill:hover { color: var(--text); }
+    .tab-pill.active { background: var(--grad); color: #fff; }
+    .tab-pill.fire-active { background: var(--grad-fire); color: #fff; }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+      gap: 16px;
+    }
+    .game-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 18px; overflow: hidden;
+      transition: transform .22s, box-shadow .22s, border-color .22s;
+      position: relative;
+    }
+    .game-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 18px 45px rgba(0,0,0,.5);
+      border-color: rgba(56,189,248,.25);
+    }
+    .game-card.trending-mine { border-color: rgba(249,115,22,.4); }
+    .game-card.trending-mine:hover { border-color: rgba(249,115,22,.7); }
+    .game-img { width: 100%; height: 130px; object-fit: cover; background: var(--card-b); display: block; }
+    .game-body { padding: 12px; }
+    .game-title {
+      font-weight: 700; font-size: .88rem; line-height: 1.3; margin-bottom: 6px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .game-meta { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+    .meta-chip {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 3px 7px; border-radius: 7px;
+      font-size: .7rem; font-weight: 700;
+    }
+    .chip-blue   { background: rgba(56,189,248,.12);  color: var(--blue); }
+    .chip-gold   { background: rgba(251,191,36,.12);  color: var(--gold); }
+    .chip-green  { background: rgba(52,211,153,.12);  color: var(--green); }
+    .chip-orange { background: rgba(249,115,22,.15);  color: var(--orange); }
+    .chip-purple { background: rgba(129,140,248,.12); color: var(--purple); }
+    .chip-fire   { background: var(--grad-fire); color: #fff; }
+
+    .rank-badge {
+      position: absolute; top: 8px; left: 8px;
+      background: rgba(5,8,22,.8); border: 1px solid rgba(255,255,255,.1);
+      border-radius: 7px; padding: 2px 7px;
+      font-size: .7rem; font-weight: 800; color: var(--gold);
+      backdrop-filter: blur(4px);
+    }
+    .trending-badge {
+      position: absolute; top: 8px; right: 8px;
+      background: var(--grad-fire); border-radius: 7px;
+      padding: 2px 7px; font-size: .68rem; font-weight: 800; color: #fff;
+    }
+    .btn-add {
+      width: 100%; border: none; border-radius: 9px; padding: 9px;
+      background: var(--grad); color: #fff;
+      font-size: .81rem; font-weight: 700; font-family: 'Inter', sans-serif;
+      cursor: pointer; transition: transform .18s, filter .18s; display: block; text-align: center;
+    }
+    .btn-add:hover { transform: translateY(-1px); filter: brightness(1.1); }
+    .btn-add.added { background: linear-gradient(135deg, #34d399, #059669); }
+    .btn-add:disabled { opacity: .6; cursor: default; }
+
+    .insights-header {
+      background: linear-gradient(135deg, rgba(249,115,22,.1), rgba(239,68,68,.07));
+      border: 1px solid rgba(249,115,22,.2);
+      border-radius: 22px; padding: 24px;
+      display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .insights-icon { font-size: 2.2rem; }
+    .insights-stats { display: flex; gap: 24px; flex-wrap: wrap; }
+    .insight-stat { text-align: center; }
+    .insight-stat b { display: block; font-size: 1.8rem; font-weight: 900; }
+    .insight-stat b.fire { background: var(--grad-fire); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .insight-stat b.blue { color: var(--blue); }
+    .insight-stat span { color: var(--muted); font-size: .78rem; }
+    .insights-cta {
+      margin-left: auto;
+      background: var(--grad-fire); color: #fff;
+      border: none; border-radius: 12px; padding: 11px 18px;
+      font-size: .85rem; font-weight: 700; font-family: 'Inter', sans-serif;
+      cursor: pointer; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 7px;
+      transition: transform .18s, filter .18s;
+    }
+    .insights-cta:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+    .skeleton {
+      background: linear-gradient(90deg, var(--card-b) 25%, rgba(255,255,255,.04) 50%, var(--card-b) 75%);
+      background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 10px;
+    }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .skel-card { height: 210px; border-radius: 18px; }
+
+    .login-gate {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 22px; padding: 40px; text-align: center;
+    }
+    .login-gate .gate-icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .login-gate h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; }
+    .login-gate p { color: var(--muted); margin-bottom: 20px; }
+    .btn-login {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--grad); color: #fff; text-decoration: none;
+      padding: 12px 24px; border-radius: 12px; font-weight: 700;
+      transition: transform .18s, filter .18s;
+    }
+    .btn-login:hover { transform: translateY(-2px); filter: brightness(1.08); }
+
+    .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
+    .toast {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px 18px;
+      font-size: .9rem; font-weight: 600;
+      display: flex; align-items: center; gap: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.4);
+      animation: slideIn .3s ease; max-width: 320px;
+    }
+    .toast.success { border-color: rgba(52,211,153,.3); color: var(--green); }
+    .toast.error   { border-color: rgba(248,113,113,.3); color: var(--danger); }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    .section-divider { height: 1px; background: var(--border); margin: 0 0 20px; }
+    .sub-tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.8rem; }
+      nav { padding: 0 14px; }
+      .nav-link { display: none; }
+      .section-header { flex-direction: column; align-items: flex-start; }
+      .insights-header { flex-direction: column; }
+      .insights-cta { margin-left: 0; width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-brand"><i class="fa-solid fa-gamepad"></i> MyGameList</div>
+    <div class="nav-links">
+      <a href="/dashboard" class="nav-link"><i class="fa-solid fa-compass"></i> Explorar</a>
+      <a href="/my-list"   class="nav-link"><i class="fa-solid fa-list"></i> Minha Lista</a>
+      <a href="/forum"     class="nav-link"><i class="fa-solid fa-comments"></i> Fórum</a>
+      <a href="/em-alta"   class="nav-link fire active"><i class="fa-solid fa-fire"></i> Em Alta</a>
+      <a href="/perfil"    class="nav-link"><i class="fa-solid fa-user"></i> Perfil</a>
+      <a href="/admin" class="nav-link" id="admin-link" style="display:none;color:var(--purple)">
+        <i class="fa-solid fa-shield-halved"></i> Admin
+      </a>
+    </div>
+    <div class="nav-user">
+      <span id="user-display">Carregando...</span>
+      <button class="btn-nav btn-logout" onclick="logout()">
+        <i class="fa-solid fa-right-from-bracket"></i> Sair
+      </button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <span class="hero-fire">🔥</span>
+    <h1>Em Alta</h1>
+    <p>Os jogos mais quentes da plataforma e do mundo — e o que isso tem a ver com você.</p>
+  </section>
+
+  <div class="container">
+
+    <!-- SEÇÃO 1: Em Alta na Plataforma -->
+    <div class="section-header">
+      <div class="section-title">
+        <div class="icon-wrap" style="background:rgba(249,115,22,.15)">
+          <i class="fa-solid fa-users" style="color:var(--orange)"></i>
+        </div>
+        Em Alta na Plataforma
+      </div>
+      <div class="tab-group" id="period-tabs">
+        <button class="tab-pill fire-active" onclick="loadPlatformTrending('week', this)">Esta Semana</button>
+        <button class="tab-pill" onclick="loadPlatformTrending('month', this)">Este Mês</button>
+      </div>
+    </div>
+    <div class="section-divider"></div>
+
+    <div class="sub-tabs">
+      <div class="tab-group">
+        <button class="tab-pill active" id="psub-added" onclick="switchPlatformSub('added')">
+          <i class="fa-solid fa-plus"></i> Mais Adicionados
+        </button>
+        <button class="tab-pill" id="psub-rated" onclick="switchPlatformSub('rated')">
+          <i class="fa-solid fa-star"></i> Melhor Avaliados
+        </button>
+      </div>
+    </div>
+
+    <div id="platform-grid" class="games-grid">
+      <div class="skeleton skel-card"></div>
+      <div class="skeleton skel-card"></div>
+      <div class="skeleton skel-card"></div>
+      <div class="skeleton skel-card"></div>
+      <div class="skeleton skel-card"></div>
+      <div class="skeleton skel-card"></div>
+    </div>
+
+    <!-- SEÇÃO 2: Em Alta Externamente -->
+    <div class="section-header" style="margin-top:52px">
+      <div class="section-title">
+        <div class="icon-wrap" style="background:rgba(129,140,248,.15)">
+          <i class="fa-solid fa-globe" style="color:var(--purple)"></i>
+        </div>
+        Em Alta no Mundo
+      </div>
+      <div class="tab-group" id="ext-tabs">
+        <button class="tab-pill fire-active" id="etab-all" onclick="loadExternal('all', this)">
+          <i class="fa-solid fa-earth-americas"></i> Todos
+        </button>
+        <button class="tab-pill" id="etab-pc" onclick="loadExternal('pc', this)">
+          <i class="fa-solid fa-desktop"></i> PC
+        </button>
+        <button class="tab-pill" id="etab-playstation" onclick="loadExternal('playstation', this)">
+          <i class="fa-brands fa-playstation"></i> PlayStation
+        </button>
+        <button class="tab-pill" id="etab-xbox" onclick="loadExternal('xbox', this)">
+          <i class="fa-brands fa-xbox"></i> Xbox
+        </button>
+        <button class="tab-pill" id="etab-mobile" onclick="loadExternal('mobile', this)">
+          <i class="fa-solid fa-mobile-screen"></i> Mobile
+        </button>
+      </div>
+    </div>
+    <div class="section-divider"></div>
+
+    <div id="external-grid" class="games-grid">
+      <div class="skeleton skel-card"></div>
+      <div class="skeleton skel-card"></div>
+      <div class="skeleton skel-card"></div>
+      <div class="skeleton skel-card"></div>
+      <div class="skeleton skel-card"></div>
+      <div class="skeleton skel-card"></div>
+    </div>
+
+    <!-- SEÇÃO 3: Meus Insights -->
+    <div class="section-header" style="margin-top:52px">
+      <div class="section-title">
+        <div class="icon-wrap" style="background:rgba(52,211,153,.15)">
+          <i class="fa-solid fa-chart-line" style="color:var(--green)"></i>
+        </div>
+        Meus Insights
+      </div>
+    </div>
+    <div class="section-divider"></div>
+
+    <div id="my-insights-container">
+      <div class="skeleton" style="height:110px;border-radius:22px;margin-bottom:20px"></div>
+      <div class="games-grid">
+        <div class="skeleton skel-card"></div>
+        <div class="skeleton skel-card"></div>
+        <div class="skeleton skel-card"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script>
+    let myListIds    = new Set();
+    let platformData = {};
+    let currentPeriod = 'week';
+    let currentPlatformSub = 'added';
+    let token = localStorage.getItem('access_token');
+    let isLoggedIn = false;
+
+    // ── Auth ──────────────────────────────────────────────────────────────────
+    async function initAuth() {
+      if (!token) {
+        document.getElementById('user-display').textContent = 'Visitante';
+        return;
+      }
+      try {
+        const res = await fetch('/users/me/', { headers: { Authorization: 'Bearer ' + token } });
+        if (!res.ok) { token = null; document.getElementById('user-display').textContent = 'Visitante'; return; }
+        const data = await res.json();
+        isLoggedIn = true;
+        document.getElementById('user-display').textContent = 'Olá, ' + (data.full_name || data.username);
+        if (data.is_admin) {
+          const al = document.getElementById('admin-link');
+          if (al) al.style.display = '';
+        }
+        await loadMyListIds();
+      } catch (_) { token = null; }
+    }
+
+    async function loadMyListIds() {
+      if (!token) return;
+      try {
+        const res = await fetch('/api/my-games', { headers: { Authorization: 'Bearer ' + token } });
+        if (res.ok) { const g = await res.json(); myListIds = new Set(g.map(x => x.game_api_id)); }
+      } catch (_) {}
+    }
+
+    // ── Platform Trending ─────────────────────────────────────────────────────
+    async function loadPlatformTrending(period, btn) {
+      document.querySelectorAll('#period-tabs .tab-pill').forEach(b => b.className = 'tab-pill');
+      btn.className = 'tab-pill fire-active';
+      currentPeriod = period;
+      if (platformData[period]) { renderPlatformGrid(); return; }
+      document.getElementById('platform-grid').innerHTML = skeletonHTML(6);
+      try {
+        const res = await fetch('/api/insights/trending-platform?period=' + period);
+        platformData[period] = await res.json();
+        renderPlatformGrid();
+      } catch (_) {
+        document.getElementById('platform-grid').innerHTML = errHTML();
+      }
+    }
+
+    function switchPlatformSub(sub) {
+      currentPlatformSub = sub;
+      ['added','rated'].forEach(s => {
+        document.getElementById('psub-' + s).className = 'tab-pill' + (s === sub ? ' active' : '');
+      });
+      renderPlatformGrid();
+    }
+
+    function renderPlatformGrid() {
+      const d = platformData[currentPeriod];
+      if (!d) return;
+      const games = currentPlatformSub === 'added' ? d.most_added : d.best_rated;
+      if (!games || !games.length) {
+        document.getElementById('platform-grid').innerHTML = emptyHTML('Nenhum jogo encontrado para este período.');
+        return;
+      }
+      document.getElementById('platform-grid').innerHTML = games.map((g, i) => {
+        const inList = myListIds.has(g.game_api_id);
+        const chip = currentPlatformSub === 'added'
+          ? `<span class="meta-chip chip-orange"><i class="fa-solid fa-users"></i> ${g.count} jogadores</span>`
+          : `<span class="meta-chip chip-gold"><i class="fa-solid fa-star"></i> ${g.avg_rating}/5 <span style="opacity:.7">(${g.voters})</span></span>`;
+        return `
+          <div class="game-card">
+            <span class="rank-badge">#${i+1}</span>
+            ${inList ? '<span class="trending-badge">✓ Na lista</span>' : ''}
+            <img class="game-img" src="${g.image_url || placeholder('0f172a','fb923c')}"
+                 alt="${esc(g.title)}" loading="lazy"
+                 onerror="this.src='${placeholder('0f172a','fb923c')}'">
+            <div class="game-body">
+              <div class="game-title">${esc(g.title)}</div>
+              <div class="game-meta">${chip}</div>
+              ${addBtn(g.game_api_id, g.title, g.image_url, 'p')}
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    // ── External (RAWG) ───────────────────────────────────────────────────────
+    async function loadExternal(platform, btn) {
+      document.querySelectorAll('#ext-tabs .tab-pill').forEach(b => b.className = 'tab-pill');
+      btn.className = 'tab-pill fire-active';
+      document.getElementById('external-grid').innerHTML = skeletonHTML(6);
+      try {
+        const res = await fetch('/api/insights/trending-external?platform=' + platform);
+        const games = await res.json();
+        renderExternalGrid(games);
+      } catch (_) {
+        document.getElementById('external-grid').innerHTML = errHTML();
+      }
+    }
+
+    function renderExternalGrid(games) {
+      if (!games.length) {
+        document.getElementById('external-grid').innerHTML = emptyHTML('Nenhum jogo encontrado.');
+        return;
+      }
+      document.getElementById('external-grid').innerHTML = games.map((g, i) => {
+        const inList = myListIds.has(g.game_api_id);
+        return `
+          <div class="game-card">
+            <span class="rank-badge">#${i+1}</span>
+            ${inList ? '<span class="trending-badge">✓ Na lista</span>' : ''}
+            <img class="game-img" src="${g.image_url || placeholder('0f172a','818cf8')}"
+                 alt="${esc(g.title)}" loading="lazy"
+                 onerror="this.src='${placeholder('0f172a','818cf8')}'">
+            <div class="game-body">
+              <div class="game-title">${esc(g.title)}</div>
+              <div class="game-meta">
+                ${g.rating ? `<span class="meta-chip chip-gold"><i class="fa-solid fa-star"></i> ${g.rating.toFixed(1)}</span>` : ''}
+                ${g.metacritic ? `<span class="meta-chip chip-green">MC ${g.metacritic}</span>` : ''}
+                ${g.added ? `<span class="meta-chip chip-blue"><i class="fa-solid fa-users"></i> ${Math.round(g.added/1000)}k</span>` : ''}
+              </div>
+              ${g.platforms && g.platforms.length
+                ? `<div class="game-meta">${g.platforms.slice(0,3).map(p => `<span class="meta-chip chip-purple" style="font-size:.63rem">${esc(p)}</span>`).join('')}</div>`
+                : ''}
+              ${addBtn(g.game_api_id, g.title, g.image_url, 'e')}
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    // ── My Insights ───────────────────────────────────────────────────────────
+    async function loadMyInsights() {
+      const c = document.getElementById('my-insights-container');
+      if (!isLoggedIn) {
+        c.innerHTML = `
+          <div class="login-gate">
+            <div class="gate-icon">🔐</div>
+            <h3>Faça login para ver seus Insights</h3>
+            <p>Correlacionamos sua lista de jogos com os trends da plataforma — veja o que você está por dentro e o que está perdendo.</p>
+            <a href="/login" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> Entrar na conta</a>
+          </div>`;
+        return;
+      }
+      try {
+        const res = await fetch('/api/insights/my-insights', { headers: { Authorization: 'Bearer ' + token } });
+        const d = await res.json();
+        const pct = d.total_games > 0 ? Math.round((d.trending_overlap / d.total_games) * 100) : 0;
+        c.innerHTML = `
+          <div class="insights-header">
+            <div class="insights-icon">📊</div>
+            <div>
+              <div style="font-size:.95rem;font-weight:700;margin-bottom:4px">Sua Coleção em Análise</div>
+              <div style="color:var(--muted);font-size:.82rem">Baseado nos ${d.total_games} jogos da sua lista</div>
+            </div>
+            <div class="insights-stats">
+              <div class="insight-stat"><b class="fire">${d.total_games}</b><span>Na lista</span></div>
+              <div class="insight-stat"><b class="blue">${d.trending_overlap}</b><span>Em trending</span></div>
+              <div class="insight-stat"><b style="color:var(--green)">${pct}%</b><span>On fire 🔥</span></div>
+            </div>
+            <a href="/my-list" class="insights-cta"><i class="fa-solid fa-list"></i> Minha Lista</a>
+          </div>
+          <div class="games-grid">
+            ${d.games.length ? d.games.map((g, i) => `
+              <div class="game-card ${g.is_trending ? 'trending-mine' : ''}">
+                ${g.is_trending ? '<span class="trending-badge">🔥 Trending</span>' : ''}
+                <span class="rank-badge">#${i+1}</span>
+                <img class="game-img" src="${g.image_url || placeholder('0f172a','34d399')}"
+                     alt="${esc(g.title)}" loading="lazy"
+                     onerror="this.src='${placeholder('0f172a','34d399')}'">
+                <div class="game-body">
+                  <div class="game-title">${esc(g.title)}</div>
+                  <div class="game-meta">
+                    ${g.rating ? `<span class="meta-chip chip-gold"><i class="fa-solid fa-star"></i> ${g.rating}/5</span>` : ''}
+                    ${g.is_trending ? `<span class="meta-chip chip-fire"><i class="fa-solid fa-fire"></i> ${g.trending_count}</span>` : ''}
+                    ${g.status ? `<span class="meta-chip chip-blue">${esc(g.status)}</span>` : ''}
+                  </div>
+                </div>
+              </div>`).join('')
+              : '<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:40px 20px">Adicione jogos à sua lista para ver insights personalizados!</p>'
+            }
+          </div>`;
+      } catch (_) {
+        document.getElementById('my-insights-container').innerHTML = errHTML();
+      }
+    }
+
+    // ── Quick Add ─────────────────────────────────────────────────────────────
+    function addBtn(gameApiId, title, img, prefix) {
+      const btnId = `${prefix}add-${gameApiId}`;
+      const inList = myListIds.has(gameApiId);
+      if (!isLoggedIn) {
+        return `<a href="/login" class="btn-add" style="text-decoration:none"><i class="fa-solid fa-right-to-bracket"></i> Login para adicionar</a>`;
+      }
+      if (inList) {
+        return `<button class="btn-add added" disabled><i class="fa-solid fa-check"></i> Na Lista</button>`;
+      }
+      const safeTitle = String(title).replace(/'/g, "\\'").replace(/`/g, '\\`');
+      const safeImg = String(img || '').replace(/'/g, "\\'");
+      return `<button class="btn-add" id="${btnId}" onclick="quickAdd(${gameApiId}, '${safeTitle}', '${safeImg}', '${btnId}')">
+        <i class="fa-solid fa-plus"></i> Adicionar
+      </button>`;
+    }
+
+    async function quickAdd(gameApiId, title, imageUrl, btnId) {
+      if (!token) { window.location.href = '/login'; return; }
+      const btn = document.getElementById(btnId);
+      if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; }
+      const fd = new FormData();
+      fd.append('game_id', gameApiId);
+      fd.append('title', title);
+      fd.append('image', imageUrl);
+      try {
+        const res = await fetch('/add-to-catalog/', {
+          method: 'POST',
+          headers: { Authorization: 'Bearer ' + token },
+          body: fd,
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Erro');
+        myListIds.add(gameApiId);
+        if (btn) { btn.className = 'btn-add added'; btn.innerHTML = '<i class="fa-solid fa-check"></i> Na Lista'; btn.disabled = true; }
+        showToast('✅ Adicionado à lista!', 'success');
+      } catch (e) {
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-plus"></i> Adicionar'; }
+        showToast('❌ ' + e.message, 'error');
+      }
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function placeholder(bg, fg) {
+      return `https://via.placeholder.com/300x130/${bg}/${fg}?text=Sem+Imagem`;
+    }
+    function skeletonHTML(n) {
+      return Array(n).fill('<div class="skeleton skel-card"></div>').join('');
+    }
+    function errHTML() {
+      return '<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:40px"><i class="fa-solid fa-triangle-exclamation" style="color:var(--danger)"></i> Erro ao carregar dados.</p>';
+    }
+    function emptyHTML(msg) {
+      return `<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:40px">${msg}</p>`;
+    }
+    function showToast(msg, type) {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = 'toast ' + (type || 'success');
+      t.textContent = msg;
+      c.appendChild(t);
+      setTimeout(() => t.remove(), 3200);
+    }
+    function logout() {
+      localStorage.removeItem('access_token');
+      document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      fetch('/logout', { method: 'POST' }).finally(() => { window.location.href = '/login'; });
+    }
+
+    // ── Boot ──────────────────────────────────────────────────────────────────
+    (async () => {
+      await initAuth();
+      const firstPTab = document.querySelector('#period-tabs .tab-pill');
+      const firstETab = document.getElementById('etab-all');
+      await Promise.all([
+        loadPlatformTrending('week', firstPTab),
+        loadExternal('all', firstETab),
+        loadMyInsights(),
+      ]);
+    })();
+  </script>
+</body>
+</html>

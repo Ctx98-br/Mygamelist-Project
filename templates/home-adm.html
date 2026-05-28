@@ -266,6 +266,34 @@
       .stats-row { grid-template-columns: 1fr; }
       nav { padding: 0 14px; }
     }
+
+    /* ── TABS DE SEÇÃO ── */
+    .tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+    .tab-btn {
+      border: none; background: transparent;
+      padding: 10px 18px; border-radius: 10px 10px 0 0;
+      font-size: .9rem; font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      color: var(--muted); cursor: pointer;
+      transition: color .2s, background .2s;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    .tab-btn:hover { color: var(--blue); background: rgba(56,189,248,.05); }
+    .tab-btn.active {
+      color: var(--blue);
+      border-bottom-color: var(--blue);
+      background: rgba(56,189,248,.06);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* FORUM TABLE EXTRAS */
+    .forum-content-cell {
+      max-width: 340px; overflow: hidden;
+      text-overflow: ellipsis; white-space: nowrap;
+      color: var(--muted); font-size: .82rem;
+    }
   </style>
 </head>
 
@@ -306,7 +334,7 @@
       </button>
       <div id="msg-denied-promote" class="msg" style="margin-top: 12px;"></div>
     </div>
-  </div>
+  </div><!-- /access-denied -->
 
   <!-- Conteúdo admin (oculto até verificar permissão) -->
   <div class="container" id="admin-content" style="display:none">
@@ -316,6 +344,18 @@
       <p>Gerencie usuários e contas do sistema MyGameList.</p>
     </div>
 
+    <!-- TABS DE NAVEGAÇÃO -->
+    <div class="tabs" role="tablist">
+      <button class="tab-btn active" id="tab-btn-usuarios" onclick="switchTab('usuarios')" role="tab" aria-selected="true">
+        <i class="fa-solid fa-users"></i> Usuários
+      </button>
+      <button class="tab-btn" id="tab-btn-forum" onclick="switchTab('forum')" role="tab" aria-selected="false">
+        <i class="fa-solid fa-comments"></i> Posts do Fórum
+      </button>
+    </div>
+
+    <!-- TAB: USUÁRIOS -->
+    <div id="tab-usuarios">
     <div class="stats-row">
       <div class="stat-card">
         <div class="stat-icon" style="background:rgba(56,189,248,.12)"><i class="fa-solid fa-users" style="color:var(--blue)"></i></div>
@@ -419,6 +459,37 @@
       </section>
 
     </div>
+    </div>
+
+    <!-- TAB: FÓRUM -->
+    <div id="tab-forum" class="tab-panel" style="display:none">
+      <section class="card">
+        <h2><i class="fa-solid fa-comments"></i> Moderação do Fórum</h2>
+        <p>Visualize e exclua posts do fórum. A exclusão remove também todos os comentários do post.</p>
+        <div class="search-row">
+          <input id="busca-forum" placeholder="Pesquisar por conteúdo ou autor..." oninput="filtrarForum()" />
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Autor</th>
+                <th>Conteúdo</th>
+                <th>Data</th>
+                <th>Likes</th>
+                <th>Coment.</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody id="listaPosts">
+              <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:28px;">Carregando posts...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
   </div>
 
   <div class="toast-container" id="toast-container"></div>
@@ -717,6 +788,86 @@
         msgEl.textContent = '❌ ' + e.message;
         msgEl.className = 'msg error';
       }
+    }
+
+
+    function switchTab(tab) {
+      document.getElementById('tab-usuarios').style.display = tab === 'usuarios' ? '' : 'none';
+      document.getElementById('tab-forum').style.display   = tab === 'forum'    ? '' : 'none';
+      document.getElementById('tab-btn-usuarios').classList.toggle('active', tab === 'usuarios');
+      document.getElementById('tab-btn-forum').classList.toggle('active',    tab === 'forum');
+      document.getElementById('tab-btn-usuarios').setAttribute('aria-selected', tab === 'usuarios');
+      document.getElementById('tab-btn-forum').setAttribute('aria-selected',    tab === 'forum');
+      if (tab === 'forum') carregarPosts();
+    }
+
+    // ====== Forum Posts ======
+    let cachePosts = [];
+
+    async function carregarPosts() {
+      const token = localStorage.getItem('access_token');
+      const tbody = document.getElementById('listaPosts');
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px;">Carregando...</td></tr>';
+      try {
+        const res = await fetch('/admin/forum/posts', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!res.ok) throw new Error('Sem permissão ou erro no servidor');
+        cachePosts = await res.json();
+        renderPosts(cachePosts);
+      } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted)">Erro: ${e.message}</td></tr>`;
+      }
+    }
+
+    function renderPosts(posts) {
+      const tbody = document.getElementById('listaPosts');
+      if (!posts.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:28px;">Nenhum post encontrado.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = posts.map(p => `
+        <tr>
+          <td style="color:var(--muted);font-size:.8rem;font-weight:600">#${p.id}</td>
+          <td class="post-content-cell">${escapePost(p.content)}</td>
+          <td><span style="color:var(--blue);font-weight:700">@${p.is_anonymous ? 'Anônimo' : (p.author_username || '—')}</span></td>
+          <td><span style="color:var(--gold)">♥ ${p.likes}</span></td>
+          <td><span style="color:var(--muted)">💬 ${p.comment_count}</span></td>
+          <td style="color:var(--muted);font-size:.78rem;white-space:nowrap">${p.created_at ? new Date(p.created_at).toLocaleString('pt-BR') : '—'}</td>
+          <td>
+            <button class="btn-sm btn-del" onclick="excluirPost(${p.id})">
+              <i class="fa-solid fa-trash"></i> Excluir
+            </button>
+          </td>
+        </tr>`).join('');
+    }
+
+    function filtrarForum() {
+      const termo = document.getElementById('busca-forum').value.toLowerCase();
+      const filtrado = cachePosts.filter(p =>
+        (p.content || '').toLowerCase().includes(termo) ||
+        (p.author_username || '').toLowerCase().includes(termo)
+      );
+      renderPosts(filtrado);
+    }
+
+    async function excluirPost(postId) {
+      if (!confirm('Excluir permanentemente este post e todos os seus comentários? Esta ação não pode ser desfeita!')) return;
+      const token = localStorage.getItem('access_token');
+      try {
+        const res = await fetch('/admin/forum/posts/' + postId, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + token },
+        });
+        if (!res.ok) throw new Error((await res.json()).detail || 'Erro');
+        showToast('Post excluído com sucesso.', 'success');
+        carregarPosts();
+      } catch(e) { showToast('Erro: ' + e.message, 'error'); }
+    }
+
+    function escapePost(text) {
+      if (!text) return '';
+      return String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
     checkAuth();

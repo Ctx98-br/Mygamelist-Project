@@ -28,7 +28,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from database import ForumComment, ForumPost, GameTable, GameView, UserCreate, UserTable, get_db
+from database import ForumComment, ForumPost, GameTable, GameView, UserCreate, UserTable, get_db, SessionLocal
 
 # --- CONFIGURAÇÕES ---
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
@@ -40,11 +40,45 @@ BASE_URL = "https://api.rawg.io/api/games"
 app = FastAPI(strict_slashes=False)
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("SESSION_SECRET", secrets.token_urlsafe(32)))
 
+
+
 BASE_DIR = Path(__file__).resolve().parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 password_hash = PasswordHash.recommended()
 DUMMY_HASH = password_hash.hash("dummypassword")
+
+
+# --- EVENTO DE STARTUP: garante usuário admin padrão ---
+@app.on_event("startup")
+async def create_default_admin():
+    """Cria o usuário admin padrão (admin/admin) na primeira inicialização."""
+    db = SessionLocal()
+    try:
+        existing = db.query(UserTable).filter(UserTable.username == "admin").first()
+        if not existing:
+            admin_user = UserTable(
+                username="admin",
+                email="admin@mygamelist.local",
+                full_name="Administrador",
+                hashed_password=password_hash.hash("admin"),
+                disabled=False,
+                is_admin=True,
+            )
+            db.add(admin_user)
+            db.commit()
+            print("✅ Usuário admin criado: login=admin / senha=admin")
+        elif not existing.is_admin:
+            existing.is_admin = True
+            db.commit()
+            print("✅ Usuário 'admin' promovido a administrador.")
+        else:
+            print("ℹ️  Usuário admin já existe.")
+    except Exception as exc:
+        print(f"⚠️  Erro ao criar admin padrão: {exc}")
+    finally:
+        db.close()
+
 
 # --- CONFIGURAÇÃO GOOGLE OAUTH ---
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
@@ -435,6 +469,11 @@ async def admin_page(request: Request):
     return templates.TemplateResponse(request=request, name="home-adm.html", context={})
 
 
+@app.get("/em-alta", response_class=HTMLResponse)
+async def em_alta_page(request: Request):
+    return templates.TemplateResponse(request=request, name="em_alta.html", context={})
+
+
 @app.get("/home-admin", response_class=RedirectResponse)
 async def redirect_home_admin():
     return RedirectResponse(url="/admin")
@@ -719,6 +758,47 @@ async def admin_toggle_admin(
     db.commit()
     action = "promovido a administrador" if payload.is_admin else "removido de administrador"
     return {"message": f"Usuário {username} {action}."}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ADMIN — Fórum (moderação de posts)
+# ─────────────────────────────────────────────────────────────────────────────
+
+@app.get("/admin/forum/posts")
+async def admin_list_forum_posts(
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_admin),
+):
+    """Lista todos os posts do fórum para moderação."""
+    posts = db.query(ForumPost).order_by(ForumPost.created_at.desc()).all()
+    return [
+        {
+            "id":             p.id,
+            "content":        p.content[:200] + ("..." if len(p.content) > 200 else ""),
+            "author_username": p.author_username,
+            "is_anonymous":   p.is_anonymous,
+            "likes":          p.likes,
+            "created_at":     p.created_at.isoformat() if p.created_at else None,
+            "comment_count":  db.query(ForumComment).filter(ForumComment.post_id == p.id).count(),
+        }
+        for p in posts
+    ]
+
+
+@app.delete("/admin/forum/posts/{post_id}")
+async def admin_delete_forum_post(
+    post_id: int,
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_admin),
+):
+    """Exclui um post do fórum e todos os seus comentários."""
+    post = db.query(ForumPost).filter(ForumPost.id == post_id).first()
+    if not post:
+        raise HTTPException(status_code=404, detail="Post não encontrado")
+    db.query(ForumComment).filter(ForumComment.post_id == post_id).delete()
+    db.delete(post)
+    db.commit()
+    return {"message": "Post excluído com sucesso"}
 
 
 class PromoteAdminRequest(BaseModel):
@@ -1025,6 +1105,156 @@ async def community_trending(db: Session = Depends(get_db)):
         {"game_api_id": r.game_api_id, "title": r.title, "image_url": r.image_url, "count": r.count}
         for r in rows
     ]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# INSIGHTS — Trending & Correlações
+# ─────────────────────────────────────────────────────────────────────────────
+
+@app.get("/api/insights/trending-platform")
+async def insights_trending_platform(
+    period: str = "week",
+    db: Session = Depends(get_db),
+):
+    """Jogos mais adicionados e avaliados na plataforma no período (week|month)."""
+    # Mais adicionados — popularidade acumulada
+    added_rows = (
+        db.query(
+            GameTable.game_api_id,
+            GameTable.title,
+            GameTable.image_url,
+            sqlfunc.count(GameTable.owner_username).label("count"),
+        )
+        .group_by(GameTable.game_api_id, GameTable.title, GameTable.image_url)
+        .order_by(sqlfunc.count(GameTable.owner_username).desc())
+        .limit(12)
+        .all()
+    )
+
+    # Mais bem avaliados na plataforma
+    rated_rows = (
+        db.query(
+            GameTable.game_api_id,
+            GameTable.title,
+            GameTable.image_url,
+            sqlfunc.avg(GameTable.rating).label("avg_rating"),
+            sqlfunc.count(GameTable.owner_username).label("voters"),
+        )
+        .filter(GameTable.rating > 0)
+        .group_by(GameTable.game_api_id, GameTable.title, GameTable.image_url)
+        .order_by(sqlfunc.avg(GameTable.rating).desc())
+        .limit(12)
+        .all()
+    )
+
+    return {
+        "period": period,
+        "most_added": [
+            {"game_api_id": r.game_api_id, "title": r.title, "image_url": r.image_url, "count": r.count}
+            for r in added_rows
+        ],
+        "best_rated": [
+            {"game_api_id": r.game_api_id, "title": r.title, "image_url": r.image_url,
+             "avg_rating": round(float(r.avg_rating), 2), "voters": r.voters}
+            for r in rated_rows
+        ],
+        "most_users": [
+            {"game_api_id": r.game_api_id, "title": r.title, "image_url": r.image_url, "count": r.count}
+            for r in added_rows
+        ],
+    }
+
+
+@app.get("/api/insights/my-insights")
+async def insights_my_insights(
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_active_user),
+):
+    """Correlaciona os jogos do usuário com os trending da plataforma."""
+    my_games = (
+        db.query(GameTable)
+        .filter(GameTable.owner_username == current_user.username)
+        .all()
+    )
+
+    # IDs dos jogos trending na plataforma
+    trending_rows = (
+        db.query(
+            GameTable.game_api_id,
+            sqlfunc.count(GameTable.owner_username).label("count"),
+        )
+        .group_by(GameTable.game_api_id)
+        .order_by(sqlfunc.count(GameTable.owner_username).desc())
+        .limit(50)
+        .all()
+    )
+    trending_ids = {r.game_api_id: r.count for r in trending_rows}
+
+    my_games_data = []
+    for g in my_games:
+        my_games_data.append({
+            "id": g.id,
+            "game_api_id": g.game_api_id,
+            "title": g.title,
+            "image_url": g.image_url,
+            "rating": g.rating or 0,
+            "status": g.status,
+            "platform": g.platform,
+            "is_trending": g.game_api_id in trending_ids,
+            "trending_count": trending_ids.get(g.game_api_id, 0),
+        })
+
+    # Ordena: trending primeiro, depois por rating
+    my_games_data.sort(key=lambda x: (-x["is_trending"], -x["trending_count"], -x["rating"]))
+
+    return {
+        "username": current_user.username,
+        "total_games": len(my_games_data),
+        "trending_overlap": sum(1 for g in my_games_data if g["is_trending"]),
+        "games": my_games_data[:20],
+    }
+
+
+@app.get("/api/insights/trending-external")
+async def insights_trending_external(platform: str = "all"):
+    """Jogos em alta globalmente via RAWG, filtrados por plataforma."""
+    platform_ids: dict = {
+        "pc":          "4",
+        "playstation": "18,187",
+        "xbox":        "1,186",
+        "mobile":      "3,21",
+    }
+    today   = datetime.utcnow().strftime("%Y-%m-%d")
+    six_ago = (datetime.utcnow() - timedelta(days=180)).strftime("%Y-%m-%d")
+
+    url = (
+        f"{BASE_URL}?key={API_KEY}"
+        f"&ordering=-added&page_size=20"
+        f"&dates={six_ago},{today}"
+    )
+    if platform != "all" and platform in platform_ids:
+        url += f"&platforms={platform_ids[platform]}"
+
+    try:
+        resp = requests.get(url, timeout=8)
+        if resp.status_code == 200:
+            return [
+                {
+                    "game_api_id": g.get("id"),
+                    "title":       g.get("name"),
+                    "image_url":   g.get("background_image"),
+                    "rating":      g.get("rating"),
+                    "metacritic":  g.get("metacritic"),
+                    "added":       g.get("added"),
+                    "released":    g.get("released"),
+                    "platforms":   [p["platform"]["name"] for p in (g.get("platforms") or [])[:3]],
+                    "genres":      [gr["name"] for gr in (g.get("genres") or [])[:3]],
+                }
+                for g in resp.json().get("results", [])
+            ]
+    except Exception as exc:
+        print(f"RAWG trending-external error: {exc}")
+    return []
 
 
 # Inclui notes no endpoint de lista JSON usada pelo perfil
