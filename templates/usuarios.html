@@ -408,17 +408,16 @@ nav{
         <!-- PSN Stats (hidden if not connected) -->
         <div id="psn-stats" style="display: none; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px;">
           <div style="display: flex; justify-content: space-between; font-size: 0.82rem;">
-            <span style="color: var(--muted);"><i class="fa-solid fa-star"></i> Nível PSN</span>
-            <strong id="psn-level" style="color: #0070d1;">Lv 0</strong>
+            <span style="color: var(--muted);"><i class="fa-solid fa-gamepad"></i> Jogos PS no site</span>
+            <strong id="psn-site-games" style="color: #0070d1;">—</strong>
           </div>
-          <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-top: 6px;">
-            <span style="color: var(--muted);"><i class="fa-solid fa-trophy"></i> Troféus</span>
-            <div style="display: flex; gap: 6px; font-size: 0.75rem;">
-              <span style="color: #d1a100;"><i class="fa-solid fa-trophy"></i> <span id="psn-plat">0</span></span>
-              <span style="color: #d1d1d1;"><i class="fa-solid fa-trophy"></i> <span id="psn-gold">0</span></span>
-              <span style="color: #a1a1a1;"><i class="fa-solid fa-trophy"></i> <span id="psn-silver">0</span></span>
-              <span style="color: #cd7f32;"><i class="fa-solid fa-trophy"></i> <span id="psn-bronze">0</span></span>
-            </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-top: 4px;">
+            <span style="color: var(--muted);"><i class="fa-solid fa-users"></i> Jogadores PS</span>
+            <strong id="psn-site-players">—</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-top: 4px;">
+            <span style="color: var(--muted);"><i class="fa-solid fa-download"></i> Importados</span>
+            <strong id="psn-imported">—</strong>
           </div>
         </div>
         
@@ -711,19 +710,16 @@ function renderUserInfo(user) {
     psnBtn.onclick = disconnectPsn;
     psnStats.style.display = 'block';
     psnForm.style.display = 'none';
-    // Usa dados da última sync se disponíveis
-    if (psnSyncData) {
-      document.getElementById('psn-level').textContent  = 'Lv ' + psnSyncData.level;
-      document.getElementById('psn-plat').textContent   = psnSyncData.platinum;
-      document.getElementById('psn-gold').textContent   = psnSyncData.gold;
-      document.getElementById('psn-silver').textContent = psnSyncData.silver;
-      document.getElementById('psn-bronze').textContent = psnSyncData.bronze;
+    // Usa dados reais do site se disponíveis após sync
+    if (psnSyncData && psnSyncData.site_ps_stats) {
+      const stats = psnSyncData.site_ps_stats;
+      document.getElementById('psn-site-games').textContent   = stats.total_ps_entries + ' jogos';
+      document.getElementById('psn-site-players').textContent = stats.ps_players + ' jogadores';
+      document.getElementById('psn-imported').textContent     = psnSyncData.imported_count + ' adicionados';
     } else {
-      document.getElementById('psn-level').textContent  = 'Lv —';
-      document.getElementById('psn-plat').textContent   = '—';
-      document.getElementById('psn-gold').textContent   = '—';
-      document.getElementById('psn-silver').textContent = '—';
-      document.getElementById('psn-bronze').textContent = '—';
+      document.getElementById('psn-site-games').textContent   = '—';
+      document.getElementById('psn-site-players').textContent = '—';
+      document.getElementById('psn-imported').textContent     = '—';
     }
   } else {
     psnStatus.textContent = 'Não conectada';

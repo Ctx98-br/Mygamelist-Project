@@ -1473,29 +1473,78 @@ def _fetch_xbox_profile(gamertag: str) -> dict:
     }
 
 
-def _build_psn_profile(psn_id: str) -> dict:
+def _fetch_psn_top_games(db: Session) -> list:
     """
-    A PSN não possui API pública oficial gratuita.
-    Retorna dados de perfil enriquecidos e determinísticos baseados no psn_id.
-    Os valores de troféus variam de forma consistente por conta (hash do ID).
-    """
-    # Seed determinístico baseado no psn_id para simular perfis diferentes
-    seed = sum(ord(c) for c in psn_id)
-    level     = 1  + (seed % 500)          # PSN Level: 1–500
-    platinum  = seed % 15                  # 0–14 platinas
-    gold      = 10 + (seed % 80)           # 10–89 ouros
-    silver    = 30 + (seed % 150)          # 30–179 pratas
-    bronze    = 80 + (seed % 400)          # 80–479 bronzes
+    Busca os jogos de PlayStation mais populares combinando duas fontes reais:
+    1. Placar interno do site: jogos PS mais adicionados pelos usuários
+    2. RAWG API: top jogos PlayStation por rating global
 
-    return {
-        "psn_id":   psn_id,
-        "level":    level,
-        "platinum": platinum,
-        "gold":     gold,
-        "silver":   silver,
-        "bronze":   bronze,
-        "note":     "PSN não possui API pública oficial. Dados de troféus são estimativas de perfil.",
-    }
+    Retorna lista unificada com no máximo 10 jogos, priorizando os do site.
+    """
+    # ── Fonte 1: placar interno do site ──────────────────────────────────────
+    # Jogos catalogados como PlayStation (qualquer variação) mais adicionados
+    ps_keywords = ["%PlayStation%", "%PS5%", "%PS4%", "%PS3%"]
+    from sqlalchemy import or_
+    internal_rows = (
+        db.query(
+            GameTable.game_api_id,
+            GameTable.title,
+            GameTable.image_url,
+            sqlfunc.count(GameTable.owner_username).label("popularity"),
+        )
+        .filter(
+            or_(*[GameTable.platform.ilike(kw) for kw in ps_keywords])
+        )
+        .group_by(GameTable.game_api_id, GameTable.title, GameTable.image_url)
+        .order_by(sqlfunc.count(GameTable.owner_username).desc())
+        .limit(6)
+        .all()
+    )
+
+    internal_games = [
+        {
+            "game_api_id": r.game_api_id,
+            "title":       r.title,
+            "image_url":   r.image_url,
+            "popularity":  r.popularity,
+            "source":      "site",
+        }
+        for r in internal_rows
+    ]
+
+    # IDs já incluídos (para evitar duplicatas)
+    included_ids = {g["game_api_id"] for g in internal_games}
+
+    # ── Fonte 2: RAWG — top jogos PlayStation por rating ─────────────────────
+    # Plataformas PlayStation no RAWG: 18=PS4, 187=PS5, 17=PS3
+    rawg_games = []
+    try:
+        rawg_url = (
+            f"{BASE_URL}?key={API_KEY}"
+            "&platforms=18,187&ordering=-rating&page_size=10"
+            "&metacritic=80,100"
+        )
+        rawg_resp = requests.get(rawg_url, timeout=8)
+        if rawg_resp.status_code == 200:
+            for g in rawg_resp.json().get("results", []):
+                gid = g.get("id")
+                if gid and gid not in included_ids:
+                    rawg_games.append({
+                        "game_api_id": gid,
+                        "title":       g.get("name"),
+                        "image_url":   g.get("background_image"),
+                        "popularity":  g.get("added", 0),
+                        "source":      "rawg",
+                    })
+                    included_ids.add(gid)
+                if len(rawg_games) >= 6:
+                    break
+    except Exception:
+        pass  # Fallback silencioso — dados internos ainda serão usados
+
+    # Combina: internos primeiro (mais relevantes para o site), depois RAWG
+    combined = internal_games + rawg_games
+    return combined[:10]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1620,62 +1669,72 @@ async def sync_psn(
 ):
     """
     Sincroniza a conta PSN do usuário.
-    A PSN não possui API pública oficial — dados de troféus são estimativas
-    determinísticas baseadas no psn_id. Jogos PS5 populares são importados
-    como sugestões de biblioteca.
+    Como a PSN não possui API pública oficial, importa os jogos PlayStation
+    mais populares combinando duas fontes reais:
+      1. Placar interno do site (jogos PS mais adicionados pelos usuários)
+      2. RAWG API (top jogos PlayStation por rating global com Metacritic 80+)
     """
     current_user.psn_id = payload.psn_id
     db.commit()
 
-    profile_data = _build_psn_profile(payload.psn_id)
+    # Busca jogos reais: placar interno + RAWG PlayStation
+    top_ps_games = _fetch_psn_top_games(db)
 
-    # Biblioteca PS5 de referência — jogos populares para importar
-    psn_library = [
-        {"game_api_id": 494384, "title": "God of War Ragnarök",      "image_url": "https://media.rawg.io/media/games/9b5/9b5aa811197d19762bdfe34f6bd65f24.jpg"},
-        {"game_api_id": 673629, "title": "Marvel's Spider-Man 2",    "image_url": "https://media.rawg.io/media/games/7c1/7c12574fa0f56a42ee0ab65814578b8.jpg"},
-        {"game_api_id": 799265, "title": "The Last of Us Part I",    "image_url": "https://media.rawg.io/media/games/b89/b89410bf1c9c42a2b7265ea588df887e.jpg"},
-        {"game_api_id": 834917, "title": "Demon's Souls",            "image_url": "https://media.rawg.io/media/games/a6c/a6ccd3852657454e6e14d393b7b47f3b.jpg"},
-        {"game_api_id": 812060, "title": "Returnal",                 "image_url": "https://media.rawg.io/media/games/1f8/1f8e0f41cd63b5e69c9f99a7a5b1e5cd.jpg"},
-        {"game_api_id": 876785, "title": "Ratchet & Clank: Rift Apart", "image_url": "https://media.rawg.io/media/games/de3/de31ba23bb0c2c0e8ce71a7b0e7ccde7.jpg"},
-    ]
-
-    # Seleciona jogos baseado no seed do psn_id (determinístico)
-    seed = sum(ord(c) for c in payload.psn_id)
-    import_count = 2 + (seed % 3)  # importa 2, 3 ou 4 jogos
-    selected = psn_library[seed % len(psn_library):] + psn_library[:seed % len(psn_library)]
-    selected = selected[:import_count]
-
+    # Importa os jogos para a lista do usuário (evita duplicatas)
     imported_count = 0
-    for g in selected:
+    for g in top_ps_games:
         existing = db.query(GameTable).filter(
             GameTable.owner_username == current_user.username,
             GameTable.game_api_id == g["game_api_id"]
         ).first()
         if not existing:
+            # Define plataforma com base na fonte
+            platform = "PlayStation" if g["source"] == "site" else "PlayStation 5"
             new_game = GameTable(
                 game_api_id=g["game_api_id"],
                 title=g["title"],
                 image_url=g["image_url"],
                 owner_username=current_user.username,
-                platform="PlayStation 5",
-                status="Jogando",
-                category="Aventura",
+                platform=platform,
+                status="Pretendo Jogar",
+                category="",
+                notes=(
+                    f"Importado via PSN Sync | "
+                    f"{'Popular no site' if g['source'] == 'site' else 'Top PlayStation (RAWG)'}"
+                ),
             )
             db.add(new_game)
             imported_count += 1
 
     db.commit()
+
+    # Placar interno: total de jogos PS no site
+    from sqlalchemy import or_
+    ps_keywords = ["%PlayStation%", "%PS5%", "%PS4%", "%PS3%"]
+    total_ps_on_site = (
+        db.query(sqlfunc.count(GameTable.id))
+        .filter(or_(*[GameTable.platform.ilike(kw) for kw in ps_keywords]))
+        .scalar()
+    ) or 0
+
+    # Usuários únicos com jogos PS
+    ps_users = (
+        db.query(sqlfunc.count(sqlfunc.distinct(GameTable.owner_username)))
+        .filter(or_(*[GameTable.platform.ilike(kw) for kw in ps_keywords]))
+        .scalar()
+    ) or 0
+
     return {
-        "status":    "success",
-        "message":   f"PSN sincronizada! {imported_count} jogo(s) importado(s).",
-        "source":    "psn_profile_estimated",
-        "psn_id":   profile_data["psn_id"],
-        "level":    profile_data["level"],
-        "platinum": profile_data["platinum"],
-        "gold":     profile_data["gold"],
-        "silver":   profile_data["silver"],
-        "bronze":   profile_data["bronze"],
-        "note":     profile_data["note"],
+        "status":            "success",
+        "message":           f"PSN sincronizada! {imported_count} jogo(s) PlayStation adicionado(s) à sua lista.",
+        "source":            "internal_ranking_rawg",
+        "psn_id":           payload.psn_id,
+        "imported_count":   imported_count,
+        "top_ps_games":     [{"title": g["title"], "source": g["source"]} for g in top_ps_games[:5]],
+        "site_ps_stats": {
+            "total_ps_entries": total_ps_on_site,
+            "ps_players":       ps_users,
+        },
     }
 
 
