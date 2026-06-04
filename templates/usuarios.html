@@ -346,6 +346,216 @@ nav{
       </div>
     </div>
 
+    <!-- Contas Vinculadas -->
+    <div class="card" id="card-linked-accounts">
+      <div class="card-title">
+        <i class="fa-solid fa-link" style="color:var(--blue)"></i> Contas Vinculadas
+      </div>
+      
+      <!-- Xbox Live -->
+      <div class="xbox-connection-container" style="background: var(--card-b); border-radius: 14px; padding: 16px; margin-bottom: 14px; border: 1px solid var(--border);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fa-brands fa-xbox" style="font-size: 2rem; color: #107c10;"></i>
+            <div>
+              <strong style="display: block; font-size: 0.9rem;">Xbox Live</strong>
+              <span id="xbox-status" style="font-size: 0.78rem; color: var(--muted);">Não conectada</span>
+            </div>
+          </div>
+          <button class="btn-edit-profile" id="xbox-btn" onclick="toggleXboxConnect()" style="font-size: 0.8rem; padding: 6px 12px; border-color: rgba(16, 124, 16, 0.3); color: #107c10; font-weight: 700;">
+            Conectar
+          </button>
+        </div>
+        
+        <!-- Xbox Stats (hidden if not connected) -->
+        <div id="xbox-stats" style="display: none; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.82rem;">
+            <span style="color: var(--muted);"><i class="fa-solid fa-trophy"></i> GamerScore</span>
+            <strong id="xbox-gamerscore" style="color: #107c10;">0 G</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-top: 4px;">
+            <span style="color: var(--muted);"><i class="fa-solid fa-circle-check"></i> Conquistas</span>
+            <strong id="xbox-achievements">0 / 0</strong>
+          </div>
+        </div>
+        
+        <!-- Xbox Input Form (hidden initially) -->
+        <div id="xbox-form" style="display: none; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px;">
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="xbox-gamertag-input" placeholder="Seu Gamertag" style="flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.85rem;" />
+            <button class="btn-edit-profile" onclick="submitXboxConnect()" style="font-size: 0.8rem; padding: 6px 12px; background: #107c10; color: white; border: none; font-weight: 700;">
+              Sincronizar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PSN -->
+      <div class="psn-connection-container" style="background: var(--card-b); border-radius: 14px; padding: 16px; border: 1px solid var(--border); margin-bottom: 14px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fa-brands fa-playstation" style="font-size: 2rem; color: #0070d1;"></i>
+            <div>
+              <strong style="display: block; font-size: 0.9rem;">PlayStation Network</strong>
+              <span id="psn-status" style="font-size: 0.78rem; color: var(--muted);">Não conectada</span>
+            </div>
+          </div>
+          <button class="btn-edit-profile" id="psn-btn" onclick="togglePsnConnect()" style="font-size: 0.8rem; padding: 6px 12px; border-color: rgba(0, 112, 209, 0.3); color: #0070d1; font-weight: 700;">
+            Conectar
+          </button>
+        </div>
+        
+        <!-- PSN Stats (hidden if not connected) -->
+        <div id="psn-stats" style="display: none; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.82rem;">
+            <span style="color: var(--muted);"><i class="fa-solid fa-star"></i> Nível PSN</span>
+            <strong id="psn-level" style="color: #0070d1;">Lv 0</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-top: 6px;">
+            <span style="color: var(--muted);"><i class="fa-solid fa-trophy"></i> Troféus</span>
+            <div style="display: flex; gap: 6px; font-size: 0.75rem;">
+              <span style="color: #d1a100;"><i class="fa-solid fa-trophy"></i> <span id="psn-plat">0</span></span>
+              <span style="color: #d1d1d1;"><i class="fa-solid fa-trophy"></i> <span id="psn-gold">0</span></span>
+              <span style="color: #a1a1a1;"><i class="fa-solid fa-trophy"></i> <span id="psn-silver">0</span></span>
+              <span style="color: #cd7f32;"><i class="fa-solid fa-trophy"></i> <span id="psn-bronze">0</span></span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- PSN Input Form (hidden initially) -->
+        <div id="psn-form" style="display: none; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px;">
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="psn-id-input" placeholder="ID Online da PSN" style="flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.85rem;" />
+            <button class="btn-edit-profile" onclick="submitPsnConnect()" style="font-size: 0.8rem; padding: 6px 12px; background: #0070d1; color: white; border: none; font-weight: 700;">
+              Sincronizar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Steam -->
+      <div class="steam-connection-container" style="background: var(--card-b); border-radius: 14px; padding: 16px; margin-bottom: 14px; border: 1px solid var(--border);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fa-brands fa-steam" style="font-size: 2rem; color: #66c0f4;"></i>
+            <div>
+              <strong style="display: block; font-size: 0.9rem;">Steam</strong>
+              <span id="steam-status" style="font-size: 0.78rem; color: var(--muted);">Não conectada</span>
+            </div>
+          </div>
+          <button class="btn-edit-profile" id="steam-btn" onclick="toggleSteamConnect()" style="font-size: 0.8rem; padding: 6px 12px; border-color: rgba(102, 192, 244, 0.3); color: #66c0f4; font-weight: 700;">
+            Conectar
+          </button>
+        </div>
+        
+        <!-- Steam Stats -->
+        <div id="steam-stats" style="display: none; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.82rem;">
+            <span style="color: var(--muted);"><i class="fa-solid fa-star"></i> Nível Steam</span>
+            <strong id="steam-level" style="color: #66c0f4;">Lv 0</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-top: 4px;">
+            <span style="color: var(--muted);"><i class="fa-solid fa-clock"></i> Tempo de Jogo</span>
+            <strong id="steam-hours">0h</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-top: 4px;">
+            <span style="color: var(--muted);"><i class="fa-solid fa-gamepad"></i> Total de Jogos</span>
+            <strong id="steam-games">0</strong>
+          </div>
+        </div>
+        
+        <!-- Steam Input Form -->
+        <div id="steam-form" style="display: none; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px;">
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="steam-id-input" placeholder="SteamID ou ID de Perfil" style="flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.85rem;" />
+            <button class="btn-edit-profile" onclick="submitSteamConnect()" style="font-size: 0.8rem; padding: 6px 12px; background: #66c0f4; color: black; border: none; font-weight: 700;">
+              Sincronizar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nintendo Network -->
+      <div class="nintendo-connection-container" style="background: var(--card-b); border-radius: 14px; padding: 16px; margin-bottom: 14px; border: 1px solid var(--border);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-gamepad" style="font-size: 2rem; color: #e60012;"></i>
+            <div>
+              <strong style="display: block; font-size: 0.9rem;">Nintendo Network</strong>
+              <span id="nintendo-status" style="font-size: 0.78rem; color: var(--muted);">Não conectada</span>
+            </div>
+          </div>
+          <button class="btn-edit-profile" id="nintendo-btn" onclick="toggleNintendoConnect()" style="font-size: 0.8rem; padding: 6px 12px; border-color: rgba(230, 0, 18, 0.3); color: #e60012; font-weight: 700;">
+            Conectar
+          </button>
+        </div>
+        
+        <!-- Nintendo Stats -->
+        <div id="nintendo-stats" style="display: none; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.82rem;">
+            <span style="color: var(--muted);"><i class="fa-solid fa-clock"></i> Tempo de Atividade</span>
+            <strong id="nintendo-playtime" style="color: #e60012;">0h</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-top: 4px;">
+            <span style="color: var(--muted);"><i class="fa-solid fa-gamepad"></i> Jogos Conectados</span>
+            <strong id="nintendo-games">0</strong>
+          </div>
+        </div>
+        
+        <!-- Nintendo Input Form -->
+        <div id="nintendo-form" style="display: none; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px;">
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="nintendo-id-input" placeholder="Friend Code (SW-XXXX-XXXX-XXXX)" style="flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.85rem;" />
+            <button class="btn-edit-profile" onclick="submitNintendoConnect()" style="font-size: 0.8rem; padding: 6px 12px; background: #e60012; color: white; border: none; font-weight: 700;">
+              Sincronizar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RetroAchievements -->
+      <div class="ra-connection-container" style="background: var(--card-b); border-radius: 14px; padding: 16px; border: 1px solid var(--border);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-trophy" style="font-size: 2rem; color: #f59e0b;"></i>
+            <div>
+              <strong style="display: block; font-size: 0.9rem;">RetroAchievements</strong>
+              <span id="ra-status" style="font-size: 0.78rem; color: var(--muted);">Não conectada</span>
+            </div>
+          </div>
+          <button class="btn-edit-profile" id="ra-btn" onclick="toggleRaConnect()" style="font-size: 0.8rem; padding: 6px 12px; border-color: rgba(245, 158, 11, 0.3); color: #f59e0b; font-weight: 700;">
+            Conectar
+          </button>
+        </div>
+        
+        <!-- RetroAchievements Stats -->
+        <div id="ra-stats" style="display: none; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.82rem;">
+            <span style="color: var(--muted);"><i class="fa-solid fa-star"></i> Pontos Retro</span>
+            <strong id="ra-points" style="color: #f59e0b;">0 pts</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-top: 4px;">
+            <span style="color: var(--muted);"><i class="fa-solid fa-calculator"></i> RetroRatio</span>
+            <strong id="ra-ratio">0.0</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-top: 4px;">
+            <span style="color: var(--muted);"><i class="fa-solid fa-ranking-star"></i> Posição Rank</span>
+            <strong id="ra-rank">#0</strong>
+          </div>
+        </div>
+        
+        <!-- RetroAchievements Input Form -->
+        <div id="ra-form" style="display: none; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px;">
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="ra-username-input" placeholder="Usuário RetroAchievements" style="flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.85rem;" />
+            <button class="btn-edit-profile" onclick="submitRaConnect()" style="font-size: 0.8rem; padding: 6px 12px; background: #f59e0b; color: white; border: none; font-weight: 700;">
+              Sincronizar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Info da Conta -->
     <div class="card">
       <div class="card-title">
@@ -418,9 +628,174 @@ function renderUserInfo(user) {
   document.getElementById('profile-dob').innerHTML =
     '<i class="fa-solid fa-calendar"></i> ' + (formatDate(user.date_of_birth) || '—');
 
+  // Badges in hero
+  let badgesHtml = '';
+  if (user.xbox_gamertag) {
+    badgesHtml += `<span class="meta-item" style="background: rgba(16, 124, 16, 0.15); color: #107c10; border: 1px solid rgba(16, 124, 16, 0.2); border-radius: 6px; padding: 2px 8px; font-weight: 600;"><i class="fa-brands fa-xbox"></i> ${user.xbox_gamertag}</span>`;
+  }
+  if (user.psn_id) {
+    badgesHtml += `<span class="meta-item" style="background: rgba(0, 112, 209, 0.15); color: #0070d1; border: 1px solid rgba(0, 112, 209, 0.2); border-radius: 6px; padding: 2px 8px; font-weight: 600;"><i class="fa-brands fa-playstation"></i> ${user.psn_id}</span>`;
+  }
+  if (user.steam_id) {
+    badgesHtml += `<span class="meta-item" style="background: rgba(102, 192, 244, 0.15); color: #66c0f4; border: 1px solid rgba(102, 192, 244, 0.2); border-radius: 6px; padding: 2px 8px; font-weight: 600;"><i class="fa-brands fa-steam"></i> ${user.steam_id}</span>`;
+  }
+  if (user.nintendo_id) {
+    badgesHtml += `<span class="meta-item" style="background: rgba(230, 0, 18, 0.15); color: #e60012; border: 1px solid rgba(230, 0, 18, 0.2); border-radius: 6px; padding: 2px 8px; font-weight: 600;"><i class="fa-solid fa-gamepad"></i> ${user.nintendo_id}</span>`;
+  }
+  if (user.ra_username) {
+    badgesHtml += `<span class="meta-item" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 6px; padding: 2px 8px; font-weight: 600;"><i class="fa-solid fa-trophy"></i> ${user.ra_username}</span>`;
+  }
+  
+  const metaContainer = document.querySelector('.profile-info .meta');
+  if (metaContainer) {
+    const emailItem = document.getElementById('profile-email');
+    const dobItem = document.getElementById('profile-dob');
+    metaContainer.innerHTML = '';
+    if (emailItem) metaContainer.appendChild(emailItem);
+    if (dobItem) metaContainer.appendChild(dobItem);
+    if (user.xbox_gamertag || user.psn_id || user.steam_id || user.nintendo_id || user.ra_username) {
+      metaContainer.insertAdjacentHTML('beforeend', badgesHtml);
+    }
+  }
+
   document.getElementById('info-username').textContent = user.username;
   document.getElementById('info-email').textContent    = user.email || '—';
   document.getElementById('info-dob').textContent      = formatDate(user.date_of_birth) || '—';
+
+  // Update Xbox Connection UI
+  const xboxStatus = document.getElementById('xbox-status');
+  const xboxBtn = document.getElementById('xbox-btn');
+  const xboxStats = document.getElementById('xbox-stats');
+  const xboxForm = document.getElementById('xbox-form');
+  
+  if (user.xbox_gamertag) {
+    xboxStatus.textContent = 'Conectado como @' + user.xbox_gamertag;
+    xboxBtn.textContent = 'Desconectar';
+    xboxBtn.style.color = 'var(--danger)';
+    xboxBtn.style.borderColor = 'rgba(248, 113, 113, 0.3)';
+    xboxBtn.onclick = disconnectXbox;
+    xboxStats.style.display = 'block';
+    xboxForm.style.display = 'none';
+    document.getElementById('xbox-gamerscore').textContent = '12.500 G';
+    document.getElementById('xbox-achievements').textContent = '87 / 150';
+  } else {
+    xboxStatus.textContent = 'Não conectada';
+    xboxBtn.textContent = 'Conectar';
+    xboxBtn.style.color = '#107c10';
+    xboxBtn.style.borderColor = 'rgba(16, 124, 16, 0.3)';
+    xboxBtn.onclick = toggleXboxConnect;
+    xboxStats.style.display = 'none';
+    xboxForm.style.display = 'none';
+  }
+
+  // Update PSN Connection UI
+  const psnStatus = document.getElementById('psn-status');
+  const psnBtn = document.getElementById('psn-btn');
+  const psnStats = document.getElementById('psn-stats');
+  const psnForm = document.getElementById('psn-form');
+  
+  if (user.psn_id) {
+    psnStatus.textContent = 'Conectado como @' + user.psn_id;
+    psnBtn.textContent = 'Desconectar';
+    psnBtn.style.color = 'var(--danger)';
+    psnBtn.style.borderColor = 'rgba(248, 113, 113, 0.3)';
+    psnBtn.onclick = disconnectPsn;
+    psnStats.style.display = 'block';
+    psnForm.style.display = 'none';
+    document.getElementById('psn-level').textContent = 'Lv 15';
+    document.getElementById('psn-plat').textContent = '1';
+    document.getElementById('psn-gold').textContent = '6';
+    document.getElementById('psn-silver').textContent = '18';
+    document.getElementById('psn-bronze').textContent = '45';
+  } else {
+    psnStatus.textContent = 'Não conectada';
+    psnBtn.textContent = 'Conectar';
+    psnBtn.style.color = '#0070d1';
+    psnBtn.style.borderColor = 'rgba(0, 112, 209, 0.3)';
+    psnBtn.onclick = togglePsnConnect;
+    psnStats.style.display = 'none';
+    psnForm.style.display = 'none';
+  }
+
+  // Update Steam Connection UI
+  const steamStatus = document.getElementById('steam-status');
+  const steamBtn = document.getElementById('steam-btn');
+  const steamStats = document.getElementById('steam-stats');
+  const steamForm = document.getElementById('steam-form');
+  
+  if (user.steam_id) {
+    steamStatus.textContent = 'Conectado como @' + user.steam_id;
+    steamBtn.textContent = 'Desconectar';
+    steamBtn.style.color = 'var(--danger)';
+    steamBtn.style.borderColor = 'rgba(248, 113, 113, 0.3)';
+    steamBtn.onclick = disconnectSteam;
+    steamStats.style.display = 'block';
+    steamForm.style.display = 'none';
+    document.getElementById('steam-level').textContent = 'Lv 42';
+    document.getElementById('steam-hours').textContent = '1.540h';
+    document.getElementById('steam-games').textContent = '128';
+  } else {
+    steamStatus.textContent = 'Não conectada';
+    steamBtn.textContent = 'Conectar';
+    steamBtn.style.color = '#66c0f4';
+    steamBtn.style.borderColor = 'rgba(102, 192, 244, 0.3)';
+    steamBtn.onclick = toggleSteamConnect;
+    steamStats.style.display = 'none';
+    steamForm.style.display = 'none';
+  }
+
+  // Update Nintendo Connection UI
+  const nintendoStatus = document.getElementById('nintendo-status');
+  const nintendoBtn = document.getElementById('nintendo-btn');
+  const nintendoStats = document.getElementById('nintendo-stats');
+  const nintendoForm = document.getElementById('nintendo-form');
+  
+  if (user.nintendo_id) {
+    nintendoStatus.textContent = 'Conectado como ' + user.nintendo_id;
+    nintendoBtn.textContent = 'Desconectar';
+    nintendoBtn.style.color = 'var(--danger)';
+    nintendoBtn.style.borderColor = 'rgba(248, 113, 113, 0.3)';
+    nintendoBtn.onclick = disconnectNintendo;
+    nintendoStats.style.display = 'block';
+    nintendoForm.style.display = 'none';
+    document.getElementById('nintendo-playtime').textContent = '450h';
+    document.getElementById('nintendo-games').textContent = '14';
+  } else {
+    nintendoStatus.textContent = 'Não conectada';
+    nintendoBtn.textContent = 'Conectar';
+    nintendoBtn.style.color = '#e60012';
+    nintendoBtn.style.borderColor = 'rgba(230, 0, 18, 0.3)';
+    nintendoBtn.onclick = toggleNintendoConnect;
+    nintendoStats.style.display = 'none';
+    nintendoForm.style.display = 'none';
+  }
+
+  // Update RetroAchievements Connection UI
+  const raStatus = document.getElementById('ra-status');
+  const raBtn = document.getElementById('ra-btn');
+  const raStats = document.getElementById('ra-stats');
+  const raForm = document.getElementById('ra-form');
+  
+  if (user.ra_username) {
+    raStatus.textContent = 'Conectado como @' + user.ra_username;
+    raBtn.textContent = 'Desconectar';
+    raBtn.style.color = 'var(--danger)';
+    raBtn.style.borderColor = 'rgba(248, 113, 113, 0.3)';
+    raBtn.onclick = disconnectRa;
+    raStats.style.display = 'block';
+    raForm.style.display = 'none';
+    document.getElementById('ra-points').textContent = '8.420 pts';
+    document.getElementById('ra-ratio').textContent = '2.4';
+    document.getElementById('ra-rank').textContent = '#3.120';
+  } else {
+    raStatus.textContent = 'Não conectada';
+    raBtn.textContent = 'Conectar';
+    raBtn.style.color = '#f59e0b';
+    raBtn.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+    raBtn.onclick = toggleRaConnect;
+    raStats.style.display = 'none';
+    raForm.style.display = 'none';
+  }
 }
 
 async function loadGamesStats(token) {
@@ -497,6 +872,221 @@ function formatDate(dateStr) {
 
 function editarPerfil() {
   alert('✏️ Funcionalidade de edição de perfil em desenvolvimento!');
+}
+
+function toggleXboxConnect() {
+  const form = document.getElementById('xbox-form');
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+async function submitXboxConnect() {
+  const gamertag = document.getElementById('xbox-gamertag-input').value.trim();
+  if (!gamertag) { alert('Digite o Gamertag!'); return; }
+  
+  const token = localStorage.getItem('access_token');
+  try {
+    const res = await fetch('/api/profile/sync-xbox', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ gamertag: gamertag })
+    });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    alert('🎮 ' + data.message);
+    loadProfile();
+  } catch (err) {
+    alert('❌ Erro ao conectar Xbox Live.');
+  }
+}
+
+async function disconnectXbox() {
+  if (!confirm('Desconectar sua conta do Xbox Live?')) return;
+  const token = localStorage.getItem('access_token');
+  try {
+    const res = await fetch('/api/profile/disconnect-xbox', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (!res.ok) throw new Error();
+    loadProfile();
+  } catch (err) {
+    alert('❌ Erro ao desconectar Xbox Live.');
+  }
+}
+
+function togglePsnConnect() {
+  const form = document.getElementById('psn-form');
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+async function submitPsnConnect() {
+  const psnId = document.getElementById('psn-id-input').value.trim();
+  if (!psnId) { alert('Digite o ID Online da PSN!'); return; }
+  
+  const token = localStorage.getItem('access_token');
+  try {
+    const res = await fetch('/api/profile/sync-psn', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ psn_id: psnId })
+    });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    alert('💙 ' + data.message);
+    loadProfile();
+  } catch (err) {
+    alert('❌ Erro ao conectar PSN.');
+  }
+}
+
+async function disconnectPsn() {
+  if (!confirm('Desconectar sua conta da PSN?')) return;
+  const token = localStorage.getItem('access_token');
+  try {
+    const res = await fetch('/api/profile/disconnect-psn', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (!res.ok) throw new Error();
+    loadProfile();
+  } catch (err) {
+    alert('❌ Erro ao desconectar PSN.');
+  }
+}
+
+function toggleSteamConnect() {
+  const form = document.getElementById('steam-form');
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+async function submitSteamConnect() {
+  const steamId = document.getElementById('steam-id-input').value.trim();
+  if (!steamId) { alert('Digite a ID do Steam!'); return; }
+  
+  const token = localStorage.getItem('access_token');
+  try {
+    const res = await fetch('/api/profile/sync-steam', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ steam_id: steamId })
+    });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    alert('🎮 ' + data.message);
+    loadProfile();
+  } catch (err) {
+    alert('❌ Erro ao conectar conta Steam.');
+  }
+}
+
+async function disconnectSteam() {
+  if (!confirm('Desconectar sua conta Steam?')) return;
+  const token = localStorage.getItem('access_token');
+  try {
+    const res = await fetch('/api/profile/disconnect-steam', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (!res.ok) throw new Error();
+    loadProfile();
+  } catch (err) {
+    alert('❌ Erro ao desconectar conta Steam.');
+  }
+}
+
+function toggleNintendoConnect() {
+  const form = document.getElementById('nintendo-form');
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+async function submitNintendoConnect() {
+  const nintendoId = document.getElementById('nintendo-id-input').value.trim();
+  if (!nintendoId) { alert('Digite o Friend Code da Nintendo!'); return; }
+  
+  const token = localStorage.getItem('access_token');
+  try {
+    const res = await fetch('/api/profile/sync-nintendo', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ nintendo_id: nintendoId })
+    });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    alert('🔴 ' + data.message);
+    loadProfile();
+  } catch (err) {
+    alert('❌ Erro ao conectar conta Nintendo.');
+  }
+}
+
+async function disconnectNintendo() {
+  if (!confirm('Desconectar sua conta Nintendo?')) return;
+  const token = localStorage.getItem('access_token');
+  try {
+    const res = await fetch('/api/profile/disconnect-nintendo', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (!res.ok) throw new Error();
+    loadProfile();
+  } catch (err) {
+    alert('❌ Erro ao desconectar conta Nintendo.');
+  }
+}
+
+function toggleRaConnect() {
+  const form = document.getElementById('ra-form');
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+async function submitRaConnect() {
+  const raUsername = document.getElementById('ra-username-input').value.trim();
+  if (!raUsername) { alert('Digite o usuário do RetroAchievements!'); return; }
+  
+  const token = localStorage.getItem('access_token');
+  try {
+    const res = await fetch('/api/profile/sync-retroachievements', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ ra_username: raUsername })
+    });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    alert('🏆 ' + data.message);
+    loadProfile();
+  } catch (err) {
+    alert('❌ Erro ao conectar conta RetroAchievements.');
+  }
+}
+
+async function disconnectRa() {
+  if (!confirm('Desconectar sua conta RetroAchievements?')) return;
+  const token = localStorage.getItem('access_token');
+  try {
+    const res = await fetch('/api/profile/disconnect-retroachievements', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (!res.ok) throw new Error();
+    loadProfile();
+  } catch (err) {
+    alert('❌ Erro ao desconectar conta RetroAchievements.');
+  }
 }
 
 function logout() {

@@ -120,6 +120,36 @@ class User(BaseModel):
     profile_bio: str | None = None
     disabled: bool | None = None
     is_admin: bool = False
+    xbox_gamertag: str | None = None
+    psn_id: str | None = None
+    steam_id: str | None = None
+    nintendo_id: str | None = None
+    ra_username: str | None = None
+
+
+class SyncXboxRequest(BaseModel):
+    gamertag: str
+
+
+class SyncPsnRequest(BaseModel):
+    psn_id: str
+
+
+class SyncSteamRequest(BaseModel):
+    steam_id: str
+
+
+class SyncNintendoRequest(BaseModel):
+    nintendo_id: str
+
+
+class SyncRetroRequest(BaseModel):
+    ra_username: str
+
+
+class GameTagsUpdate(BaseModel):
+    tags: str | None = None
+
 
 
 class AdminUserCreate(BaseModel):
@@ -499,6 +529,11 @@ async def read_users_me(
         profile_bio=current_user.profile_bio,
         disabled=current_user.disabled,
         is_admin=current_user.is_admin or False,
+        xbox_gamertag=current_user.xbox_gamertag,
+        psn_id=current_user.psn_id,
+        steam_id=current_user.steam_id,
+        nintendo_id=current_user.nintendo_id,
+        ra_username=current_user.ra_username,
     )
 
 
@@ -1257,7 +1292,7 @@ async def insights_trending_external(platform: str = "all"):
     return []
 
 
-# Inclui notes no endpoint de lista JSON usada pelo perfil
+# Inclui notes e tags no endpoint de lista JSON usada pelo perfil
 @app.get("/api/my-games")
 async def api_my_games(
     db: Session = Depends(get_db),
@@ -1279,6 +1314,310 @@ async def api_my_games(
             "category": g.category,
             "status": g.status,
             "platform": g.platform,
+            "tags": g.tags,
         }
         for g in games
     ]
+
+
+@app.patch("/api/my-list/{game_id}/tags")
+async def update_game_tags(
+    game_id: int,
+    payload: GameTagsUpdate,
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_active_user),
+):
+    game = (
+        db.query(GameTable)
+        .filter(
+            GameTable.id == game_id, GameTable.owner_username == current_user.username
+        )
+        .first()
+    )
+
+    if not game:
+        raise HTTPException(status_code=404, detail="Jogo não encontrado na sua lista")
+
+    game.tags = payload.tags
+    db.commit()
+    return {"message": "Tags atualizadas!", "tags": payload.tags}
+
+
+@app.post("/api/profile/sync-xbox")
+async def sync_xbox(
+    payload: SyncXboxRequest,
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_active_user),
+):
+    current_user.xbox_gamertag = payload.gamertag
+    db.commit()
+
+    # Mock games to import
+    xbox_games = [
+        {"game_api_id": 326227, "title": "Halo Infinite", "image_url": "https://media.rawg.io/media/games/53f/53f7c46f140656a42ee0ab65814578b8.jpg"},
+        {"game_api_id": 614761, "title": "Forza Horizon 5", "image_url": "https://media.rawg.io/media/games/082/0823655ccafefec977265ea588df887e.jpg"},
+        {"game_api_id": 58751, "title": "Sea of Thieves", "image_url": "https://media.rawg.io/media/games/25c/25c4776e1860f5c9e47d8c4c5e400186.jpg"},
+    ]
+
+    imported_count = 0
+    for g in xbox_games:
+        existing = db.query(GameTable).filter(
+            GameTable.owner_username == current_user.username,
+            GameTable.game_api_id == g["game_api_id"]
+        ).first()
+        if not existing:
+            new_game = GameTable(
+                game_api_id=g["game_api_id"],
+                title=g["title"],
+                image_url=g["image_url"],
+                owner_username=current_user.username,
+                platform="Xbox Series X/S",
+                status="Jogando",
+                category="Ação",
+            )
+            db.add(new_game)
+            imported_count += 1
+    
+    db.commit()
+    return {
+        "status": "success",
+        "message": f"Xbox Live sincronizado! {imported_count} jogo(s) importado(s).",
+        "gamertag": payload.gamertag,
+        "gamerscore": 12500,
+        "achievements_count": 87,
+    }
+
+
+@app.post("/api/profile/disconnect-xbox")
+async def disconnect_xbox(
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_active_user),
+):
+    current_user.xbox_gamertag = None
+    db.commit()
+    return {"status": "success", "message": "Xbox Live desconectado."}
+
+
+@app.post("/api/profile/sync-psn")
+async def sync_psn(
+    payload: SyncPsnRequest,
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_active_user),
+):
+    current_user.psn_id = payload.psn_id
+    db.commit()
+
+    # Mock games to import
+    psn_games = [
+        {"game_api_id": 494384, "title": "God of War Ragnarök", "image_url": "https://media.rawg.io/media/games/9b5/9b5aa811197d19762bdfe34f6bd65f24.jpg"},
+        {"game_api_id": 673629, "title": "Marvel's Spider-Man 2", "image_url": "https://media.rawg.io/media/games/7c1/7c12574fa0f56a42ee0ab65814578b8.jpg"},
+        {"game_api_id": 799265, "title": "The Last of Us Part I", "image_url": "https://media.rawg.io/media/games/b89/b89410bf1c9c42a2b7265ea588df887e.jpg"},
+    ]
+
+    imported_count = 0
+    for g in psn_games:
+        existing = db.query(GameTable).filter(
+            GameTable.owner_username == current_user.username,
+            GameTable.game_api_id == g["game_api_id"]
+        ).first()
+        if not existing:
+            new_game = GameTable(
+                game_api_id=g["game_api_id"],
+                title=g["title"],
+                image_url=g["image_url"],
+                owner_username=current_user.username,
+                platform="PlayStation 5",
+                status="Jogando",
+                category="Aventura",
+            )
+            db.add(new_game)
+            imported_count += 1
+    
+    db.commit()
+    return {
+        "status": "success",
+        "message": f"PSN sincronizada! {imported_count} jogo(s) importado(s).",
+        "psn_id": payload.psn_id,
+        "level": 15,
+        "bronze": 45,
+        "silver": 18,
+        "gold": 6,
+        "platinum": 1,
+    }
+
+
+@app.post("/api/profile/disconnect-psn")
+async def disconnect_psn(
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_active_user),
+):
+    current_user.psn_id = None
+    db.commit()
+    return {"status": "success", "message": "PSN desconectada."}
+
+
+@app.post("/api/profile/sync-steam")
+async def sync_steam(
+    payload: SyncSteamRequest,
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_active_user),
+):
+    current_user.steam_id = payload.steam_id
+    db.commit()
+
+    # Mock games to import
+    steam_games = [
+        {"game_api_id": 4200, "title": "Portal 2", "image_url": "https://media.rawg.io/media/games/328/328361ad6ad60c28987d314578b8a46b.jpg"},
+        {"game_api_id": 13536, "title": "Counter-Strike 2", "image_url": "https://media.rawg.io/media/games/73e/73e1253458428b995687e66dfc569f7e.jpg"},
+        {"game_api_id": 4688, "title": "Left 4 Dead 2", "image_url": "https://media.rawg.io/media/games/d58/d58913d67a11e40614f2b1805b63d07e.jpg"},
+    ]
+
+    imported_count = 0
+    for g in steam_games:
+        existing = db.query(GameTable).filter(
+            GameTable.owner_username == current_user.username,
+            GameTable.game_api_id == g["game_api_id"]
+        ).first()
+        if not existing:
+            new_game = GameTable(
+                game_api_id=g["game_api_id"],
+                title=g["title"],
+                image_url=g["image_url"],
+                owner_username=current_user.username,
+                platform="PC",
+                status="Pretendo Jogar",
+                category="Tiro / FPS",
+            )
+            db.add(new_game)
+            imported_count += 1
+    
+    db.commit()
+    return {
+        "status": "success",
+        "message": f"Steam sincronizado! {imported_count} jogo(s) importado(s).",
+        "steam_id": payload.steam_id,
+        "steam_level": 42,
+        "playtime_hours": 1540,
+        "games_count": 128,
+    }
+
+
+@app.post("/api/profile/disconnect-steam")
+async def disconnect_steam(
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_active_user),
+):
+    current_user.steam_id = None
+    db.commit()
+    return {"status": "success", "message": "Steam desconectado."}
+
+
+@app.post("/api/profile/sync-nintendo")
+async def sync_nintendo(
+    payload: SyncNintendoRequest,
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_active_user),
+):
+    current_user.nintendo_id = payload.nintendo_id
+    db.commit()
+
+    # Mock games to import
+    nintendo_games = [
+        {"game_api_id": 22501, "title": "The Legend of Zelda: Breath of the Wild", "image_url": "https://media.rawg.io/media/games/283/283e7e473506c58c959f4a578b8146b2.jpg"},
+        {"game_api_id": 50738, "title": "Super Mario Odyssey", "image_url": "https://media.rawg.io/media/games/212/212f458e0b04e03d7e5d8c47b56a588b.jpg"},
+        {"game_api_id": 41494, "title": "Animal Crossing: New Horizons", "image_url": "https://media.rawg.io/media/games/a71/a71a067a1f574d75ee58ea47f5b1287c.jpg"},
+    ]
+
+    imported_count = 0
+    for g in nintendo_games:
+        existing = db.query(GameTable).filter(
+            GameTable.owner_username == current_user.username,
+            GameTable.game_api_id == g["game_api_id"]
+        ).first()
+        if not existing:
+            new_game = GameTable(
+                game_api_id=g["game_api_id"],
+                title=g["title"],
+                image_url=g["image_url"],
+                owner_username=current_user.username,
+                platform="Nintendo Switch",
+                status="Jogando",
+                category="Aventura",
+            )
+            db.add(new_game)
+            imported_count += 1
+
+    db.commit()
+    return {
+        "status": "success",
+        "message": f"Conta Nintendo sincronizada! {imported_count} jogo(s) importado(s).",
+        "nintendo_id": payload.nintendo_id,
+        "nintendo_playtime": 450,
+        "games_count": 14,
+    }
+
+
+@app.post("/api/profile/disconnect-nintendo")
+async def disconnect_nintendo(
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_active_user),
+):
+    current_user.nintendo_id = None
+    db.commit()
+    return {"status": "success", "message": "Conta Nintendo desconectada."}
+
+
+@app.post("/api/profile/sync-retroachievements")
+async def sync_retroachievements(
+    payload: SyncRetroRequest,
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_active_user),
+):
+    current_user.ra_username = payload.ra_username
+    db.commit()
+
+    # Mock games to import
+    ra_games = [
+        {"game_api_id": 52362, "title": "Super Mario World", "image_url": "https://media.rawg.io/media/games/0a5/0a57e4e1e07b8b4200778c47b56a588b.jpg"},
+        {"game_api_id": 53580, "title": "Sonic the Hedgehog", "image_url": "https://media.rawg.io/media/games/b2c/b2c86bd7e411c40b1df8e6b1287c5c0c.jpg"},
+        {"game_api_id": 53896, "title": "Chrono Trigger", "image_url": "https://media.rawg.io/media/games/33d/33d77e4b52fe0e4c6c061801f4c718b9.jpg"},
+    ]
+
+    imported_count = 0
+    for g in ra_games:
+        existing = db.query(GameTable).filter(
+            GameTable.owner_username == current_user.username,
+            GameTable.game_api_id == g["game_api_id"]
+        ).first()
+        if not existing:
+            new_game = GameTable(
+                game_api_id=g["game_api_id"],
+                title=g["title"],
+                image_url=g["image_url"],
+                owner_username=current_user.username,
+                platform="Outro",
+                status="Jogando",
+                category="RPG",
+            )
+            db.add(new_game)
+            imported_count += 1
+
+    db.commit()
+    return {
+        "status": "success",
+        "message": f"RetroAchievements sincronizado! {imported_count} jogo(s) importado(s).",
+        "ra_username": payload.ra_username,
+        "ra_points": 8420,
+        "ra_ratio": "2.4",
+        "ra_rank": 3120,
+    }
+
+
+@app.post("/api/profile/disconnect-retroachievements")
+async def disconnect_retroachievements(
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_active_user),
+):
+    current_user.ra_username = None
+    db.commit()
+    return {"status": "success", "message": "RetroAchievements desconectado."}

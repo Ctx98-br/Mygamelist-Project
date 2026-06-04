@@ -359,6 +359,21 @@
       border-color: rgba(56, 189, 248, .2);
     }
 
+    .steam-tooltip-trigger.xbox:hover {
+      background: rgba(16, 124, 16, .06);
+      border-color: rgba(16, 124, 16, .3);
+    }
+
+    .steam-tooltip-trigger.psn:hover {
+      background: rgba(0, 112, 209, .06);
+      border-color: rgba(0, 112, 209, .3);
+    }
+
+    .steam-tooltip-trigger.nintendo:hover {
+      background: rgba(230, 0, 18, .06);
+      border-color: rgba(230, 0, 18, .3);
+    }
+
     .steam-tooltip-trigger .steam-icon {
       color: #66c0f4;
       font-size: .7rem;
@@ -783,15 +798,49 @@
     </select>
   </div>
 
+  <!-- ===== FILTROS DE TAG E ORDENAÇÃO ===== -->
+  <div class="filter-bar" id="tag-filter-bar" style="margin-top: -14px; margin-bottom: 25px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span class="filter-label"><i class="fa-solid fa-tag"></i> Filtrar por Tag:</span>
+      <select id="filter-tag-select" onchange="applyTagFilter(this.value)" style="background: var(--card-b); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; color: var(--text); font-family: 'Inter', sans-serif; cursor: pointer; outline: none; transition: border-color 0.2s;">
+        <option value="all">Todas as Tags</option>
+        <option value="none">Sem Tags</option>
+      </select>
+    </div>
+    
+    <div style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
+      <span class="filter-label"><i class="fa-solid fa-sort"></i> Ordenar por:</span>
+      <select id="sort-select" onchange="applySort(this.value)" style="background: var(--card-b); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; color: var(--text); font-family: 'Inter', sans-serif; cursor: pointer; outline: none; transition: border-color 0.2s;">
+        <option value="default">Padrão</option>
+        <option value="title-asc">Título (A-Z)</option>
+        <option value="title-desc">Título (Z-A)</option>
+        <option value="rating-desc">Maior Nota</option>
+        <option value="rating-asc">Menor Nota</option>
+      </select>
+    </div>
+  </div>
+
   <div class="game-grid" id="game-grid">
     {% for game in games %}
-    <div class="game-card" id="card-{{ game.id }}" data-rating="{{ game.rating or 0 }}" data-category="{{ game.category or '' }}" data-status="{{ game.status or '' }}" data-platform="{{ game.platform or '' }}" data-gameid="{{ game.id }}"
-      data-apiid="{{ game.game_api_id }}">
+    <div class="game-card" id="card-{{ game.id }}" data-rating="{{ game.rating or 0 }}" data-category="{{ game.category or '' }}" data-status="{{ game.status or '' }}" data-platform="{{ game.platform or '' }}" data-tags="{{ game.tags or '' }}" data-gameid="{{ game.id }}" data-apiid="{{ game.game_api_id }}">
       <img class="game-card-img"
         src="{{ game.image_url or 'https://via.placeholder.com/300x150/0f172a/38bdf8?text=Sem+Imagem' }}"
         alt="{{ game.title }}" loading="lazy" />
       <div class="game-card-body">
         <div class="game-card-title">{{ game.title }}</div>
+
+        <!-- Tags Badges -->
+        <div class="game-tags-list" id="tags-list-{{ game.id }}" style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; margin-bottom: 6px;">
+          {% if game.tags %}
+            {% for tag in game.tags.split(',') %}
+              {% if tag.strip() %}
+                <span class="tag-badge" style="background: rgba(129, 140, 248, 0.15); color: var(--purple); border: 1px solid rgba(129, 140, 248, 0.2); border-radius: 6px; padding: 2px 8px; font-size: 0.72rem; font-weight: 600;">
+                  {{ tag.strip() }}
+                </span>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </div>
 
         <!-- Plataforma Badge na Lista -->
         {% if game.platform %}
@@ -819,7 +868,95 @@
             {% endif %}
           </div>
 
-          <!-- Nota Steam/RAWG (tooltip ao hover) -->
+          <!-- Nota Steam/RAWG/PSN/Xbox (tooltip ao hover) -->
+          {% if game.platform == 'PlayStation 5' or game.platform == 'PlayStation 4' %}
+          <div class="steam-tooltip-trigger psn" id="steam-badge-{{ game.id }}" data-loaded="false">
+            <i class="fa-brands fa-playstation steam-icon" style="color: #0070d1; font-size: 0.8rem;"></i>
+            <span>Nota PSN:</span>
+            <span class="steam-score loading" id="steam-score-{{ game.id }}" style="color: #0070d1;">—</span>
+            <!-- Popup tooltip -->
+            <div class="steam-tooltip-popup" id="steam-popup-{{ game.id }}" style="border-color: rgba(0, 112, 209, 0.3);">
+              <div class="tt-title" style="color: #0070d1;">
+                <i class="fa-brands fa-playstation"></i> Avaliação PSN / RAWG
+              </div>
+              <div class="tt-row">
+                <span class="tt-key">Nota:</span>
+                <span class="tt-val gold" id="tt-score-{{ game.id }}">—</span>
+              </div>
+              <div class="tt-row">
+                <span class="tt-key">Estrelas:</span>
+                <span class="tt-val">
+                  <span class="tt-stars" id="tt-stars-{{ game.id }}">
+                    <span class="ts">★</span><span class="ts">★</span><span class="ts">★</span><span
+                      class="ts">★</span><span class="ts">★</span>
+                  </span>
+                </span>
+              </div>
+              <div class="tt-row" id="tt-votes-row-{{ game.id }}" style="display:none">
+                <span class="tt-key">Votos:</span>
+                <span class="tt-val" id="tt-votes-{{ game.id }}">—</span>
+              </div>
+            </div>
+          </div>
+          {% elif game.platform == 'Xbox Series X/S' or game.platform == 'Xbox One' %}
+          <div class="steam-tooltip-trigger xbox" id="steam-badge-{{ game.id }}" data-loaded="false">
+            <i class="fa-brands fa-xbox steam-icon" style="color: #107c10; font-size: 0.8rem;"></i>
+            <span>Nota Xbox:</span>
+            <span class="steam-score loading" id="steam-score-{{ game.id }}" style="color: #107c10;">—</span>
+            <!-- Popup tooltip -->
+            <div class="steam-tooltip-popup" id="steam-popup-{{ game.id }}" style="border-color: rgba(16, 124, 16, 0.3);">
+              <div class="tt-title" style="color: #107c10;">
+                <i class="fa-brands fa-xbox"></i> Avaliação Xbox / RAWG
+              </div>
+              <div class="tt-row">
+                <span class="tt-key">Nota:</span>
+                <span class="tt-val gold" id="tt-score-{{ game.id }}">—</span>
+              </div>
+              <div class="tt-row">
+                <span class="tt-key">Estrelas:</span>
+                <span class="tt-val">
+                  <span class="tt-stars" id="tt-stars-{{ game.id }}">
+                    <span class="ts">★</span><span class="ts">★</span><span class="ts">★</span><span
+                      class="ts">★</span><span class="ts">★</span>
+                  </span>
+                </span>
+              </div>
+              <div class="tt-row" id="tt-votes-row-{{ game.id }}" style="display:none">
+                <span class="tt-key">Votos:</span>
+                <span class="tt-val" id="tt-votes-{{ game.id }}">—</span>
+              </div>
+            </div>
+          </div>
+          {% elif game.platform == 'Nintendo Switch' %}
+          <div class="steam-tooltip-trigger nintendo" id="steam-badge-{{ game.id }}" data-loaded="false">
+            <i class="fa-solid fa-gamepad steam-icon" style="color: #e60012; font-size: 0.8rem;"></i>
+            <span>Nota Nintendo:</span>
+            <span class="steam-score loading" id="steam-score-{{ game.id }}" style="color: #e60012;">—</span>
+            <!-- Popup tooltip -->
+            <div class="steam-tooltip-popup" id="steam-popup-{{ game.id }}" style="border-color: rgba(230, 0, 18, 0.3);">
+              <div class="tt-title" style="color: #e60012;">
+                <i class="fa-solid fa-gamepad"></i> Avaliação Nintendo / RAWG
+              </div>
+              <div class="tt-row">
+                <span class="tt-key">Nota:</span>
+                <span class="tt-val gold" id="tt-score-{{ game.id }}">—</span>
+              </div>
+              <div class="tt-row">
+                <span class="tt-key">Estrelas:</span>
+                <span class="tt-val">
+                  <span class="tt-stars" id="tt-stars-{{ game.id }}">
+                    <span class="ts">★</span><span class="ts">★</span><span class="ts">★</span><span
+                      class="ts">★</span><span class="ts">★</span>
+                  </span>
+                </span>
+              </div>
+              <div class="tt-row" id="tt-votes-row-{{ game.id }}" style="display:none">
+                <span class="tt-key">Votos:</span>
+                <span class="tt-val" id="tt-votes-{{ game.id }}">—</span>
+              </div>
+            </div>
+          </div>
+          {% else %}
           <div class="steam-tooltip-trigger" id="steam-badge-{{ game.id }}" data-loaded="false">
             <i class="fa-brands fa-steam steam-icon"></i>
             <span>Nota Steam:</span>
@@ -848,6 +985,7 @@
               </div>
             </div>
           </div>
+          {% endif %}
         </div>
 
         <!-- Notas pessoais -->
@@ -930,6 +1068,18 @@
           <option value="iOS" {% if game.platform == 'iOS' %}selected{% endif %}>iOS</option>
           <option value="Outro" {% if game.platform == 'Outro' %}selected{% endif %}>Outro</option>
         </select>
+
+        <!-- Tags Pessoais -->
+        <div class="notes-label" style="margin-top: 10px;"><i class="fa-solid fa-tag"></i> Tags Pessoais</div>
+        <input
+          type="text"
+          class="notes-textarea"
+          id="tags-{{ game.id }}"
+          placeholder="Ex: Favorito, RPG, Difícil (separadas por vírgula)"
+          value="{{ game.tags or '' }}"
+          onblur="saveTags({{ game.id }}, this.value)"
+          style="height: auto; padding: 8px 10px;"
+        />
 
         <!-- Remover -->
         <button type="button" class="btn-remove" onclick="removeGame({{ game.id }}, this)">
@@ -1174,17 +1324,158 @@
       filterCards();
     }
 
+    // ====== TAGS & SORTING ======
+    let currentTagFilter = 'all';
+
+    async function saveTags(gameId, tags) {
+      const token = localStorage.getItem('access_token');
+      if (!token) return;
+      const card = document.getElementById('card-' + gameId);
+      if (card) card.dataset.tags = tags;
+
+      try {
+        const res = await fetch('/api/my-list/' + gameId + '/tags', {
+          method: 'PATCH',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ tags: tags || null })
+        });
+        if (!res.ok) throw new Error();
+        showToast('🏷️ Tags salvas!', 'success');
+
+        // Update the tags badge container on the card dynamically
+        let badgeContainer = document.getElementById('tags-list-' + gameId);
+        if (badgeContainer) {
+          badgeContainer.innerHTML = '';
+          if (tags) {
+            tags.split(',').forEach(tag => {
+              const clean = tag.trim();
+              if (clean) {
+                const span = document.createElement('span');
+                span.className = 'tag-badge';
+                span.style.background = 'rgba(129, 140, 248, 0.15)';
+                span.style.color = 'var(--purple)';
+                span.style.border = '1px solid rgba(129, 140, 248, 0.2)';
+                span.style.borderRadius = '6px';
+                span.style.padding = '2px 8px';
+                span.style.fontSize = '0.72rem';
+                span.style.fontWeight = '600';
+                span.textContent = clean;
+                badgeContainer.appendChild(span);
+              }
+            });
+          }
+        }
+
+        populateTagFilterOptions();
+        filterCards();
+      } catch (_e) {
+        showToast('❌ Erro ao salvar tags', 'error');
+      }
+    }
+
+    function populateTagFilterOptions() {
+      const select = document.getElementById('filter-tag-select');
+      if (!select) return;
+
+      const previousValue = select.value;
+      select.innerHTML = '<option value="all">Todas as Tags</option><option value="none">Sem Tags</option>';
+
+      // Gather all tags
+      const tagsSet = new Set();
+      document.querySelectorAll('.game-card').forEach(card => {
+        const cardTags = card.dataset.tags || '';
+        if (cardTags) {
+          cardTags.split(',').forEach(t => {
+            const clean = t.trim();
+            if (clean) tagsSet.add(clean);
+          });
+        }
+      });
+
+      // Sort tags alphabetically
+      const sortedTags = Array.from(tagsSet).sort((a, b) => a.localeCompare(b));
+      sortedTags.forEach(tag => {
+        const opt = document.createElement('option');
+        opt.value = tag;
+        opt.textContent = tag;
+        select.appendChild(opt);
+      });
+
+      // Restore value if still exists
+      if (Array.from(select.options).some(opt => opt.value === previousValue)) {
+        select.value = previousValue;
+        currentTagFilter = previousValue;
+      } else {
+        select.value = 'all';
+        currentTagFilter = 'all';
+      }
+    }
+
+    function applyTagFilter(val) {
+      currentTagFilter = val;
+      updateFilterStyle();
+      filterCards();
+    }
+
+    function applySort(criteria) {
+      const grid = document.getElementById('game-grid');
+      if (!grid) return;
+
+      // Extract all card elements (ignoring empty-state or non-card elements)
+      const cards = Array.from(grid.querySelectorAll('.game-card'));
+      if (cards.length === 0) return;
+
+      if (criteria === 'default') {
+        cards.sort((a, b) => {
+          return parseInt(a.dataset.gameid) - parseInt(b.dataset.gameid);
+        });
+      } else if (criteria === 'title-asc') {
+        cards.sort((a, b) => {
+          const ta = a.querySelector('.game-card-title').textContent.trim().toLowerCase();
+          const tb = b.querySelector('.game-card-title').textContent.trim().toLowerCase();
+          return ta.localeCompare(tb);
+        });
+      } else if (criteria === 'title-desc') {
+        cards.sort((a, b) => {
+          const ta = a.querySelector('.game-card-title').textContent.trim().toLowerCase();
+          const tb = b.querySelector('.game-card-title').textContent.trim().toLowerCase();
+          return tb.localeCompare(ta);
+        });
+      } else if (criteria === 'rating-desc') {
+        cards.sort((a, b) => {
+          const ra = parseInt(a.dataset.rating) || 0;
+          const rb = parseInt(b.dataset.rating) || 0;
+          return rb - ra;
+        });
+      } else if (criteria === 'rating-asc') {
+        cards.sort((a, b) => {
+          const ra = parseInt(a.dataset.rating) || 0;
+          const rb = parseInt(b.dataset.rating) || 0;
+          return ra - rb;
+        });
+      }
+
+      // Re-append sorted cards in order
+      cards.forEach(card => grid.appendChild(card));
+    }
+
     function updateFilterStyle() {
       // Rating
       document.querySelectorAll('#filter-bar .filter-btn').forEach(btn => {
         btn.classList.remove('active', 'active-all', 'active-unrated');
       });
       if (currentRatingFilter === 'all') {
-        document.getElementById('filter-all').classList.add('active-all');
+        const el = document.getElementById('filter-all');
+        if (el) el.classList.add('active-all');
       } else if (currentRatingFilter === 0) {
-        document.getElementById('filter-0').classList.add('active-unrated');
+        const el = document.getElementById('filter-0');
+        if (el) el.classList.add('active-unrated');
       } else {
-        document.getElementById('filter-' + currentRatingFilter).classList.add('active');
+        const el = document.getElementById('filter-' + currentRatingFilter);
+        if (el) el.classList.add('active');
       }
 
       // Categoria
@@ -1198,9 +1489,11 @@
         btn.classList.remove('active', 'active-all', 'active-unrated');
       });
       if (currentStatusFilter === 'all') {
-        document.getElementById('filter-status-all').classList.add('active-all');
+        const el = document.getElementById('filter-status-all');
+        if (el) el.classList.add('active-all');
       } else if (currentStatusFilter === 'none') {
-        document.getElementById('filter-status-none').classList.add('active-unrated');
+        const el = document.getElementById('filter-status-none');
+        if (el) el.classList.add('active-unrated');
       } else {
         const idMap = {
           'Pretendo Jogar': 'pretendo',
@@ -1220,6 +1513,12 @@
       if (platSelect) {
         platSelect.value = currentPlatformFilter;
       }
+
+      // Tag
+      const tagSelect = document.getElementById('filter-tag-select');
+      if (tagSelect) {
+        tagSelect.value = currentTagFilter;
+      }
     }
 
     function filterCards() {
@@ -1229,6 +1528,7 @@
         const cat = card.dataset.category || '';
         const status = card.dataset.status || '';
         const plat = card.dataset.platform || '';
+        const tagsStr = card.dataset.tags || '';
 
         // Avaliação
         let matchRating = false;
@@ -1270,7 +1570,18 @@
           matchPlatform = (plat === currentPlatformFilter);
         }
 
-        const show = matchRating && matchCategory && matchStatus && matchPlatform;
+        // Tag
+        let matchTag = false;
+        if (currentTagFilter === 'all') {
+          matchTag = true;
+        } else if (currentTagFilter === 'none') {
+          matchTag = (!tagsStr || tagsStr.trim() === '');
+        } else {
+          const list = tagsStr.split(',').map(t => t.trim().toLowerCase());
+          matchTag = list.includes(currentTagFilter.toLowerCase());
+        }
+
+        const show = matchRating && matchCategory && matchStatus && matchPlatform && matchTag;
         card.setAttribute('data-hidden', show ? 'false' : 'true');
       });
 
@@ -1285,7 +1596,7 @@
         const msg = document.getElementById('no-filter-msg');
         if (msg) {
           let text = 'Nenhum jogo encontrado.';
-          if (currentRatingFilter !== 'all' || currentCategoryFilter !== 'all' || currentStatusFilter !== 'all' || currentPlatformFilter !== 'all') {
+          if (currentRatingFilter !== 'all' || currentCategoryFilter !== 'all' || currentStatusFilter !== 'all' || currentPlatformFilter !== 'all' || currentTagFilter !== 'all') {
             text = 'Nenhum jogo atende aos filtros selecionados.';
           }
           msg.textContent = text;
@@ -1385,9 +1696,10 @@
       fetch('/logout', { method: 'POST' }).finally(() => { window.location.href = '/login'; });
     }
 
-    loadUserInfo();
-    initSteamTooltips();
-  </script>
+     loadUserInfo();
+     populateTagFilterOptions();
+     initSteamTooltips();
+   </script>
 </body>
 
 </html>

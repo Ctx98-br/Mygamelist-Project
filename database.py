@@ -29,6 +29,11 @@ class UserTable(Base):
     date_of_birth   = Column(String,  nullable=True)
     profile_bio     = Column(String,  nullable=True)
     is_admin        = Column(Boolean, default=False, nullable=False)
+    xbox_gamertag   = Column(String,  nullable=True)
+    psn_id          = Column(String,  nullable=True)
+    steam_id        = Column(String,  nullable=True)
+    nintendo_id     = Column(String,  nullable=True)
+    ra_username     = Column(String,  nullable=True)
 
 
 # ── Jogos do usuário ──────────────────────────────────────────────────────────
@@ -44,6 +49,7 @@ class GameTable(Base):
     category       = Column(String,  nullable=True)
     status         = Column(String,  nullable=True)
     platform       = Column(String,  nullable=True)
+    tags           = Column(String,  nullable=True)
 
 
 # ── Histórico de visualizações (trending + recentes) ─────────────────────────
@@ -124,3 +130,9 @@ _safe_add_column("my_games",        "platform", "VARCHAR")
 _safe_add_column("users",           "date_of_birth", "VARCHAR")
 _safe_add_column("users",           "profile_bio", "VARCHAR")
 _safe_add_column("users",           "is_admin", "BOOLEAN NOT NULL DEFAULT FALSE")
+_safe_add_column("users",           "xbox_gamertag", "VARCHAR")
+_safe_add_column("users",           "psn_id", "VARCHAR")
+_safe_add_column("users",           "steam_id", "VARCHAR")
+_safe_add_column("users",           "nintendo_id", "VARCHAR")
+_safe_add_column("users",           "ra_username", "VARCHAR")
+_safe_add_column("my_games",        "tags", "VARCHAR")
