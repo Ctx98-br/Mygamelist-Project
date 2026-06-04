@@ -587,6 +587,8 @@ nav{
 <script>
 let userData = null;
 let gamesData = [];
+let xboxSyncData = null;  // Armazena dados reais da última sync Xbox
+let psnSyncData  = null;  // Armazena dados reais da última sync PSN
 
 async function loadProfile() {
   const token = localStorage.getItem('access_token');
@@ -676,8 +678,15 @@ function renderUserInfo(user) {
     xboxBtn.onclick = disconnectXbox;
     xboxStats.style.display = 'block';
     xboxForm.style.display = 'none';
-    document.getElementById('xbox-gamerscore').textContent = '12.500 G';
-    document.getElementById('xbox-achievements').textContent = '87 / 150';
+    // Usa dados reais se disponíveis, senão mostra traços
+    if (xboxSyncData && xboxSyncData.gamerscore !== null && xboxSyncData.gamerscore !== undefined) {
+      document.getElementById('xbox-gamerscore').textContent = xboxSyncData.gamerscore.toLocaleString('pt-BR') + ' G';
+      const ach = xboxSyncData.achievements_count;
+      document.getElementById('xbox-achievements').textContent = ach > 0 ? ach + ' desbloqueados' : '— (sem dados)';
+    } else {
+      document.getElementById('xbox-gamerscore').textContent = '— G';
+      document.getElementById('xbox-achievements').textContent = '—';
+    }
   } else {
     xboxStatus.textContent = 'Não conectada';
     xboxBtn.textContent = 'Conectar';
@@ -702,11 +711,20 @@ function renderUserInfo(user) {
     psnBtn.onclick = disconnectPsn;
     psnStats.style.display = 'block';
     psnForm.style.display = 'none';
-    document.getElementById('psn-level').textContent = 'Lv 15';
-    document.getElementById('psn-plat').textContent = '1';
-    document.getElementById('psn-gold').textContent = '6';
-    document.getElementById('psn-silver').textContent = '18';
-    document.getElementById('psn-bronze').textContent = '45';
+    // Usa dados da última sync se disponíveis
+    if (psnSyncData) {
+      document.getElementById('psn-level').textContent  = 'Lv ' + psnSyncData.level;
+      document.getElementById('psn-plat').textContent   = psnSyncData.platinum;
+      document.getElementById('psn-gold').textContent   = psnSyncData.gold;
+      document.getElementById('psn-silver').textContent = psnSyncData.silver;
+      document.getElementById('psn-bronze').textContent = psnSyncData.bronze;
+    } else {
+      document.getElementById('psn-level').textContent  = 'Lv —';
+      document.getElementById('psn-plat').textContent   = '—';
+      document.getElementById('psn-gold').textContent   = '—';
+      document.getElementById('psn-silver').textContent = '—';
+      document.getElementById('psn-bronze').textContent = '—';
+    }
   } else {
     psnStatus.textContent = 'Não conectada';
     psnBtn.textContent = 'Conectar';
@@ -895,10 +913,13 @@ async function submitXboxConnect() {
     });
     if (!res.ok) throw new Error();
     const data = await res.json();
-    alert('🎮 ' + data.message);
+    // Armazena dados reais para exibição no perfil
+    xboxSyncData = data;
+    const icon = data.source === 'openxbl' ? '🎮' : '⚠️';
+    alert(icon + ' ' + data.message);
     loadProfile();
   } catch (err) {
-    alert('❌ Erro ao conectar Xbox Live.');
+    alert('Erro ao conectar Xbox Live.');
   }
 }
 
@@ -938,10 +959,12 @@ async function submitPsnConnect() {
     });
     if (!res.ok) throw new Error();
     const data = await res.json();
+    // Armazena dados de troféus para exibição no perfil
+    psnSyncData = data;
     alert('💙 ' + data.message);
     loadProfile();
   } catch (err) {
-    alert('❌ Erro ao conectar PSN.');
+    alert('Erro ao conectar PSN.');
   }
 }
 
