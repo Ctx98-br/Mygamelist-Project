@@ -34,6 +34,11 @@ class UserTable(Base):
     steam_id        = Column(String,  nullable=True)
     nintendo_id     = Column(String,  nullable=True)
     ra_username     = Column(String,  nullable=True)
+    xbox_gamerscore = Column(Integer, default=0)
+    xbox_achievements = Column(Integer, default=0)
+    psn_games_count   = Column(Integer, default=0)
+    psn_players_count = Column(Integer, default=0)
+    psn_imported_count = Column(Integer, default=0)
 
 
 # ── Jogos do usuário ──────────────────────────────────────────────────────────
@@ -72,6 +77,7 @@ class ForumPost(Base):
     created_at       = Column(DateTime, default=datetime.utcnow)
     likes            = Column(Integer,  default=0)
     is_anonymous     = Column(Boolean,  default=False)
+    topic            = Column(String,   default="Geral", nullable=True)
 
 
 # ── Fórum: comentários ────────────────────────────────────────────────────────
@@ -136,3 +142,9 @@ _safe_add_column("users",           "steam_id", "VARCHAR")
 _safe_add_column("users",           "nintendo_id", "VARCHAR")
 _safe_add_column("users",           "ra_username", "VARCHAR")
 _safe_add_column("my_games",        "tags", "VARCHAR")
+_safe_add_column("users",           "xbox_gamerscore", "INTEGER DEFAULT 0")
+_safe_add_column("users",           "xbox_achievements", "INTEGER DEFAULT 0")
+_safe_add_column("users",           "psn_games_count", "INTEGER DEFAULT 0")
+_safe_add_column("users",           "psn_players_count", "INTEGER DEFAULT 0")
+_safe_add_column("users",           "psn_imported_count", "INTEGER DEFAULT 0")
+_safe_add_column("forum_posts",     "topic", "VARCHAR DEFAULT 'Geral'")

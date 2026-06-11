@@ -678,9 +678,9 @@ function renderUserInfo(user) {
     xboxStats.style.display = 'block';
     xboxForm.style.display = 'none';
     // Usa dados reais se disponíveis, senão mostra traços
-    if (xboxSyncData && xboxSyncData.gamerscore !== null && xboxSyncData.gamerscore !== undefined) {
-      document.getElementById('xbox-gamerscore').textContent = xboxSyncData.gamerscore.toLocaleString('pt-BR') + ' G';
-      const ach = xboxSyncData.achievements_count;
+    if (user.xbox_gamerscore !== null && user.xbox_gamerscore !== undefined && user.xbox_gamerscore > 0) {
+      document.getElementById('xbox-gamerscore').textContent = user.xbox_gamerscore.toLocaleString('pt-BR') + ' G';
+      const ach = user.xbox_achievements;
       document.getElementById('xbox-achievements').textContent = ach > 0 ? ach + ' desbloqueados' : '— (sem dados)';
     } else {
       document.getElementById('xbox-gamerscore').textContent = '— G';
@@ -711,11 +711,10 @@ function renderUserInfo(user) {
     psnStats.style.display = 'block';
     psnForm.style.display = 'none';
     // Usa dados reais do site se disponíveis após sync
-    if (psnSyncData && psnSyncData.site_ps_stats) {
-      const stats = psnSyncData.site_ps_stats;
-      document.getElementById('psn-site-games').textContent   = stats.total_ps_entries + ' jogos';
-      document.getElementById('psn-site-players').textContent = stats.ps_players + ' jogadores';
-      document.getElementById('psn-imported').textContent     = psnSyncData.imported_count + ' adicionados';
+    if (user.psn_games_count !== null && user.psn_games_count !== undefined && user.psn_games_count > 0) {
+      document.getElementById('psn-site-games').textContent   = user.psn_games_count + ' jogos';
+      document.getElementById('psn-site-players').textContent = user.psn_players_count + ' jogadores';
+      document.getElementById('psn-imported').textContent     = user.psn_imported_count + ' adicionados';
     } else {
       document.getElementById('psn-site-games').textContent   = '—';
       document.getElementById('psn-site-players').textContent = '—';

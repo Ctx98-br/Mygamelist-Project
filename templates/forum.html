@@ -166,6 +166,49 @@ nav{
 
 @media(max-width:900px){.wrapper{grid-template-columns:1fr;}}
 @media(max-width:640px){nav{padding:0 14px;}.nav-link{display:none;}}
+
+/* FILTER PILLS */
+.filter-pill {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+  outline: none;
+}
+.filter-pill:hover {
+  border-color: var(--blue);
+  color: var(--text);
+  background: rgba(56, 189, 248, 0.05);
+}
+.filter-pill.active {
+  background: var(--grad);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 4px 10px rgba(56, 189, 248, 0.15);
+}
+
+/* TOPIC BADGES */
+.badge-topic {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: .7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-left: 8px;
+  text-transform: uppercase;
+}
+.badge-topic.geral { background: rgba(56, 189, 248, 0.12); color: var(--blue); }
+.badge-topic.dúvidas { background: rgba(251, 191, 36, 0.12); color: var(--gold); }
+.badge-topic.novidades { background: rgba(129, 140, 248, 0.12); color: var(--purple); }
+.badge-topic.reviews { background: rgba(52, 211, 153, 0.12); color: var(--green); }
+.badge-topic.dicas { background: rgba(248, 113, 113, 0.12); color: var(--danger); }
 </style>
 </head>
 <body>
@@ -195,16 +238,37 @@ nav{
     <div class="post-box card" style="margin-bottom:16px;">
       <div class="card-title"><i class="fa-solid fa-pen" style="color:var(--blue)"></i> Criar Tópico</div>
       <textarea id="newPostText" placeholder="Compartilhe algo sobre jogos, dúvidas ou novidades..."></textarea>
-      <div class="post-actions">
-        <button class="btn btn-publish" id="btn-publish" onclick="publicar()">
-          <i class="fa-solid fa-paper-plane"></i> Publicar
-        </button>
-        <label class="anon-toggle" title="Oculta seu nome e exibe 'Anônimo' para todos">
-          <input type="checkbox" id="postAnon">
-          <span class="toggle-track"><span class="toggle-thumb"></span></span>
-          <span class="anon-label"><i class="fa-solid fa-user-secret"></i> Anônimo</span>
-        </label>
+      <div class="post-actions" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <select id="postTopic" style="background:var(--card-b); color:var(--text); border:1px solid var(--border); padding:6px 12px; border-radius:8px; font-size:0.82rem; font-weight:600; cursor:pointer; outline:none; transition:border-color .2s;">
+            <option value="Geral">🌐 Geral</option>
+            <option value="Dúvidas">❓ Dúvidas</option>
+            <option value="Novidades">📢 Novidades</option>
+            <option value="Reviews">⭐ Reviews</option>
+            <option value="Dicas">💡 Dicas</option>
+          </select>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <label class="anon-toggle" title="Oculta seu nome e exibe 'Anônimo' para todos">
+            <input type="checkbox" id="postAnon">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            <span class="anon-label"><i class="fa-solid fa-user-secret"></i> Anônimo</span>
+          </label>
+          <button class="btn btn-publish" id="btn-publish" onclick="publicar()">
+            <i class="fa-solid fa-paper-plane"></i> Publicar
+          </button>
+        </div>
       </div>
+    </div>
+
+    <!-- Filtros de Tópicos -->
+    <div class="topic-filters" style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
+      <button class="filter-pill active" onclick="filtrarTopico('Tudo')" data-topic="Tudo">Tudo</button>
+      <button class="filter-pill" onclick="filtrarTopico('Geral')" data-topic="Geral">🌐 Geral</button>
+      <button class="filter-pill" onclick="filtrarTopico('Dúvidas')" data-topic="Dúvidas">❓ Dúvidas</button>
+      <button class="filter-pill" onclick="filtrarTopico('Novidades')" data-topic="Novidades">📢 Novidades</button>
+      <button class="filter-pill" onclick="filtrarTopico('Reviews')" data-topic="Reviews">⭐ Reviews</button>
+      <button class="filter-pill" onclick="filtrarTopico('Dicas')" data-topic="Dicas">💡 Dicas</button>
     </div>
 
     <!-- Feed de posts -->
@@ -251,31 +315,58 @@ async function init() {
 }
 
 // ── Posts ─────────────────────────────────────────────────────────────────────
+let cacheForumPosts = [];
+let selectedTopic = 'Tudo';
+
 async function loadPosts() {
   try {
     const res = await fetch('/api/forum/posts');
-    const posts = await res.json();
-    renderPosts(posts);
-    renderRanking(posts);
+    cacheForumPosts = await res.json();
+    filtrarTopico(selectedTopic);
+    renderRanking(cacheForumPosts);
   } catch (_e) {
     document.getElementById('feed').innerHTML = '<div class="empty-feed">Erro ao carregar tópicos.</div>';
   }
 }
 
+function filtrarTopico(topic) {
+  selectedTopic = topic;
+  document.querySelectorAll('.filter-pill').forEach(btn => {
+    if (btn.getAttribute('data-topic') === topic) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+  const filtered = topic === 'Tudo'
+    ? cacheForumPosts
+    : cacheForumPosts.filter(p => (p.topic || 'Geral').toLowerCase() === topic.toLowerCase());
+  renderPosts(filtered);
+}
+
 function renderPosts(posts) {
   const feed = document.getElementById('feed');
   if (!posts.length) {
-    feed.innerHTML = '<div class="empty-feed"><i class="fa-solid fa-comments" style="font-size:2rem;opacity:.3;display:block;margin-bottom:10px"></i>Nenhum tópico ainda. Seja o primeiro!</div>';
+    feed.innerHTML = '<div class="empty-feed"><i class="fa-solid fa-comments" style="font-size:2rem;opacity:.3;display:block;margin-bottom:10px"></i>Nenhum tópico nesta categoria ainda.</div>';
     return;
   }
   feed.innerHTML = posts.map(function(p) {
+    var topicLabel = p.topic || 'Geral';
+    var topicBadge = '<span class="badge-topic ' + topicLabel.toLowerCase() + '">' + topicLabel + '</span>';
     var authorHtml = p.is_anonymous
-      ? '<span class="post-author anon"><i class="fa-solid fa-user-secret"></i> Anônimo</span><span class="badge-anon">anon</span>'
-      : '<span class="post-author">🎮 ' + p.author_name + '</span>';
+      ? '<span class="post-author anon"><i class="fa-solid fa-user-secret"></i> Anônimo</span><span class="badge-anon">anon</span>' + topicBadge
+      : '<span class="post-author">🎮 ' + p.author_name + '</span>' + topicBadge;
+    var deletePostBtn = '';
+    if (currentUser && currentUser.is_admin) {
+      deletePostBtn = '<button class="btn-delete-post" onclick="deletePost(' + p.id + ')" style="background:none;border:none;color:var(--danger);font-size:.8rem;cursor:pointer;" title="Excluir Post (Moderador)"><i class="fa-solid fa-trash"></i></button>';
+    }
     return '<div class="post" id="post-' + p.id + '">'
       + '<div class="post-header">'
-      + '<div style="display:flex;align-items:center;gap:6px">' + authorHtml + '</div>'
+      + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">' + authorHtml + '</div>'
+      + '<div style="display:flex;align-items:center;gap:10px;margin-left:auto">'
       + '<span class="post-time">' + formatTime(p.created_at) + '</span>'
+      + deletePostBtn
+      + '</div>'
       + '</div>'
       + '<div class="post-content">' + escapeHtml(p.content) + '</div>'
       + '<div class="post-footer">'
@@ -340,6 +431,7 @@ async function publicar() {
   const token = localStorage.getItem('access_token');
   const texto = document.getElementById('newPostText').value.trim();
   if (!texto) { showToast('Escreva algo antes de publicar!', 'error'); return; }
+  const topic = document.getElementById('postTopic').value;
   const isAnon = document.getElementById('postAnon').checked;
   const btn = document.getElementById('btn-publish');
   btn.disabled = true;
@@ -347,11 +439,12 @@ async function publicar() {
     const res = await fetch('/api/forum/posts', {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: texto, is_anonymous: isAnon }),
+      body: JSON.stringify({ content: texto, is_anonymous: isAnon, topic: topic }),
     });
     if (!res.ok) throw new Error();
     document.getElementById('newPostText').value = '';
     document.getElementById('postAnon').checked = false;
+    document.getElementById('postTopic').value = 'Geral';
     showToast(isAnon ? '🕵️ Tópico publicado anonimamente!' : '✅ Tópico publicado!', 'success');
     loadPosts();
   } catch (_e) {
@@ -399,8 +492,18 @@ function renderComments(postId, comments) {
     var authorHtml = c.is_anonymous
       ? '<span class="c-author anon"><i class="fa-solid fa-user-secret"></i> Anônimo</span><span class="badge-anon">anon</span>'
       : '<span class="c-author">@' + c.author_name + '</span>';
+    var deleteCommentBtn = '';
+    if (currentUser && currentUser.is_admin) {
+      deleteCommentBtn = '<button class="btn-delete-comment" onclick="deleteComment(' + postId + ', ' + c.id + ')" style="background:none;border:none;color:var(--danger);font-size:.75rem;cursor:pointer;" title="Excluir Comentário (Moderador)"><i class="fa-solid fa-trash"></i></button>';
+    }
     return '<div class="comment" id="comment-' + c.id + '">'
-      + '<div class="c-header"><div style="display:flex;align-items:center;gap:5px">' + authorHtml + '</div><span class="c-time">' + formatTime(c.created_at) + '</span></div>'
+      + '<div class="c-header">'
+      + '<div style="display:flex;align-items:center;gap:5px">' + authorHtml + '</div>'
+      + '<div style="display:flex;align-items:center;gap:8px">'
+      + '<span class="c-time">' + formatTime(c.created_at) + '</span>'
+      + deleteCommentBtn
+      + '</div>'
+      + '</div>'
       + '<p>' + escapeHtml(c.content) + '</p>'
       + '<button class="btn-like-c" onclick="likeComment(' + postId + ', ' + c.id + ', this)">'
       + '<i class="fa-solid fa-heart"></i> <span class="like-count">' + c.likes + '</span>'
@@ -447,6 +550,46 @@ async function likeComment(postId, commentId, btn) {
     btn.querySelector('.like-count').textContent = data.likes;
     btn.style.color = 'var(--danger)';
   } catch (_e) { showToast('Erro ao curtir.', 'error'); }
+}
+
+// ── Exclusão Moderador (Apenas Admin) ─────────────────────────────────────────
+async function deletePost(postId) {
+  if (!confirm("Tem certeza que deseja excluir este post e todos os seus comentários?")) return;
+  const token = localStorage.getItem('access_token');
+  try {
+    const res = await fetch('/admin/forum/posts/' + postId, {
+      method: 'DELETE',
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (!res.ok) throw new Error();
+    showToast('✅ Post excluído com sucesso!', 'success');
+    loadPosts();
+  } catch (_e) {
+    showToast('❌ Erro ao excluir post.', 'error');
+  }
+}
+
+async function deleteComment(postId, commentId) {
+  if (!confirm("Tem certeza que deseja excluir este comentário?")) return;
+  const token = localStorage.getItem('access_token');
+  try {
+    const res = await fetch('/admin/forum/posts/' + postId + '/comments/' + commentId, {
+      method: 'DELETE',
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (!res.ok) throw new Error();
+    showToast('✅ Comentário excluído!', 'success');
+    
+    // Recarrega os comentários do post
+    const res2 = await fetch('/api/forum/posts/' + postId + '/comments', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const comments = await res2.json();
+    renderComments(postId, comments);
+    document.getElementById('cc-' + postId).textContent = comments.length;
+  } catch (_e) {
+    showToast('❌ Erro ao excluir comentário.', 'error');
+  }
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
