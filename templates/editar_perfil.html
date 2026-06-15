@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Edite suas informações de perfil e altere sua senha no MyGameList.">
+<title>Editar Perfil | MyGameList</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root{
+  --bg:#050816; --nav:rgba(5,8,22,.85);
+  --card:#0f172a; --card-b:#1e293b;
+  --text:#e2e8f0; --muted:#94a3b8; --border:rgba(255,255,255,.07);
+  --blue:#38bdf8; --purple:#818cf8; --green:#34d399;
+  --danger:#f87171; --gold:#fbbf24;
+  --grad:linear-gradient(135deg,#38bdf8,#818cf8);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Inter',sans-serif;
+  background:
+    radial-gradient(circle at 15% 10%,rgba(56,189,248,.1) 0%,transparent 30%),
+    radial-gradient(circle at 85% 85%,rgba(129,140,248,.1) 0%,transparent 30%),
+    var(--bg);
+  color:var(--text);min-height:100vh;
+}
+
+/* ===== NAV ===== */
+nav{
+  position:sticky;top:0;z-index:50;
+  background:var(--nav);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-brand{
+  display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.15rem;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.nav-brand i{-webkit-text-fill-color:var(--blue);}
+.nav-links{display:flex;align-items:center;gap:8px;}
+.nav-link{
+  padding:8px 14px;border-radius:10px;font-size:.88rem;font-weight:600;
+  color:var(--muted);text-decoration:none;transition:color .2s,background .2s;
+}
+.nav-link:hover,.nav-link.active{color:var(--blue);background:rgba(56,189,248,.08);}
+.btn-nav{
+  border:none;padding:8px 14px;border-radius:10px;
+  font-size:.85rem;font-weight:700;font-family:'Inter',sans-serif;
+  cursor:pointer;transition:transform .18s,filter .18s;
+}
+.btn-nav:hover{transform:translateY(-1px);filter:brightness(1.1);}
+.btn-logout{background:rgba(248,113,113,.15);color:var(--danger);border:1px solid rgba(248,113,113,.2);}
+
+/* ===== CONTAINER ===== */
+.container{max-width:650px;margin:0 auto;padding:40px 24px 60px;}
+
+/* ===== CARD ===== */
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:24px;padding:36px;
+  box-shadow:0 20px 50px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.05);
+  animation:rise 450ms cubic-bezier(.16,1,.3,1);
+}
+@keyframes rise{from{transform:translateY(15px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+
+.card-header{
+  margin-bottom:28px;border-bottom:1px solid var(--border);
+  padding-bottom:16px;
+}
+.card-header h2{
+  font-size:1.4rem;font-weight:800;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  display:flex;align-items:center;gap:10px;
+}
+.card-header h2 i{-webkit-text-fill-color:var(--blue);}
+.card-header p{color:var(--muted);font-size:.85rem;margin-top:6px;}
+
+/* ===== FORM FIELDS ===== */
+.row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.field{margin-bottom:20px;}
+label{
+  display:block;margin-bottom:8px;
+  font-size:.78rem;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.05em;
+}
+.input-wrap{position:relative;}
+.input-wrap i{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  color:var(--muted);font-size:.88rem;pointer-events:none;transition:color .2s;
+}
+input,textarea{
+  width:100%;background:var(--card-b);border:1px solid var(--border);
+  border-radius:12px;padding:12px 14px 12px 40px;
+  font-size:.92rem;color:var(--text);font-family:'Inter',sans-serif;
+  transition:border-color .2s,box-shadow .2s;
+}
+textarea{resize:none;height:100px;padding-left:14px;}
+input:focus,textarea:focus{
+  outline:none;border-color:var(--blue);box-shadow:0 0 0 4px rgba(56,189,248,.1);
+}
+.input-wrap:focus-within i{color:var(--blue);}
+input::placeholder,textarea::placeholder{color:var(--muted);}
+
+/* ===== PASSWORD SECTION ===== */
+.password-toggle-container {
+  background: rgba(255,255,255,.02);
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  transition: border-color .2s, background .2s;
+}
+.password-toggle-container:hover {
+  border-color: rgba(56,189,248,.2);
+}
+.checkbox-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+.checkbox-wrap input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--blue);
+}
+.checkbox-wrap span {
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.password-fields {
+  display: none;
+  margin-top: 18px;
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== BUTTONS ===== */
+.btn-group{
+  display:flex;align-items:center;gap:12px;margin-top:10px;
+}
+.btn{
+  flex:1;border:none;border-radius:12px;padding:14px;
+  font-size:.95rem;font-weight:700;font-family:'Inter',sans-serif;
+  cursor:pointer;transition:transform .18s,filter .18s,background .18s;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.08);}
+.btn:disabled{opacity:.6;cursor:wait;}
+.btn-primary{background:var(--grad);color:#fff;box-shadow:0 10px 24px rgba(56,189,248,.2);}
+.btn-ghost{
+  background:transparent;border:1.5px solid var(--border);
+  color:var(--muted);
+}
+.btn-ghost:hover:not(:disabled){border-color:var(--danger);color:var(--danger);background:rgba(248,113,113,.06);}
+
+/* ===== MESSAGES ===== */
+.msg{
+  margin-top:20px;padding:12px 16px;border-radius:12px;
+  font-size:.88rem;font-weight:600;text-align:center;display:none;
+}
+.msg.error  {display:block;color:var(--danger);background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);}
+.msg.success{display:block;color:var(--green);background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);}
+
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:560px){
+  .row{grid-template-columns:1fr;}
+  .card{padding:24px;}
+  .btn-group{flex-direction:column-reverse;}
+  .btn{width:100%;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand"><i class="fa-solid fa-gamepad"></i> MyGameList</div>
+  <div class="nav-links">
+    <a href="/dashboard" class="nav-link"><i class="fa-solid fa-compass"></i> Explorar</a>
+    <a href="/my-list"   class="nav-link"><i class="fa-solid fa-list"></i> Minha Lista</a>
+    <a href="/forum"     class="nav-link"><i class="fa-solid fa-comments"></i> Fórum</a>
+    <a href="/perfil"    class="nav-link active"><i class="fa-solid fa-user"></i> Perfil</a>
+    <a href="/admin"     class="nav-link" id="admin-link" style="display:none;color:var(--purple)">
+      <i class="fa-solid fa-shield-halved"></i> Admin
+    </a>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <button class="btn-nav btn-logout" onclick="logout()">
+      <i class="fa-solid fa-right-from-bracket"></i> Sair
+    </button>
+  </div>
+</nav>
+
+<div class="container">
+  <main class="card">
+    <div class="card-header">
+      <h2><i class="fa-solid fa-user-gear"></i> Editar Perfil</h2>
+      <p>Gerencie as informações da sua conta e configurações de segurança.</p>
+    </div>
+
+    <form id="editProfileForm">
+      <div class="row">
+        <div class="field">
+          <label for="fullName">Nome Completo</label>
+          <div class="input-wrap">
+            <input id="fullName" type="text" placeholder="Carregando..." required />
+            <i class="fa-solid fa-user"></i>
+          </div>
+        </div>
+        <div class="field">
+          <label for="email">E-mail</label>
+          <div class="input-wrap">
+            <input id="email" type="email" placeholder="Carregando..." required />
+            <i class="fa-solid fa-envelope"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="dateOfBirth">Data de Nascimento</label>
+        <div class="input-wrap">
+          <input id="dateOfBirth" type="date" style="padding-left:14px;" />
+          <i class="fa-solid fa-calendar" style="left:auto;right:14px;"></i>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="profileBio">Bio do Perfil</label>
+        <textarea id="profileBio" placeholder="Fale sobre você e seus jogos favoritos..."></textarea>
+      </div>
+
+      <!-- Seção Alterar Senha -->
+      <div class="password-toggle-container">
+        <label class="checkbox-wrap">
+          <input type="checkbox" id="changePasswordCheck" onchange="togglePasswordFields(this.checked)" />
+          <span>Alterar minha senha</span>
+        </label>
+
+        <div class="password-fields" id="passwordFields">
+          <div class="field">
+            <label for="currentPassword">Senha Atual</label>
+            <div class="input-wrap">
+              <input id="currentPassword" type="password" placeholder="Digite sua senha atual" autocomplete="current-password" />
+              <i class="fa-solid fa-lock"></i>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="newPassword">Nova Senha</label>
+              <div class="input-wrap">
+                <input id="newPassword" type="password" placeholder="Mínimo de 6 caracteres" autocomplete="new-password" />
+                <i class="fa-solid fa-key"></i>
+              </div>
+            </div>
+            <div class="field">
+              <label for="confirmNewPassword">Confirmar Nova Senha</label>
+              <div class="input-wrap">
+                <input id="confirmNewPassword" type="password" placeholder="Repita a nova senha" autocomplete="new-password" />
+                <i class="fa-solid fa-key"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="msg" class="msg"></div>
+
+      <div class="btn-group">
+        <button type="button" class="btn btn-ghost" onclick="window.location.href='/perfil'">
+          Cancelar
+        </button>
+        <button type="submit" id="submit-btn" class="btn btn-primary">
+          <i class="fa-solid fa-circle-check"></i> Salvar Alterações
+        </button>
+      </div>
+    </form>
+  </main>
+</div>
+
+<script>
+const token = localStorage.getItem('access_token');
+const form = document.getElementById('editProfileForm');
+const msgEl = document.getElementById('msg');
+const btnSubmit = document.getElementById('submit-btn');
+
+// Verifica Autenticação
+if (!token) {
+  window.location.href = '/login';
+}
+
+function showMsg(text, type) {
+  msgEl.textContent = text;
+  msgEl.className = 'msg ' + type;
+}
+
+function togglePasswordFields(checked) {
+  const fields = document.getElementById('passwordFields');
+  fields.style.display = checked ? 'block' : 'none';
+  
+  // Toggle o atributo required dos campos de senha
+  document.getElementById('currentPassword').required = checked;
+  document.getElementById('newPassword').required = checked;
+  document.getElementById('confirmNewPassword').required = checked;
+}
+
+// Carregar dados atuais do perfil
+async function loadUserData() {
+  try {
+    const res = await fetch('/users/me/', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (!res.ok) {
+      logout();
+      return;
+    }
+    const user = await res.json();
+    
+    document.getElementById('fullName').value = user.full_name || '';
+    document.getElementById('email').value = user.email || '';
+    document.getElementById('dateOfBirth').value = user.date_of_birth || '';
+    document.getElementById('profileBio').value = user.profile_bio || '';
+    
+    if (user.is_admin) {
+      const adminLink = document.getElementById('admin-link');
+      if (adminLink) adminLink.style.display = '';
+    }
+  } catch (err) {
+    showMsg('Erro de conexão ao carregar os dados.', 'error');
+  }
+}
+
+// Enviar Atualizações
+form.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const changePassword = document.getElementById('changePasswordCheck').checked;
+  const currentPassword = document.getElementById('currentPassword').value;
+  const newPassword = document.getElementById('newPassword').value;
+  const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+  
+  if (changePassword) {
+    if (newPassword.length < 6) {
+      showMsg('A nova senha deve conter no mínimo 6 caracteres.', 'error');
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      showMsg('As senhas não coincidem.', 'error');
+      return;
+    }
+  }
+  
+  btnSubmit.disabled = true;
+  btnSubmit.innerHTML = '<span class="spinner"></span> Salvando...';
+  showMsg('', '');
+  
+  const payload = {
+    full_name: document.getElementById('fullName').value,
+    email: document.getElementById('email').value,
+    date_of_birth: document.getElementById('dateOfBirth').value || null,
+    profile_bio: document.getElementById('profileBio').value || null,
+  };
+  
+  if (changePassword) {
+    payload.current_password = currentPassword;
+    payload.new_password = newPassword;
+  }
+  
+  try {
+    const res = await fetch('/api/profile/update', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    const data = await res.json();
+    
+    if (!res.ok) {
+      showMsg(data.detail || 'Não foi possível atualizar o perfil.', 'error');
+      return;
+    }
+    
+    showMsg('✅ Perfil atualizado com sucesso! Redirecionando...', 'success');
+    setTimeout(() => {
+      window.location.href = '/perfil';
+    }, 1500);
+  } catch (err) {
+    showMsg('Erro de comunicação com o servidor.', 'error');
+  } finally {
+    btnSubmit.disabled = false;
+    btnSubmit.innerHTML = '<i class="fa-solid fa-circle-check"></i> Salvar Alterações';
+  }
+});
+
+function logout() {
+  localStorage.removeItem('access_token');
+  document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+  fetch('/logout', { method: 'POST' }).finally(() => { window.location.href = '/login'; });
+}
+
+loadUserData();
+</script>
+</body>
+</html>

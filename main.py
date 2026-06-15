@@ -116,6 +116,15 @@ class ResetPasswordRequest(BaseModel):
     new_password: str
 
 
+class ProfileUpdate(BaseModel):
+    full_name: str | None = None
+    email: str | None = None
+    date_of_birth: str | None = None
+    profile_bio: str | None = None
+    current_password: str | None = None
+    new_password: str | None = None
+
+
 class User(BaseModel):
     username: str
     email: str | None = None
@@ -504,6 +513,11 @@ async def perfil_page(request: Request):
     return templates.TemplateResponse(request=request, name="usuarios.html", context={})
 
 
+@app.get("/editar-perfil", response_class=HTMLResponse)
+async def editar_perfil_page(request: Request):
+    return templates.TemplateResponse(request=request, name="editar_perfil.html", context={})
+
+
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_page(request: Request):
     return templates.TemplateResponse(request=request, name="home-adm.html", context={})
@@ -550,6 +564,41 @@ async def read_users_me(
         psn_players_count=current_user.psn_players_count,
         psn_imported_count=current_user.psn_imported_count,
     )
+
+
+@app.put("/api/profile/update")
+async def update_profile(
+    payload: ProfileUpdate,
+    db: Session = Depends(get_db),
+    current_user: UserTable = Depends(get_current_active_user),
+):
+    # Se uma nova senha for fornecida
+    if payload.new_password:
+        if not payload.current_password:
+            raise HTTPException(status_code=400, detail="A senha atual é obrigatória para alterar a senha.")
+        if not verify_password(payload.current_password, current_user.hashed_password):
+            raise HTTPException(status_code=400, detail="Senha atual incorreta.")
+        if len(payload.new_password) < 6:
+            raise HTTPException(status_code=400, detail="A nova senha deve ter no mínimo 6 caracteres.")
+        current_user.hashed_password = get_password_hash(payload.new_password)
+
+    # Verifica a unicidade do e-mail caso tenha sido alterado
+    if payload.email and payload.email != current_user.email:
+        existing = db.query(UserTable).filter(UserTable.email == payload.email).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="E-mail já cadastrado por outro usuário.")
+        current_user.email = payload.email
+
+    if payload.full_name is not None:
+        current_user.full_name = payload.full_name
+    if payload.date_of_birth is not None:
+        current_user.date_of_birth = payload.date_of_birth
+    if payload.profile_bio is not None:
+        current_user.profile_bio = payload.profile_bio
+
+    db.commit()
+    return {"message": "Perfil atualizado com sucesso!"}
+
 
 
 @app.post("/api/forgot-password")
