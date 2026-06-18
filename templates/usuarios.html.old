@@ -244,9 +244,6 @@ nav{
         <span class="meta-item" id="profile-email"><i class="fa-solid fa-envelope"></i> —</span>
         <span class="meta-item" id="profile-dob"><i class="fa-solid fa-calendar"></i> —</span>
       </div>
-      <p style="margin-top:14px;color:var(--muted);font-size:.9rem;">
-        Acesse seus dados, altere o e-mail ou senha e atualize sua bio clicando em <strong>Editar Perfil</strong>.
-      </p>
     </div>
     <div class="profile-actions">
       <button class="btn-edit-profile" onclick="editarPerfil()">
@@ -580,11 +577,6 @@ nav{
           <span class="label"><i class="fa-solid fa-shield"></i> Status</span>
           <span class="value" style="color:var(--green)"><i class="fa-solid fa-circle" style="font-size:.6rem"></i> Ativo</span>
         </div>
-      </div>
-      <div style="margin-top:18px;text-align:center;">
-        <button class="btn-edit-profile" onclick="editarPerfil()" style="width:100%;max-width:280px;">
-          <i class="fa-solid fa-pen"></i> Editar meu perfil
-        </button>
       </div>
     </div>
 

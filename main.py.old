@@ -509,18 +509,12 @@ async def forum_page(request: Request):
 
 
 @app.get("/perfil", response_class=HTMLResponse)
-async def perfil_page(
-    request: Request,
-    current_user: UserTable = Depends(get_current_active_user),
-):
+async def perfil_page(request: Request):
     return templates.TemplateResponse(request=request, name="usuarios.html", context={})
 
 
 @app.get("/editar-perfil", response_class=HTMLResponse)
-async def editar_perfil_page(
-    request: Request,
-    current_user: UserTable = Depends(get_current_active_user),
-):
+async def editar_perfil_page(request: Request):
     return templates.TemplateResponse(request=request, name="editar_perfil.html", context={})
 
 
