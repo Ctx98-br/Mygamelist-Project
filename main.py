@@ -56,28 +56,30 @@ DUMMY_HASH = password_hash.hash("dummypassword")
 # --- EVENTO DE STARTUP: garante usuário admin padrão ---
 @app.on_event("startup")
 async def create_default_admin():
-    """Cria o usuário admin padrão (admin/admin) na primeira inicialização."""
+    """Cria o usuário admin padrão na primeira inicialização usando variáveis de ambiente."""
     db = SessionLocal()
+    admin_username = os.getenv("DEFAULT_ADMIN_USER", "admin")
+    admin_password = os.getenv("DEFAULT_ADMIN_PASSWORD", "admin")
     try:
-        existing = db.query(UserTable).filter(UserTable.username == "admin").first()
+        existing = db.query(UserTable).filter(UserTable.username == admin_username).first()
         if not existing:
             admin_user = UserTable(
-                username="admin",
-                email="admin@mygamelist.local",
+                username=admin_username,
+                email=f"{admin_username}@mygamelist.local",
                 full_name="Administrador",
-                hashed_password=password_hash.hash("admin"),
+                hashed_password=password_hash.hash(admin_password),
                 disabled=False,
                 is_admin=True,
             )
             db.add(admin_user)
             db.commit()
-            print("✅ Usuário admin criado: login=admin / senha=admin")
+            print(f"✅ Usuário admin criado: login={admin_username} / senha configurada no .env (ou padrão)")
         elif not existing.is_admin:
             existing.is_admin = True
             db.commit()
-            print("✅ Usuário 'admin' promovido a administrador.")
+            print(f"✅ Usuário '{admin_username}' promovido a administrador.")
         else:
-            print("ℹ️  Usuário admin já existe.")
+            print(f"ℹ️  Usuário admin '{admin_username}' já existe.")
     except Exception as exc:
         print(f"⚠️  Erro ao criar admin padrão: {exc}")
     finally:
@@ -774,7 +776,7 @@ async def admin_create_user(
     db: Session = Depends(get_db),
     current_user: UserTable = Depends(get_current_admin),
 ):
-    ADMIN_MASTER_CODE = "mgl-admin-2025"
+    ADMIN_MASTER_CODE = os.getenv("ADMIN_MASTER_CODE")
     if payload.codigo != ADMIN_MASTER_CODE:
         raise HTTPException(status_code=403, detail="Código mestre inválido")
 
